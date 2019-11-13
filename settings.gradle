@@ -1,0 +1,7 @@
+rootProject.name = 'tes-parent'
+include 'app'
+include 'core'
+include 'plugin'
+include 'plugin-jach-java'
+include 'web-ant'
+

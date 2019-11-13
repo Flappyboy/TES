@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+}
+
+group 'top.jach.tes'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+
+repositories {
+    maven{
+        //更换为阿里的仓库
+        url  'http://maven.aliyun.com/nexus/content/groups/public'
+    }
+    //有些jar包在中央仓库是没有的，需要手动添加上去
+//        flatDir {  dirs 'local_jars' }
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    // https://mvnrepository.com/artifact/com.github.bingoohuang/idworker-client
+    compile group: 'com.github.bingoohuang', name: 'idworker-client', version: '0.0.8'
+// https://mvnrepository.com/artifact/org.apache.commons/commons-compress
+    compile group: 'org.apache.commons', name: 'commons-compress', version: '1.19'
+// https://mvnrepository.com/artifact/commons-io/commons-io
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+}
