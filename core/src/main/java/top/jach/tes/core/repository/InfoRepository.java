@@ -5,7 +5,7 @@ import top.jach.tes.core.dto.PageQueryDto;
 
 import java.util.List;
 
-public interface InfoRepository<I extends Info> {
+public interface InfoRepository<I extends Info> extends Repository {
 
     /**
      * 存储Info Info已经赋予了Id

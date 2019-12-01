@@ -10,4 +10,12 @@ public class ValueInfo<V> extends Info {
         this.v = v;
         return this;
     }
+
+    public static <V> ValueInfo<V> createValueInfo(V v, String name, Class<V> clazz){
+        ValueInfo<V> valueInfo = new ValueInfo<>();
+        valueInfo.setV(v)
+                .setName(name)
+                .initBuild();
+        return valueInfo;
+    }
 }

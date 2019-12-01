@@ -8,8 +8,9 @@ import java.util.*;
  */
 public class NToMMatchingWithoutPriority<N,M> implements NToMMatchingStrategy<N,M> {
     Set<NToMMatchingStrategy<N,M>> strategys = new LinkedHashSet<>();
-    public void register(NToMMatchingStrategy<N,M>... strategy){
+    public NToMMatchingWithoutPriority register(NToMMatchingStrategy<N,M>... strategy){
         strategys.addAll(Arrays.asList(strategy));
+        return this;
     }
 
     @Override

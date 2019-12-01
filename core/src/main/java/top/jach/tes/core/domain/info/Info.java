@@ -6,16 +6,22 @@ import top.jach.tes.core.domain.Entity;
 
 @Getter
 @ToString
-public class Info extends Entity {
+public abstract class Info extends Entity {
     private String name;
 
     private String desc;
 
-    private InfoStatus status;
+    private String status = InfoStatus.NONE.name();
 
     public enum InfoStatus {
-        SAVING(),//0
-        COMPLETE();//1
+        SAVING(),
+        COMPLETE(),
+        NONE()
+    }
+
+    // 用于识别Info的Class，正常情况下就是类本身，但在仅用于传输info部分属性，而不知道具体Info时需要指定
+    public Class<? extends Info> getInfoClass(){
+        return getClass();
     }
 
     public Info setName(String name) {
@@ -28,8 +34,17 @@ public class Info extends Entity {
         return this;
     }
 
-    public Info setStatus(InfoStatus status) {
-        this.status = status;
+    public Info setStatus(String status) {
+        try {
+            InfoStatus infoStatus = InfoStatus.valueOf(status);
+            if(infoStatus != null) {
+                this.status = status;
+            }else{
+                this.status = InfoStatus.NONE.name();
+            }
+        }catch (IllegalArgumentException e){
+            this.status = InfoStatus.NONE.name();
+        }
         return this;
     }
 }

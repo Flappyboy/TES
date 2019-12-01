@@ -8,8 +8,6 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-
-
 repositories {
     maven{
         //更换为阿里的仓库
@@ -24,11 +22,9 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compileOnly 'org.projectlombok:lombok:1.18.10'
     annotationProcessor 'org.projectlombok:lombok:1.18.10'
-    // https://mvnrepository.com/artifact/com.github.bingoohuang/idworker-client
     compile group: 'com.github.bingoohuang', name: 'idworker-client', version: '0.0.8'
-// https://mvnrepository.com/artifact/org.apache.commons/commons-compress
-    compile group: 'org.apache.commons', name: 'commons-compress', version: '1.19'
-// https://mvnrepository.com/artifact/commons-io/commons-io
-    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.29'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.62'
 }

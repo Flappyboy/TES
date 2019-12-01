@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+
+spring:
+  profiles:
+    active: dev
+  session:
+#    jdbc:
+#      initialize-schema: ALWAYS
+    store-type: jdbc
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL57Dialect
+  datasource:
+    url: jdbc:mysql://localhost:3306/tes?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root

@@ -9,18 +9,18 @@ import java.util.Date;
 public abstract class Entity {
     private Long id;
 
-    private Date createdTime;
+    private Long createdTime;
 
-    private Date updatedTime;
+    private Long updatedTime;
 
     public void initBuild(){
         this.id = IdGenerator.nextId();
-        this.createdTime = new Date();
-        this.updatedTime = new Date();
+        this.createdTime = System.currentTimeMillis();
+        this.updatedTime = System.currentTimeMillis();
     }
 
     public void updateTime(){
-        this.updatedTime = new Date();
+        this.updatedTime = System.currentTimeMillis();
     }
 
     public Entity setId(Long id) {
@@ -28,12 +28,12 @@ public abstract class Entity {
         return this;
     }
 
-    public Entity setCreatedTime(Date createdTime) {
+    public Entity setCreatedTime(Long createdTime) {
         this.createdTime = createdTime;
         return this;
     }
 
-    public Entity setUpdatedTime(Date updatedTime) {
+    public Entity setUpdatedTime(Long updatedTime) {
         this.updatedTime = updatedTime;
         return this;
     }

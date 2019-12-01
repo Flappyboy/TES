@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class DefaultNToMMatchingStrategy<N,M> implements NToMMatchingStrategy<N,M> {
+public class DefaultNToMMatchingStrategy<N,M> implements NToMMatchingStrategy<N,M>, LinkNM<N, M> {
 
     Map<N, Set<M>> N2MMap = new HashMap<>();
     Map<M, Set<N>> M2NMap = new HashMap<>();
@@ -30,8 +30,9 @@ public class DefaultNToMMatchingStrategy<N,M> implements NToMMatchingStrategy<N,
         return ns;
     }
 
-    void link(N n, M m){
+    public DefaultNToMMatchingStrategy link(N n, M m){
         NToM(n).add(m);
         MToN(m).add(n);
+        return this;
     }
 }

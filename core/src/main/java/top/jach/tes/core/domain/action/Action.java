@@ -1,14 +1,12 @@
 package top.jach.tes.core.domain.action;
 
-import top.jach.tes.core.domain.info.InputInfo;
-import top.jach.tes.core.domain.info.OutputInfo;
-import top.jach.tes.core.domain.meta.MetaData;
-import top.jach.tes.core.resource.Resource;
+import top.jach.tes.core.context.Context;
+import top.jach.tes.core.domain.meta.Meta;
 
-public interface Action {
+public interface Action<I extends InputInfos> {
 
     /**
-     * 功能名，应全局唯一
+     * 功能名
      * @return
      */
     String getName();
@@ -23,7 +21,7 @@ public interface Action {
      * 描述该功能所需的输入
      * @return
      */
-    MetaData getMetaData();
+    Meta getInputMeta();
 
-    OutputInfo execute(InputInfo inputInfo, Resource resource);
+    OutputInfos execute(I inputInfo, Context context);
 }

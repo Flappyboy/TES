@@ -30,6 +30,10 @@ repositories {
 }
 
 dependencies {
+    compile project(':core')
+    compile project(':plugin')
+    compile project(':plugin-tes')
+    
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-web'
