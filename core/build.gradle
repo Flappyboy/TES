@@ -8,16 +8,6 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-repositories {
-    maven{
-        //更换为阿里的仓库
-        url  'http://maven.aliyun.com/nexus/content/groups/public'
-    }
-    //有些jar包在中央仓库是没有的，需要手动添加上去
-//        flatDir {  dirs 'local_jars' }
-    mavenCentral()
-}
-
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compileOnly 'org.projectlombok:lombok:1.18.10'

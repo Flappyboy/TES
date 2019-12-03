@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.2.1.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+//    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'java'
 }
 
@@ -17,16 +17,6 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-}
-
-repositories {
-    maven{
-        //更换为阿里的仓库
-        url  'http://maven.aliyun.com/nexus/content/groups/public'
-    }
-    //有些jar包在中央仓库是没有的，需要手动添加上去
-//        flatDir {  dirs 'local_jars' }
-    mavenCentral()
 }
 
 dependencies {

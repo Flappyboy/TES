@@ -1,3 +1,16 @@
+pluginManagement {
+    repositories {
+        maven{
+            //更换为阿里的仓库
+            url  'http://maven.aliyun.com/nexus/content/groups/public'
+        }
+        //有些jar包在中央仓库是没有的，需要手动添加上去
+//        flatDir {  dirs 'local_jars' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'tes-parent'
 include 'app'
 include 'core'
@@ -8,4 +21,3 @@ include 'plugin-arc-smell'
 include 'plugin-jach'
 include 'plugin-jhkt'
 include 'web'
-
