@@ -8,7 +8,6 @@ import top.jach.tes.core.domain.info.Info;
 import top.jach.tes.core.domain.info.value.FileInfo;
 import top.jach.tes.core.domain.info.value.StringInfo;
 import top.jach.tes.plugin.jach.code.git.tree.GitTreeAction;
-import top.jach.tes.plugin.jach.code.repo.Repo;
 import top.jach.tes.plugin.jach.code.repo.RepoInfo;
 
 import java.io.File;
@@ -16,7 +15,7 @@ import java.io.File;
 public class GitTree {
     public static void main(String[] args) {
         // 创建不存在于数据库中的Info，一般是一些参数
-        Info repoInfo = RepoInfo.createInfo(new Repo().setName("dddsample"));
+        Info repoInfo = RepoInfo.createInfo("dddsample", "http://");
         Info repoDir = FileInfo.createInfo(new File("E:\\workspace\\otherproject\\dddsample-core"));
         Info sha = StringInfo.createInfo("master");
 
