@@ -2,11 +2,12 @@ package top.jach.tes.core.domain.action;
 
 import top.jach.tes.core.domain.info.Info;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class DefaultOutputInfo implements OutputInfo {
     Info info;
-    Set<String> flags;
+    Set<String> flags = new HashSet<>();
 
     public DefaultOutputInfo(Info info) {
         this.info = info;
@@ -24,11 +25,11 @@ public class DefaultOutputInfo implements OutputInfo {
 
     @Override
     public Info getInfo() {
-        return null;
+        return info;
     }
 
     @Override
     public Set<String> flags() {
-        return null;
+        return flags;
     }
 }

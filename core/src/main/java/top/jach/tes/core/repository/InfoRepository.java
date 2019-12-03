@@ -5,7 +5,7 @@ import top.jach.tes.core.dto.PageQueryDto;
 
 import java.util.List;
 
-public interface InfoRepository<I extends Info> extends Repository {
+public interface InfoRepository<I extends Info, C> extends Repository {
 
     /**
      * 存储Info Info已经赋予了Id
@@ -43,6 +43,14 @@ public interface InfoRepository<I extends Info> extends Repository {
      * @return
      */
     PageQueryDto<I> queryProfileByInfoAndProjectId(Info info, Long projectId, PageQueryDto pageQueryDto);
+
+    /**
+     * 定制化的查询
+     * @param c
+     * @param pageQueryDto
+     * @return
+     */
+    PageQueryDto<I> queryProfileByCustom(C c, PageQueryDto pageQueryDto);
 
     /**
      * 查询Info具体数据，需要将Info中的Detail进行填充

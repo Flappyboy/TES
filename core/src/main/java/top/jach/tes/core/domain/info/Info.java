@@ -7,6 +7,15 @@ import top.jach.tes.core.domain.Entity;
 @Getter
 @ToString
 public abstract class Info extends Entity {
+/*
+    所有继承Info的类应该要包含如下静态方法,并调用info.initBuild()方法,
+    可以添加参数，用于表示创建新的Info，Info替换成对应类。
+    public static Info createInfo(...){
+        Info info = new Info();
+        info.initBuild();
+        return info;
+    }
+*/
 
     /**
      * 用于向用户表明该Info的含义，不具备具体的业务属性，可能会用来作为筛选条件

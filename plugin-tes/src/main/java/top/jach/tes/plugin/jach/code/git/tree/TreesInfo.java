@@ -6,19 +6,22 @@ import top.jach.tes.core.domain.info.Info;
 import java.util.List;
 
 @Data
-public class TreeInfo extends Info {
+public class TreesInfo extends Info {
     Long repoId;
     List<Tree> trees;
 
-    public TreeInfo() {
+    public static TreesInfo createInfo(){
+        TreesInfo info = new TreesInfo();
+        info.initBuild();
+        return info;
     }
 
-    public TreeInfo setRepoId(Long repoId) {
+    public TreesInfo setRepoId(Long repoId) {
         this.repoId = repoId;
         return this;
     }
 
-    public TreeInfo setTrees(List<Tree> trees) {
+    public TreesInfo setTrees(List<Tree> trees) {
         this.trees = trees;
         return this;
     }

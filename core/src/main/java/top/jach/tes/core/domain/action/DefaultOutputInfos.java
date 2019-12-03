@@ -19,7 +19,7 @@ public class DefaultOutputInfos implements OutputInfos {
                 flags) {
             defaultOutputInfo.addFlag(flag);
         }
-        outputInfoList.add(new DefaultOutputInfo(info));
+        addOutputInfo(defaultOutputInfo);
         return this;
     }
 
@@ -42,6 +42,6 @@ public class DefaultOutputInfos implements OutputInfos {
 
     @Override
     public List<OutputInfo> getOutputInfoList() {
-        return null;
+        return outputInfoList;
     }
 }

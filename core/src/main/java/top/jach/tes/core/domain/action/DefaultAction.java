@@ -32,9 +32,9 @@ public class DefaultAction implements Action, StatefulAction{
             return null;
         }
         InputInfos tmp = new DefaultInputInfos();
-        for (OutputInfos.OutputInfo outputInfo :
+        for (OutputInfo outputInfo :
                 outputInfos.getOutputInfoList()) {
-            if(outputInfo.flags().contains(OutputInfos.OutputInfo.Flag.SAVE.name())){
+            if(outputInfo.flags().contains(OutputInfo.Flag.SAVE.name())){
                 tmp.put(String.valueOf(tmp.size()), outputInfo.getInfo());
             }
         }

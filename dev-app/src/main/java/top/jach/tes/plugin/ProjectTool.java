@@ -1,4 +1,4 @@
-package top.jach.tes.core.dev.app;
+package top.jach.tes.plugin;
 
 import top.jach.tes.core.domain.Project;
 

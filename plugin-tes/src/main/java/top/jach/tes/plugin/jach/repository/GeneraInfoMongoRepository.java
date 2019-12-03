@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -19,9 +20,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GeneraInfoMongoRepository implements InfoRepository {
+public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<GeneraInfoMongoRepository.BsonType, Bson>> {
     public static final String PROJECT_ID = "_projectId";
     MongoCollection mongoCollection;
+
+    public enum BsonType{
+        Filter(),
+        Projection(),
+    }
 
     public GeneraInfoMongoRepository(MongoCollection mongoCollection) {
         this.mongoCollection = mongoCollection;
@@ -67,6 +73,27 @@ public class GeneraInfoMongoRepository implements InfoRepository {
     }
 
     @Override
+    public PageQueryDto<Info> queryProfileByCustom(Map<BsonType, Bson> bsonTypeBsonMap, PageQueryDto pageQueryDto) {
+        if (pageQueryDto == null){
+            pageQueryDto = PageQueryDto.create(1,-1);
+        }
+        FindIterable<Document> documents = mongoCollection
+                .find(getBson(bsonTypeBsonMap, BsonType.Filter))
+                .projection(getBson(bsonTypeBsonMap, BsonType.Projection));
+        for (Document document :
+                documents) {
+            try {
+                Info info = (Info) JSON.parseObject(document.toJson(JsonWriterSettings.builder().build()),
+                        Class.forName(document.getString("infoClass")));
+                pageQueryDto.resultAdd(info);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return pageQueryDto;
+    }
+
+    @Override
     public List queryDetailsByInfoIds(List infoIds) {
         FindIterable<Document> documents = mongoCollection.find(Filters.in("id",infoIds));
         List<Info> infos = new ArrayList<>();
@@ -81,5 +108,21 @@ public class GeneraInfoMongoRepository implements InfoRepository {
             }
         }
         return infos;
+    }
+
+    private Bson getBson(Map<BsonType, Bson> bsonTypeBsonMap, BsonType bsonType){
+        Bson bson = bsonTypeBsonMap.get(bsonType);
+        if(bson != null){
+            return bson;
+        }
+        switch (bsonType){
+            case Filter:
+                return Filters.and();
+            case Projection:
+                return Projections.include(
+                        "id","createdTime","updatedTime","name","infoClass", "status", "desc"
+                );
+        }
+        return null;
     }
 }

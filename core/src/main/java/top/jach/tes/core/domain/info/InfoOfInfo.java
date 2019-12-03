@@ -11,7 +11,8 @@ import java.util.List;
 public class InfoOfInfo<I extends Info> extends Info implements Iterable<I>{
     private List<I> infos = new ArrayList<>();
 
-    public InfoOfInfo addInfos(I... infos){
+    @SafeVarargs
+    public final InfoOfInfo addInfos(I... infos){
         return addInfos(Arrays.asList(infos));
     }
 
@@ -30,6 +31,8 @@ public class InfoOfInfo<I extends Info> extends Info implements Iterable<I>{
         infoOfInfo.addInfos(infos);
         return infoOfInfo;
     }
+
+    @SafeVarargs
     public static <I extends Info> InfoOfInfo<I> createInfoOfInfo(I... infos){
         InfoOfInfo<I> infoOfInfo = new InfoOfInfo<>();
         infoOfInfo.addInfos(infos);

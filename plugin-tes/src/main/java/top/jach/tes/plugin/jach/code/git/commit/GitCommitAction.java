@@ -1,5 +1,6 @@
 package top.jach.tes.plugin.jach.code.git.commit;
 
+import top.jach.tes.core.domain.action.OutputInfo;
 import top.jach.tes.core.domain.context.Context;
 import top.jach.tes.core.domain.action.Action;
 import top.jach.tes.core.domain.action.InputInfos;
@@ -39,7 +40,7 @@ public class GitCommitAction implements Action {
         ));
         info.initBuild();
 
-        return () -> Arrays.asList(new OutputInfos.OutputInfo() {
+        return () -> Arrays.asList(new OutputInfo() {
             @Override
             public Info getInfo() {
                 return info;

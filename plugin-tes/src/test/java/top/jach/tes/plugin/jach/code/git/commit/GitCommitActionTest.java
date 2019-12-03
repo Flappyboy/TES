@@ -1,9 +1,9 @@
 package top.jach.tes.plugin.jach.code.git.commit;
 
 import org.junit.Test;
-import top.jach.tes.core.dev.app.InfoTool;
-import top.jach.tes.core.dev.app.InputInfoProfiles;
-import top.jach.tes.core.dev.app.TaskTool;
+import top.jach.tes.plugin.InfoTool;
+import top.jach.tes.plugin.InputInfoProfiles;
+import top.jach.tes.plugin.TaskTool;
 import top.jach.tes.core.domain.action.Action;
 import top.jach.tes.core.domain.action.InputInfos;
 import top.jach.tes.core.domain.info.Info;

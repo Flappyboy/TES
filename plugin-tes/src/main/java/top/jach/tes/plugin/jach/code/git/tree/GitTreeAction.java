@@ -59,11 +59,11 @@ public class GitTreeAction implements Action {
                         treeList.add(new Tree().setRelativePath(treeWalk.getPathString())
                                 .setFileMode(FileModeToString(treeWalk.getFileMode())));
                     });
-            TreeInfo treeInfo = new TreeInfo().setTrees(treeList);
+            TreesInfo treesInfo = TreesInfo.createInfo().setTrees(treeList);
             if(inputInfo.getInfo(REPO_INFO, RepoInfo.class) != null) {
-                treeInfo.setRepoId(inputInfo.getInfo(REPO_INFO, RepoInfo.class).getId());
+                treesInfo.setRepoId(inputInfo.getInfo(REPO_INFO, RepoInfo.class).getId());
             }
-            return DefaultOutputInfos.WithSaveFlag(treeInfo);
+            return DefaultOutputInfos.WithSaveFlag(treesInfo);
         } catch (Exception e) {
             context.Logger().error("GitTreeAction", e);
         }

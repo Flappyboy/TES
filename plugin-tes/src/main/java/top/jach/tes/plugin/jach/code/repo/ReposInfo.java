@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class ReposInfo extends Info {
-    private List<Long> repoInfoIds;
+    private List<Long> repoIds;
 }

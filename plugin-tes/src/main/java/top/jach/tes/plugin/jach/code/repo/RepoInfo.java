@@ -5,14 +5,25 @@ import top.jach.tes.core.domain.info.Info;
 
 @Data
 public class RepoInfo extends Info {
-    Repo repo;
+    String name;
 
-    public RepoInfo() {
+    String remoteUrl;
+
+    public static RepoInfo createInfo(String name ,String remoteUrl){
+        RepoInfo repoInfo = new RepoInfo();
+        repoInfo.setName(name);
+        repoInfo.setRemoteUrl(remoteUrl);
+        repoInfo.initBuild();
+        return repoInfo;
     }
 
-    public static RepoInfo createInfo(Repo repo){
-        RepoInfo repoInfo = new RepoInfo();
-        repoInfo.setRepo(repo);
-        return repoInfo;
+    public RepoInfo setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public RepoInfo setRemoteUrl(String remoteUrl) {
+        this.remoteUrl = remoteUrl;
+        return this;
     }
 }

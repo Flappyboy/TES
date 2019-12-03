@@ -6,4 +6,6 @@ include 'plugin-tes'
 include 'dev-app'
 include 'plugin-arc-smell'
 include 'plugin-jach'
+include 'plugin-jhkt'
+include 'web'
 

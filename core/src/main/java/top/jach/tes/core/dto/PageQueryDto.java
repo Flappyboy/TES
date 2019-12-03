@@ -2,6 +2,7 @@ package top.jach.tes.core.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -27,6 +28,14 @@ public class PageQueryDto<T> {
     public PageQueryDto addResult(List<T> result, Long total){
         this.result = result;
         this.total = total;
+        return this;
+    }
+
+    public PageQueryDto resultAdd(T t){
+        if(this.result == null){
+            result = new ArrayList<>();
+        }
+        this.result.add(t);
         return this;
     }
 }
