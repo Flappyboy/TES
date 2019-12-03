@@ -12,6 +12,7 @@ dependencies {
     testCompile project(':dev-app')
 
     compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
     
     compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '5.5.1.201910021850-r'
     compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit.archive', version: '5.5.1.201910021850-r'
