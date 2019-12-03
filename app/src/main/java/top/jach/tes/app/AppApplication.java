@@ -6,30 +6,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import top.jach.tes.core.context.log.simple.SimpleLoggerFactory;
+import top.jach.tes.core.domain.context.BaseContextFactory;
+import top.jach.tes.core.domain.context.log.simple.SimpleLoggerFactory;
 import top.jach.tes.core.domain.info.Info;
+import top.jach.tes.core.factory.ContextFactory;
 import top.jach.tes.core.factory.info.DefaultInfoRepositoryFactory;
 import top.jach.tes.core.factory.info.InfoRepositoryFactory;
 import top.jach.tes.core.matching.DefaultNToOneMatchingStrategy;
 import top.jach.tes.core.matching.NToOneMatchingStrategy;
 import top.jach.tes.core.repository.InfoRepository;
-import top.jach.tes.plugin.jach.repository.GeneraMongoRepository;
+import top.jach.tes.plugin.jach.repository.GeneraInfoMongoRepository;
 
 import java.util.Set;
 
 @SpringBootApplication
 public class AppApplication {
     @Autowired
-    GeneraMongoRepository generaMongoRepository;
+    GeneraInfoMongoRepository generaInfoMongoRepository;
+
+    @Autowired
+    ILoggerFactory iLoggerFactory;
+
+    @Autowired
+    InfoRepositoryFactory infoRepositoryFactory;
 
     public static void main(String[] args) {
         SpringApplication.run(AppApplication.class, args);
     }
 
     @Bean
-    GeneraMongoRepository generaMongoRepository(){
+    ContextFactory contextFactory(){
+        return new BaseContextFactory(iLoggerFactory, infoRepositoryFactory);
+    }
+
+    @Bean
+    GeneraInfoMongoRepository generaInfoMongoRepository(){
         MongoClient mongoClient = new MongoClient("localhost", 27017);
-        return new GeneraMongoRepository(mongoClient.getDatabase("tes").getCollection("general_info"));
+        return new GeneraInfoMongoRepository(mongoClient.getDatabase("tes").getCollection("general_info"));
     }
 
     @Bean
@@ -39,7 +52,7 @@ public class AppApplication {
         factory.register(new NToOneMatchingStrategy<Class<? extends Info>, InfoRepository>() {
             @Override
             public InfoRepository NToM(Class<? extends Info> aClass) {
-                return generaMongoRepository;
+                return generaInfoMongoRepository;
             }
 
             @Override

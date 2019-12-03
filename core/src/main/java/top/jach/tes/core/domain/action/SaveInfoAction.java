@@ -1,6 +1,6 @@
 package top.jach.tes.core.domain.action;
 
-import top.jach.tes.core.context.Context;
+import top.jach.tes.core.domain.context.Context;
 import top.jach.tes.core.domain.info.Info;
 import top.jach.tes.core.domain.meta.Meta;
 import top.jach.tes.core.factory.info.InfoRepositoryFactory;
@@ -30,7 +30,7 @@ public class SaveInfoAction implements Action {
         InfoRepositoryFactory infoRepositoryFactory = context.InfoRepositoryFactory();
         for (Info info :
                 inputInfo.values()) {
-            infoRepositoryFactory.getRepository(info.getInfoClass()).saveProfile(info, context.currentTask().getProject().getId());
+            infoRepositoryFactory.getRepository(info.getInfoClass()).saveProfile(info, context.currentProject().getId());
             infoRepositoryFactory.getRepository(info.getInfoClass()).saveDetail(info);
         }
         return null;

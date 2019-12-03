@@ -22,13 +22,13 @@ public class InfoProfileEntity {
 
     private Class<? extends Info> clazz;
 
-    public Info toInfo(){
-        Info info = new InfoProfile(id, clazz);
+    public InfoProfile toInfo(){
+        InfoProfile info = new InfoProfile(id, clazz);
         info.setName(name);
         return info;
     }
 
-    public static InfoProfileEntity createEntities(Info info){
+    public static InfoProfileEntity createEntities(InfoProfile info){
         InfoProfileEntity infoProfileEntity = new InfoProfileEntity();
         infoProfileEntity.setId(info.getId());
         infoProfileEntity.setName(info.getName());
@@ -36,17 +36,17 @@ public class InfoProfileEntity {
         return infoProfileEntity;
     }
 
-    public static Map<String, Info> entitiesToInfos(Map<String, InfoProfileEntity> infoProfileEntityMap){
-        InputInfos inputInfos = new DefaultInputInfos();
+    public static Map<String, InfoProfile> entitiesToInfoProfiles(Map<String, InfoProfileEntity> infoProfileEntityMap){
+        Map<String, InfoProfile> inputInfos = new HashMap<>();
         for (Map.Entry<String, InfoProfileEntity> entry :
                 infoProfileEntityMap.entrySet()) {
             inputInfos.put(entry.getKey(), entry.getValue().toInfo());
         }
         return inputInfos;
     }
-    public static Map<String, InfoProfileEntity> infosToEntities(Map<String, Info> infoMap){
+    public static Map<String, InfoProfileEntity> infoProfilesToEntities(Map<String, InfoProfile> infoMap){
         Map<String, InfoProfileEntity> infoProfileEntityMap = new HashMap<>();
-        for (Map.Entry<String, Info> entry :
+        for (Map.Entry<String, InfoProfile> entry :
                 infoMap.entrySet()) {
             infoProfileEntityMap.put(entry.getKey(), InfoProfileEntity.createEntities(entry.getValue()));
         }

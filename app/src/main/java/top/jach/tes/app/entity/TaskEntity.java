@@ -1,9 +1,7 @@
 package top.jach.tes.app.entity;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 import top.jach.tes.core.domain.Task;
 import top.jach.tes.core.domain.action.StatefulAction;
@@ -41,7 +39,7 @@ public class TaskEntity {
 
     public Task toTask(){
         Task task = new Task(projectEntity.toProject());
-        task.setInputInfos(InfoProfileEntity.entitiesToInfos(inputInfos))
+        task.setInputInfos(InfoProfileEntity.entitiesToInfoProfiles(inputInfos))
                 .setStatus(status).setAction(StatefulAction.deserializeActionFromJson(action))
                 .setId(id).setUpdatedTime(updatedTime).setCreatedTime(createdTime);
         return task;
@@ -51,7 +49,7 @@ public class TaskEntity {
         TaskEntity entity = new TaskEntity();
         BeanUtils.copyProperties(task, entity);
         entity.setAction(StatefulAction.serializeActionToJson(task.getAction()));
-        entity.setInputInfos(InfoProfileEntity.infosToEntities(task.getInputInfos()));
+        entity.setInputInfos(InfoProfileEntity.infoProfilesToEntities(task.getInputInfos()));
         entity.setProjectEntity(ProjectEntity.createFromProject(task.getProject()));
         return entity;
     }

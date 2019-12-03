@@ -7,6 +7,10 @@ import top.jach.tes.core.domain.Entity;
 @Getter
 @ToString
 public abstract class Info extends Entity {
+
+    /**
+     * 用于向用户表明该Info的含义，不具备具体的业务属性，可能会用来作为筛选条件
+     */
     private String name;
 
     private String desc;

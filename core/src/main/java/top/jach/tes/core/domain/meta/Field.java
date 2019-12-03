@@ -11,6 +11,9 @@ public interface Field<I> {
      */
     String getName();
 
+
+    String displayName();
+
     /**
      * 字段数据的类型
      * @return

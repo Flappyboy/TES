@@ -1,6 +1,6 @@
 package top.jach.tes.core.domain.action;
 
-import top.jach.tes.core.context.Context;
+import top.jach.tes.core.domain.context.Context;
 import top.jach.tes.core.domain.meta.Meta;
 
 public interface Action<I extends InputInfos> {

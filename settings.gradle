@@ -3,3 +3,7 @@ include 'app'
 include 'core'
 include 'plugin'
 include 'plugin-tes'
+include 'dev-app'
+include 'plugin-arc-smell'
+include 'plugin-jach'
+

@@ -282,7 +282,7 @@ public class JGitUtil {
         GitLowLevelAPI.doGetFileContent(gitdir, out, branchOrSha, blobId, path);
     }
 
-    abstract static class GitLowLevelAPI {
+    public abstract static class GitLowLevelAPI {
         private GitLowLevelAPI() {
         }
 
@@ -384,7 +384,7 @@ public class JGitUtil {
         }
     }
 
-    interface IGitTreeWorkHandler {
+    public interface IGitTreeWorkHandler {
         void handle(Repository repository, TreeWalk treeWalk) throws Exception;
     }
 }

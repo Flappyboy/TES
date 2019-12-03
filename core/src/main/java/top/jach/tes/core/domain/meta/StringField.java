@@ -1,9 +1,30 @@
 package top.jach.tes.core.domain.meta;
 
-public abstract class StringField extends ValueField<String> {
+import top.jach.tes.core.domain.info.Info;
+import top.jach.tes.core.domain.info.value.StringInfo;
+import top.jach.tes.core.factory.info.InfoRepositoryFactory;
+
+public class StringField extends ValueField<String> {
+
+    public static StringField createField(String name, String displayName){
+        StringField field = new StringField();
+        field.name = name;
+        field.displayName = name;
+        return field;
+    }
+
+    public static StringField createField(String name){
+        return createField(name, name);
+    }
+
 
     @Override
     public Class<String> getInputClass() {
         return String.class;
+    }
+
+    @Override
+    public Info getInfo(String input, InfoRepositoryFactory infoRepositoryFactory) {
+        return StringInfo.createInfo(input);
     }
 }

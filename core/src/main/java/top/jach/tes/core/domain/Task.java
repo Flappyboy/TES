@@ -1,13 +1,13 @@
 package top.jach.tes.core.domain;
 
 import lombok.Getter;
-import top.jach.tes.core.context.Context;
+import top.jach.tes.core.domain.context.Context;
 import top.jach.tes.core.domain.action.Action;
 import top.jach.tes.core.domain.action.InputInfos;
 import top.jach.tes.core.domain.action.OutputInfos;
 import top.jach.tes.core.domain.info.DefaultInputInfos;
 import top.jach.tes.core.domain.info.Info;
-import top.jach.tes.core.factory.info.InfoRepositoryFactory;
+import top.jach.tes.core.domain.info.InfoProfile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class Task extends Entity {
 
     // 任务的输入
-    private Map<String, Info> inputInfos;
+    private Map<String, InfoProfile> inputInfos;
 
     // 执行的步骤
     private Action action;
@@ -28,7 +28,7 @@ public class Task extends Entity {
     // 所属project
     private Project project;
 
-    private InfoRepositoryFactory infoRepositoryFactory;
+    private Context context;
 
     public Task(Project project) {
         this.project = project;
@@ -50,21 +50,30 @@ public class Task extends Entity {
     }
 
     public void execute(Context context){
-        InputInfos inputInfos = new DefaultInputInfos();
-        if(this.inputInfos != null) {
-            for (Map.Entry<String, Info> entry :
-                    this.inputInfos.entrySet()) {
-                List<Info> result = context.InfoRepositoryFactory().getRepository(entry.getValue().getInfoClass()).queryDetailsByInfoIds(Arrays.asList(entry.getValue()));
-                if (result.size() > 0) {
-                    inputInfos.put(entry.getKey(), result.get(0));
+        this.context = context;
+        setStatus(Status.Doing.name());
+        try {
+            InputInfos inputInfos = new DefaultInputInfos();
+            if (this.inputInfos != null) {
+                for (Map.Entry<String, InfoProfile> entry :
+                        this.inputInfos.entrySet()) {
+                    List<Info> result = context.InfoRepositoryFactory().getRepository(entry.getValue().getInfoClass()).
+                            queryDetailsByInfoIds(Arrays.asList(entry.getValue().getId()));
+                    if (result.size() > 0) {
+                        inputInfos.put(entry.getKey(), result.get(0));
+                    }
                 }
             }
+            OutputInfos outputInfos = action.execute(inputInfos, context);
+
+            setStatus(Status.Complete.name());
+        } catch (Throwable e){
+            context.Logger().error("error: \n", e);
+            setStatus(Status.Error.name());
         }
-        OutputInfos outputInfos = action.execute(inputInfos, context);
-        setStatus(Status.Complete.name());
     }
 
-    public Task setInputInfos(Map<String, Info> inputInfos) {
+    public Task setInputInfos(Map<String, InfoProfile> inputInfos) {
         this.inputInfos = inputInfos;
         return this;
     }
@@ -76,11 +85,6 @@ public class Task extends Entity {
 
     public Task setStatus(String status) {
         this.status = status;
-        return this;
-    }
-
-    public Task setInfoRepositoryFactory(InfoRepositoryFactory infoRepositoryFactory) {
-        this.infoRepositoryFactory = infoRepositoryFactory;
         return this;
     }
 }

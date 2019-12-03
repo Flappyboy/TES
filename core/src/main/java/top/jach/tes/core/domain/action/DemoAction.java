@@ -1,6 +1,6 @@
 package top.jach.tes.core.domain.action;
 
-import top.jach.tes.core.context.Context;
+import top.jach.tes.core.domain.context.Context;
 import top.jach.tes.core.domain.meta.Field;
 import top.jach.tes.core.domain.meta.Meta;
 import top.jach.tes.core.domain.meta.StringField;
@@ -26,7 +26,12 @@ public class DemoAction implements Action{
             metas.add(new StringField() {
                 @Override
                 public String getName() {
-                    return "String Name";
+                    return "String_Name";
+                }
+
+                @Override
+                public String displayName() {
+                    return getName();
                 }
             });
             return metas;
