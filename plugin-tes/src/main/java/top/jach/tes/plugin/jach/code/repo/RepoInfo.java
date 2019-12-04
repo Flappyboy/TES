@@ -1,13 +1,12 @@
 package top.jach.tes.plugin.jach.code.repo;
 
 import lombok.Data;
+import lombok.Getter;
 import top.jach.tes.core.domain.info.Info;
 
-@Data
 public class RepoInfo extends Info {
-    String name;
 
-    String remoteUrl;
+    private Repo repo = new Repo();
 
     public static RepoInfo createInfo(String name ,String remoteUrl){
         RepoInfo repoInfo = new RepoInfo();
@@ -18,12 +17,20 @@ public class RepoInfo extends Info {
     }
 
     public RepoInfo setName(String name) {
-        this.name = name;
+        this.repo.setName(name);
         return this;
     }
 
     public RepoInfo setRemoteUrl(String remoteUrl) {
-        this.remoteUrl = remoteUrl;
+        this.repo.setRemoteUrl(remoteUrl);
         return this;
+    }
+
+    public String getName(){
+        return this.repo.getName();
+    }
+
+    public String getRemoteUrl(){
+        return this.repo.getRemoteUrl();
     }
 }
