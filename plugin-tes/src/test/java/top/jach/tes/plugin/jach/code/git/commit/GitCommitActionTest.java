@@ -1,14 +1,5 @@
 package top.jach.tes.plugin.jach.code.git.commit;
 
-import org.junit.Test;
-import top.jach.tes.dev.app.InfoTool;
-import top.jach.tes.dev.app.InputInfoProfiles;
-import top.jach.tes.dev.app.TaskTool;
-import top.jach.tes.core.domain.action.Action;
-import top.jach.tes.core.domain.action.InputInfos;
-import top.jach.tes.core.domain.info.Info;
-import top.jach.tes.core.domain.info.value.StringInfo;
-
 public class GitCommitActionTest {
 
 /*    @Test

@@ -15,7 +15,7 @@ import top.jach.tes.core.factory.info.InfoRepositoryFactory;
 import top.jach.tes.core.matching.DefaultNToOneMatchingStrategy;
 import top.jach.tes.core.matching.NToOneMatchingStrategy;
 import top.jach.tes.core.repository.InfoRepository;
-import top.jach.tes.plugin.jach.repository.GeneraInfoMongoRepository;
+import top.jach.tes.plugin.tes.repository.GeneraInfoMongoRepository;
 
 import java.util.Set;
 

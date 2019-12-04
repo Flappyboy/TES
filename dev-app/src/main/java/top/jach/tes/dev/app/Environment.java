@@ -13,7 +13,7 @@ import top.jach.tes.core.matching.NToOneMatchingStrategy;
 import top.jach.tes.core.repository.InfoRepository;
 import top.jach.tes.core.service.infoservice.DefaultInfoService;
 import top.jach.tes.core.service.infoservice.InfoService;
-import top.jach.tes.plugin.jach.repository.GeneraInfoMongoRepository;
+import top.jach.tes.plugin.tes.repository.GeneraInfoMongoRepository;
 
 import java.util.Set;
 

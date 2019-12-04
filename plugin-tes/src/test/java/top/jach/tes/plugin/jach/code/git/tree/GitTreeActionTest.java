@@ -1,16 +1,5 @@
 package top.jach.tes.plugin.jach.code.git.tree;
 
-import org.junit.Test;
-import top.jach.tes.dev.app.InfoTool;
-import top.jach.tes.dev.app.InputInfoProfiles;
-import top.jach.tes.dev.app.TaskTool;
-import top.jach.tes.core.domain.action.Action;
-import top.jach.tes.core.domain.info.Info;
-import top.jach.tes.core.domain.info.value.FileInfo;
-import top.jach.tes.core.domain.info.value.StringInfo;
-
-import java.io.File;
-
 public class GitTreeActionTest {
 
 /*    @Test
