@@ -4,8 +4,10 @@ import org.eclipse.jgit.lib.FileMode;
 import top.jach.tes.core.domain.action.*;
 import top.jach.tes.core.domain.context.Context;
 import top.jach.tes.core.domain.info.value.FileInfo;
+import top.jach.tes.core.domain.info.value.LongInfo;
 import top.jach.tes.core.domain.info.value.StringInfo;
 import top.jach.tes.core.domain.meta.InfoField;
+import top.jach.tes.core.domain.meta.LongField;
 import top.jach.tes.core.domain.meta.Meta;
 import top.jach.tes.core.domain.meta.StringField;
 import top.jach.tes.plugin.tes.code.repo.RepoInfo;
@@ -16,7 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GitTreeAction implements Action {
-    public static final String REPO_INFO = "repo_info";
+    public static final String REPOS_ID = "repos_id";
+    public static final String REPO_NAME = "repo_name";
     public static final String LOCAL_REPO_DIR = "local_repo_dir";
     public static final String COMMIT_SHA = "commit_sha";
 
@@ -33,10 +36,10 @@ public class GitTreeAction implements Action {
     @Override
     public Meta getInputMeta() {
         return () -> Arrays.asList(
-                InfoField.createField(REPO_INFO).setInfoClass(RepoInfo.class),
                 InfoField.createField(LOCAL_REPO_DIR).setInfoClass(FileInfo.class),
-                StringField.createField(COMMIT_SHA)
-        );
+                StringField.createField(COMMIT_SHA),
+                StringField.createField(REPO_NAME),
+                LongField.createField(REPOS_ID));
     }
 
     @Override
@@ -60,8 +63,9 @@ public class GitTreeAction implements Action {
                                 .setFileMode(FileModeToString(treeWalk.getFileMode())));
                     });
             TreesInfo treesInfo = TreesInfo.createInfo().setTrees(treeList);
-            if(inputInfo.getInfo(REPO_INFO, RepoInfo.class) != null) {
-                treesInfo.setRepoId(inputInfo.getInfo(REPO_INFO, RepoInfo.class).getId());
+            if(inputInfo.getInfo(REPOS_ID, StringInfo.class) != null) {
+                treesInfo.setReposId(inputInfo.getInfo(REPOS_ID, LongInfo.class).getValue());
+                treesInfo.setRepoName(inputInfo.getInfo(REPO_NAME, StringInfo.class).getValue());
             }
             return DefaultOutputInfos.WithSaveFlag(treesInfo);
         } catch (Exception e) {

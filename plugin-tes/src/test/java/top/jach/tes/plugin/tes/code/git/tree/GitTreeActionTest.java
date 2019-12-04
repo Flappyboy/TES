@@ -1,4 +1,4 @@
-package top.jach.tes.plugin.jach.code.git.tree;
+package top.jach.tes.plugin.tes.code.git.tree;
 
 public class GitTreeActionTest {
 
