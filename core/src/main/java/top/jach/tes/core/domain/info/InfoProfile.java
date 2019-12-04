@@ -9,7 +9,6 @@ import top.jach.tes.core.repository.InfoRepository;
 import java.util.Arrays;
 import java.util.List;
 
-@Getter
 @ToString
 public class InfoProfile extends Info {
 
