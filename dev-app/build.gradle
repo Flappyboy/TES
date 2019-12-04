@@ -12,4 +12,7 @@ dependencies {
     compile project(':core')
     compile project(':plugin')
     compile project(':plugin-tes')
+
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
 }

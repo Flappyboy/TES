@@ -12,7 +12,7 @@ import top.jach.tes.core.factory.ContextFactory;
 import top.jach.tes.core.factory.info.InfoRepositoryFactory;
 import top.jach.tes.core.repository.ProjectRepository;
 import top.jach.tes.core.repository.TaskRepository;
-import top.jach.tes.plugin.jach.code.git.commit.GitCommitAction;
+import top.jach.tes.dev.app.jach.code.git.commit.GitCommitAction;
 
 import java.util.HashMap;
 
