@@ -1,20 +1,12 @@
 package top.jach.tes.app;
 
-import org.junit.jupiter.api.Test;
 import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.jach.tes.core.domain.Project;
-import top.jach.tes.core.domain.Task;
-import top.jach.tes.core.domain.action.DefaultAction;
-import top.jach.tes.core.domain.action.SaveInfoAction;
 import top.jach.tes.core.factory.ContextFactory;
 import top.jach.tes.core.factory.info.InfoRepositoryFactory;
 import top.jach.tes.core.repository.ProjectRepository;
 import top.jach.tes.core.repository.TaskRepository;
-import top.jach.tes.dev.app.jach.code.git.commit.GitCommitAction;
-
-import java.util.HashMap;
 
 @SpringBootTest
 class AppApplicationTests {
