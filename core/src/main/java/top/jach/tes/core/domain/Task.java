@@ -57,11 +57,7 @@ public class Task extends Entity {
             if (this.inputInfos != null) {
                 for (Map.Entry<String, InfoProfile> entry :
                         this.inputInfos.entrySet()) {
-                    List<Info> result = context.InfoRepositoryFactory().getRepository(entry.getValue().getInfoClass()).
-                            queryDetailsByInfoIds(Arrays.asList(entry.getValue().getId()));
-                    if (result.size() > 0) {
-                        inputInfos.put(entry.getKey(), result.get(0));
-                    }
+                    inputInfos.putInfoFromProfile(entry.getKey(), entry.getValue(), context.InfoRepositoryFactory());
                 }
             }
             OutputInfos outputInfos = action.execute(inputInfos, context);

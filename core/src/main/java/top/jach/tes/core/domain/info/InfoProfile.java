@@ -3,6 +3,11 @@ package top.jach.tes.core.domain.info;
 import lombok.Getter;
 import lombok.ToString;
 import top.jach.tes.core.domain.Entity;
+import top.jach.tes.core.factory.info.InfoRepositoryFactory;
+import top.jach.tes.core.repository.InfoRepository;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 @ToString
@@ -30,5 +35,14 @@ public class InfoProfile extends Info {
     @Override
     public Class<? extends Info> getInfoClass() {
         return clazz;
+    }
+
+    public Info toInfoWithDetail(InfoRepositoryFactory infoRepositoryFactory){
+        List<Info> result = infoRepositoryFactory.getRepository(getInfoClass()).
+                queryDetailsByInfoIds(Arrays.asList(getId()));
+        if (result.size() > 0) {
+            return result.get(0);
+        }
+        return null;
     }
 }
