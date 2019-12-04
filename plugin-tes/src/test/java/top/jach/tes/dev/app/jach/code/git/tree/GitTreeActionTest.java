@@ -13,7 +13,7 @@ import java.io.File;
 
 public class GitTreeActionTest {
 
-    @Test
+/*    @Test
     public void execute() {
         // 创建不存在与数据库中的Info，一般是一些参数
         Info repoDir = FileInfo.createInfo(new File("E:\\workspace\\otherproject\\dddsample-core"));
@@ -30,6 +30,6 @@ public class GitTreeActionTest {
                 .addInfoProfile(GitTreeAction.COMMIT_SHA, sha);
 
         Action action = new GitTreeAction();
-        TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
-    }
+//        TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
+    }*/
 }
