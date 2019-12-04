@@ -11,7 +11,7 @@ import top.jach.tes.core.domain.info.value.StringInfo;
 
 public class GitCommitActionTest {
 
-    @Test
+/*    @Test
     public void execute() {
         // 创建不存在与数据库中的Info，一般是一些参数
         Info repoPath = StringInfo.createInfo("./repo_path").setName(InputInfos.INFO_NAME);
@@ -27,6 +27,6 @@ public class GitCommitActionTest {
                 ;
 
         Action action = new GitCommitAction();
-        TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
-    }
+//        TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
+    }*/
 }

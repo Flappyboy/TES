@@ -9,7 +9,7 @@ version '1.0-SNAPSHOT'
 // 所有子项目的通用配置
 subprojects {
     apply plugin: 'idea'
-    
+
     idea {
         module {
             inheritOutputDirs = false
@@ -26,5 +26,9 @@ subprojects {
         //有些jar包在中央仓库是没有的，需要手动添加上去
 //        flatDir {  dirs 'local_jars' }
         mavenCentral()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
     }
 }

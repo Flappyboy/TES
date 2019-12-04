@@ -33,13 +33,13 @@ class AppApplicationTests {
     @Autowired
     ContextFactory contextFactory;
 
-    @Test
+/*    @Test
     void contextLoads() {
     }
 
     @Test
     void process(){
-        Project project = Project.createNewProject("tes", "just test");
+        *//*Project project = Project.createNewProject("tes", "just test");
         projectRepository.save(project);
 
         Task task = Task.createNewTask(project);
@@ -49,7 +49,7 @@ class AppApplicationTests {
         action.setAction(new GitCommitAction());
         task.setAction(action);
         taskRepository.save(task);
-        task.execute(contextFactory.createContext(project));
-    }
+        task.execute(contextFactory.createContext(project));*//*
+    }*/
 
 }
