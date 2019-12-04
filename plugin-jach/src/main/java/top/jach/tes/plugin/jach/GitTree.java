@@ -1,6 +1,5 @@
 package top.jach.tes.plugin.jach;
 
-import top.jach.tes.core.domain.info.value.LongInfo;
 import top.jach.tes.dev.app.InfoTool;
 import top.jach.tes.dev.app.InputInfoProfiles;
 import top.jach.tes.dev.app.TaskTool;
