@@ -3,6 +3,7 @@ package top.jach.tes.core.domain.action;
 import top.jach.tes.core.domain.context.Context;
 import top.jach.tes.core.domain.info.DefaultInputInfos;
 import top.jach.tes.core.domain.meta.Meta;
+import top.jach.tes.core.exception.ActionExecuteFailedException;
 
 public class DefaultAction implements Action, StatefulAction{
 
@@ -26,7 +27,7 @@ public class DefaultAction implements Action, StatefulAction{
     }
 
     @Override
-    public OutputInfos execute(InputInfos inputInfo, Context context) {
+    public OutputInfos execute(InputInfos inputInfo, Context context) throws ActionExecuteFailedException {
         OutputInfos outputInfos = action.execute(inputInfo, context);
         if (outputInfos == null){
             return null;

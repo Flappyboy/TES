@@ -2,6 +2,7 @@ package top.jach.tes.core.domain.action;
 
 import top.jach.tes.core.domain.context.Context;
 import top.jach.tes.core.domain.meta.Meta;
+import top.jach.tes.core.exception.ActionExecuteFailedException;
 
 public interface Action<I extends InputInfos> {
 
@@ -23,5 +24,5 @@ public interface Action<I extends InputInfos> {
      */
     Meta getInputMeta();
 
-    OutputInfos execute(I inputInfo, Context context);
+    OutputInfos execute(I inputInfo, Context context) throws ActionExecuteFailedException;
 }

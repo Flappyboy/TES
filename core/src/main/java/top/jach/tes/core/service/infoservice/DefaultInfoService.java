@@ -6,6 +6,7 @@ import top.jach.tes.core.domain.action.InputInfos;
 import top.jach.tes.core.domain.action.SaveInfoAction;
 import top.jach.tes.core.domain.info.DefaultInputInfos;
 import top.jach.tes.core.domain.info.Info;
+import top.jach.tes.core.exception.ActionExecuteFailedException;
 import top.jach.tes.core.factory.ContextFactory;
 
 public class DefaultInfoService implements InfoService{
@@ -25,6 +26,10 @@ public class DefaultInfoService implements InfoService{
             inputInfos.put(String.valueOf(i), info);
         }
         Action action = new SaveInfoAction();
-        action.execute(inputInfos, contextFactory.createContext(project));
+        try {
+            action.execute(inputInfos, contextFactory.createContext(project));
+        } catch (ActionExecuteFailedException e) {
+            e.printStackTrace();
+        }
     }
 }
