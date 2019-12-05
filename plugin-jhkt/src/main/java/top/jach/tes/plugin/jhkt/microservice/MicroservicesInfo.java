@@ -10,7 +10,10 @@ import java.util.List;
 @Data
 public class MicroservicesInfo extends Info {
     Long reposId;
+
     String repoName;
+
+    String version;
 
     private List<Microservice> microservices = new ArrayList<>();
 
@@ -32,6 +35,11 @@ public class MicroservicesInfo extends Info {
 
     public MicroservicesInfo setRepoName(String repoName) {
         this.repoName = repoName;
+        return this;
+    }
+
+    public MicroservicesInfo setVersion(String version) {
+        this.version = version;
         return this;
     }
 }
