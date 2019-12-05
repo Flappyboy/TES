@@ -63,6 +63,7 @@ public class GitTreeAction implements Action {
                                 .setFileMode(FileModeToString(treeWalk.getFileMode())));
                     });
             TreesInfo treesInfo = TreesInfo.createInfo().setTrees(treeList);
+            treesInfo.setName("GitTreeInfo");
             if(inputInfo.getInfo(REPOS_ID, StringInfo.class) != null) {
                 treesInfo.setReposId(inputInfo.getInfo(REPOS_ID, LongInfo.class).getValue());
                 treesInfo.setRepoName(inputInfo.getInfo(REPO_NAME, StringInfo.class).getValue());
