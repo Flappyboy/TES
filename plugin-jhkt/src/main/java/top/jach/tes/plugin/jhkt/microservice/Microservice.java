@@ -3,6 +3,7 @@ package top.jach.tes.plugin.jhkt.microservice;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class Microservice {
@@ -11,8 +12,8 @@ public class Microservice {
 
     Long annotationLines;
     Long codeLines;
-    List<String> pubTopics;
-    List<String> subTopics;
+    Set<String> pubTopics;
+    Set<String> subTopics;
 
     public Microservice setRepoName(String repoName) {
         this.repoName = repoName;
@@ -34,12 +35,12 @@ public class Microservice {
         return this;
     }
 
-    public Microservice setPubTopics(List<String> pubTopics) {
+    public Microservice setPubTopics(Set<String> pubTopics) {
         this.pubTopics = pubTopics;
         return this;
     }
 
-    public Microservice setSubTopics(List<String> subTopics) {
+    public Microservice setSubTopics(Set<String> subTopics) {
         this.subTopics = subTopics;
         return this;
     }
