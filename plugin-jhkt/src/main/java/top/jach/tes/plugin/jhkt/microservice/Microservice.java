@@ -7,18 +7,12 @@ import java.util.Set;
 
 @Data
 public class Microservice {
-    String repoName;
     String path;
 
     Long annotationLines;
     Long codeLines;
     Set<String> pubTopics;
     Set<String> subTopics;
-
-    public Microservice setRepoName(String repoName) {
-        this.repoName = repoName;
-        return this;
-    }
 
     public Microservice setPath(String path) {
         this.path = path;
