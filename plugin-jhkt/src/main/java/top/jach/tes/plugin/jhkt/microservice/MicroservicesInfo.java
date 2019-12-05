@@ -9,6 +9,8 @@ import java.util.List;
 
 @Data
 public class MicroservicesInfo extends Info {
+    Long reposId;
+
     private List<Microservice> microservices = new ArrayList<>();
 
     public static MicroservicesInfo createInfo(){
@@ -19,6 +21,11 @@ public class MicroservicesInfo extends Info {
 
     public MicroservicesInfo addMicroservice(Microservice... microservices){
         this.microservices.addAll(Arrays.asList(microservices));
+        return this;
+    }
+
+    public MicroservicesInfo setReposId(Long reposId) {
+        this.reposId = reposId;
         return this;
     }
 }
