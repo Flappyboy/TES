@@ -34,4 +34,19 @@ public class TreesInfo extends Info {
         this.trees = trees;
         return this;
     }
+
+    public TreesInfo setSha(String sha) {
+        this.sha = sha;
+        return this;
+    }
+
+    public TreesInfo setBranchName(String branchName) {
+        this.branchName = branchName;
+        return this;
+    }
+
+    public TreesInfo setTagName(String tagName) {
+        TagName = tagName;
+        return this;
+    }
 }

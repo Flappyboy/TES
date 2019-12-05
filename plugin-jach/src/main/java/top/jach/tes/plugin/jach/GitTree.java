@@ -38,7 +38,7 @@ public class GitTree {
 */
         InputInfoProfiles infoProfileMap = InputInfoProfiles.InputInfoProfiles()
                 .createSaveValueInfos(GitTreeAction.LOCAL_REPO_DIR, new File("./"))
-                .createSaveValueInfos(GitTreeAction.COMMIT_SHA, "master")
+                .createSaveValueInfos(GitTreeAction.BRANCH, "master")
                 .createSaveValueInfos(GitTreeAction.REPOS_ID, reposInfo.getId())
                 .createSaveValueInfos(GitTreeAction.REPO_NAME, reposInfo.getRepos().get(0).getName())
                 ;

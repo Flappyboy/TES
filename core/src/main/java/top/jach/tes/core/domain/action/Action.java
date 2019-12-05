@@ -24,5 +24,5 @@ public interface Action<I extends InputInfos> {
      */
     Meta getInputMeta();
 
-    OutputInfos execute(I inputInfo, Context context) throws ActionExecuteFailedException;
+    OutputInfos execute(I inputInfos, Context context) throws ActionExecuteFailedException;
 }
