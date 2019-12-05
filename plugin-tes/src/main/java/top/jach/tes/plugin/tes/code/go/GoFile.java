@@ -2,6 +2,7 @@ package top.jach.tes.plugin.tes.code.go;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
 public class GoFile {
     private String name;
 
-    private List<GoPackage> goPackages;
+    private List<GoPackage> goPackages = new ArrayList<>();
 
     public GoFile setName(String name) {
         this.name = name;
