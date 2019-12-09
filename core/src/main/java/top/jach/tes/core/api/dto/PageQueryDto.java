@@ -10,16 +10,16 @@ public class PageQueryDto<T> {
 
     private List<T> result;
 
-    private Integer pageNum; // 从1开始
+    private Integer pageNum = 1; // 从1开始
 
-    private Integer pageSize;
+    private Integer pageSize = -1;
 
     private Long total;
 
     private String sortField;
     private SortType sortType = SortType.DESC;
 
-    enum SortType {
+    public enum SortType {
         ASC(),
         DESC()
     }

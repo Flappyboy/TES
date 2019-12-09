@@ -16,6 +16,15 @@ public class InfoProfile extends Info {
         this.clazz = clazz;
     }
 
+    public Class<? extends Info> getClazz() {
+        return clazz;
+    }
+
+    public InfoProfile setClazz(Class<? extends Info> clazz) {
+        this.clazz = clazz;
+        return this;
+    }
+
     @Override
     public void initBuild() {
         throw new RuntimeException("can't init InfoProfile");

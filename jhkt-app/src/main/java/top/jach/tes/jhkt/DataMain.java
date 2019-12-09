@@ -1,4 +1,4 @@
-package top.jach.tes.plugin.jach;
+package top.jach.tes.jhkt;
 
 import top.jach.tes.core.easy.InputInfoProfiles;
 import top.jach.tes.core.easy.TaskTool;
@@ -7,7 +7,7 @@ import top.jach.tes.plugin.jhkt.DataAction;
 
 import java.io.File;
 
-public class Main extends DevApp {
+public class DataMain extends DevApp {
     public static void main(String[] args) {
         String dataFilePath = null;
         if (args.length>0){

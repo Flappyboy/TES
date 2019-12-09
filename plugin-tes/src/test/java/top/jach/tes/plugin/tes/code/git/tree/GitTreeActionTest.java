@@ -1,24 +1,29 @@
 package top.jach.tes.plugin.tes.code.git.tree;
 
+import org.junit.Test;
+import top.jach.tes.core.api.domain.action.Action;
+import top.jach.tes.core.easy.InfoTool;
+import top.jach.tes.core.easy.InputInfoProfiles;
+import top.jach.tes.core.easy.TaskTool;
+import top.jach.tes.plugin.tes.code.repo.Repo;
+import top.jach.tes.plugin.tes.code.repo.ReposInfo;
+
+import java.io.File;
+
 public class GitTreeActionTest {
 
-/*    @Test
+    @Test
     public void execute() {
-        // 创建不存在与数据库中的Info，一般是一些参数
-        Info repoDir = FileInfo.createInfo(new File("E:\\workspace\\otherproject\\dddsample-core"));
-        Info sha = StringInfo.createInfo("master");
-
-        // 然后将这些info存入数据库
-        InfoTool.saveInputInfos(repoDir, sha);
-
-        // 创建一些已存在的InfoProfile
-//        InfoProfile infoProfile = new InfoProfile(123l, ValueInfo.class);
-
+        ReposInfo reposInfo = ReposInfo.createInfo();
+        reposInfo.addRepo(new Repo().setName("tes"));
+        InfoTool.saveInputInfos(reposInfo);
         InputInfoProfiles infoProfileMap = InputInfoProfiles.InputInfoProfiles()
-                .addInfoProfile(GitTreeAction.LOCAL_REPO_DIR, repoDir)
-                .addInfoProfile(GitTreeAction.COMMIT_SHA, sha);
-
+                .createSaveValueInfos(GitTreeAction.LOCAL_REPO_DIR, new File("../"))
+                .createSaveValueInfos(GitTreeAction.BRANCH, "master")
+                .createSaveValueInfos(GitTreeAction.REPOS_ID, reposInfo.getId())
+                .createSaveValueInfos(GitTreeAction.REPO_NAME, reposInfo.getRepos().get(0).getName())
+                ;
         Action action = new GitTreeAction();
-//        TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
-    }*/
+        TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
+    }
 }

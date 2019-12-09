@@ -1,4 +1,4 @@
-package top.jach.tes.plugin.jach;
+package top.jach.tes.jhkt.lijiaqi;
 
 import top.jach.tes.core.easy.InfoTool;
 import top.jach.tes.core.easy.InputInfoProfiles;

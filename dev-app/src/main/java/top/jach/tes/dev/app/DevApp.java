@@ -42,7 +42,6 @@ public abstract class DevApp {
                 MongoCollection mongoCollection = mongoClient.getDatabase("tes_dev").getCollection("general_info");
                 return new GeneraInfoMongoRepository(mongoCollection);
             }
-
             @Override
             public Set<Class<? extends Info>> MToN(InfoRepository infoRepository) {
                 return null;

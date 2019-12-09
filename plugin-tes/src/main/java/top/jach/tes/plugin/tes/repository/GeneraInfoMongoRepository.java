@@ -6,7 +6,9 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.json.JsonWriterSettings;
@@ -15,11 +17,10 @@ import top.jach.tes.core.api.domain.info.InfoProfile;
 import top.jach.tes.core.api.dto.PageQueryDto;
 import top.jach.tes.core.api.repository.InfoRepository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import static com.alibaba.fastjson.parser.Feature.DisableFieldSmartMatch;
+import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
 import static com.alibaba.fastjson.serializer.SerializerFeature.DisableCircularReferenceDetect;
 
 public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<GeneraInfoMongoRepository.BsonType, Bson>> {
@@ -70,8 +71,11 @@ public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<Gener
     }
 
     @Override
-    public PageQueryDto queryProfileByInfoAndProjectId(Info info, Long projectId, PageQueryDto pageQueryDto) {
-        return null;
+    public PageQueryDto queryProfileByInfoAndProjectId(Info queryInfo, Long projectId, PageQueryDto pageQueryDto) {
+        Bson bson = Document.parse(JSONObject.toJSONString(queryInfo, DisableCircularReferenceDetect)).append(PROJECT_ID, projectId);
+        Map<BsonType, Bson> bsonTypeBsonMap = new HashMap<>();
+        bsonTypeBsonMap.put(BsonType.Filter, bson);
+        return queryProfileByCustom(bsonTypeBsonMap, pageQueryDto);
     }
 
     @Override
@@ -79,14 +83,29 @@ public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<Gener
         if (pageQueryDto == null){
             pageQueryDto = PageQueryDto.create(1,-1);
         }
+        Bson sort = null;
+        if (StringUtils.isNoneBlank(pageQueryDto.getSortField())){
+            switch (pageQueryDto.getSortType()){
+                case ASC:
+                    sort = Sorts.ascending(pageQueryDto.getSortField());
+                    break;
+                case DESC:
+                    sort = Sorts.descending(pageQueryDto.getSortField());
+                    break;
+            }
+        }
         FindIterable<Document> documents = mongoCollection
                 .find(getBson(bsonTypeBsonMap, BsonType.Filter))
-                .projection(getBson(bsonTypeBsonMap, BsonType.Projection));
+                .projection(getBson(bsonTypeBsonMap, BsonType.Projection))
+                .sort(sort)
+                .limit(pageQueryDto.getPageSize())
+                .skip(pageQueryDto.getPageSize()*(pageQueryDto.getPageNum()-1));
+                ;
         for (Document document :
                 documents) {
             try {
                 Info info = (Info) JSON.parseObject(document.toJson(JsonWriterSettings.builder().build()),
-                        Class.forName(document.getString("infoClass")));
+                        Class.forName(document.getString("infoClass")),DisableFieldSmartMatch);
                 pageQueryDto.resultAdd(info);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -96,7 +115,7 @@ public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<Gener
     }
 
     @Override
-    public List queryDetailsByInfoIds(List infoIds) {
+    public List queryDetailsByInfoIds(List<Long> infoIds) {
         FindIterable<Document> documents = mongoCollection.find(Filters.in("id",infoIds));
         List<Info> infos = new ArrayList<>();
         for (Document d :

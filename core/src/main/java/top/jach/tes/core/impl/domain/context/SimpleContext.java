@@ -18,10 +18,21 @@ public class SimpleContext extends Context {
 
     private InfoRepositoryFactory infoRepositoryFactory;
 
+    private File baseDir;
+
     protected SimpleContext(Project project, ILoggerFactory loggerFactory, InfoRepositoryFactory infoRepositoryFactory) {
+        this(project, loggerFactory, infoRepositoryFactory,
+                new File(System.getProperties().getProperty("user.home")+"/.tes-app/context/tmp"));
+    }
+
+    public SimpleContext(Project project, ILoggerFactory loggerFactory, InfoRepositoryFactory infoRepositoryFactory, File baseDir) {
         this.loggerFactory = loggerFactory;
         this.project = project;
         this.infoRepositoryFactory = infoRepositoryFactory;
+        this.baseDir = baseDir;
+        if(!baseDir.exists()){
+            baseDir.mkdirs();
+        }
     }
 
     protected SimpleContext(Project project) {

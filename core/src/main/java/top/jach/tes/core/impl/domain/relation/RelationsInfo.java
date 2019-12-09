@@ -18,6 +18,14 @@ public abstract class RelationsInfo<R extends Relation> extends Info implements 
         return relations.values();
     }
 
+    public RelationsInfo setRelations(Collection<R> relations){
+        for (R r :
+                relations) {
+            addRelation(r);
+        };
+        return this;
+    }
+
     public RelationsInfo addRelation(R relation) {
         relations.put(relation, relation);
         return this;
