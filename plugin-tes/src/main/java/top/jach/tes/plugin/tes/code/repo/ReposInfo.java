@@ -1,6 +1,6 @@
 package top.jach.tes.plugin.tes.code.repo;
 
-import top.jach.tes.core.domain.info.Info;
+import top.jach.tes.core.api.domain.info.Info;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,10 +3,10 @@ package top.jach.tes.app;
 import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.jach.tes.core.factory.ContextFactory;
-import top.jach.tes.core.factory.info.InfoRepositoryFactory;
-import top.jach.tes.core.repository.ProjectRepository;
-import top.jach.tes.core.repository.TaskRepository;
+import top.jach.tes.core.api.factory.ContextFactory;
+import top.jach.tes.core.api.factory.InfoRepositoryFactory;
+import top.jach.tes.core.api.repository.ProjectRepository;
+import top.jach.tes.core.api.repository.TaskRepository;
 
 @SpringBootTest
 class AppApplicationTests {

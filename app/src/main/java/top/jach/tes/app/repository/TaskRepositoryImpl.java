@@ -3,8 +3,8 @@ package top.jach.tes.app.repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.jach.tes.app.entity.TaskEntity;
-import top.jach.tes.core.domain.Task;
-import top.jach.tes.core.repository.TaskRepository;
+import top.jach.tes.core.api.domain.Task;
+import top.jach.tes.core.api.repository.TaskRepository;
 
 @Component
 public class TaskRepositoryImpl implements TaskRepository {

@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import top.jach.tes.app.entity.TaskEntity;
-import top.jach.tes.core.domain.context.BaseContext;
-import top.jach.tes.core.domain.Task;
-import top.jach.tes.core.factory.ContextFactory;
-import top.jach.tes.core.factory.info.InfoRepositoryFactory;
-import top.jach.tes.core.repository.ProjectRepository;
-import top.jach.tes.core.repository.TaskRepository;
+import top.jach.tes.core.api.domain.Task;
+import top.jach.tes.core.api.factory.ContextFactory;
+import top.jach.tes.core.api.factory.InfoRepositoryFactory;
+import top.jach.tes.core.api.repository.ProjectRepository;
+import top.jach.tes.core.api.repository.TaskRepository;
 
 @RestController("/api/task")
 public class TaskController {

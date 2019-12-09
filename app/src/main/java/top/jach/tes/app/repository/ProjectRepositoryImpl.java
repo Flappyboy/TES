@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
 import top.jach.tes.app.entity.ProjectEntity;
-import top.jach.tes.core.domain.Project;
-import top.jach.tes.core.dto.PageQueryDto;
-import top.jach.tes.core.repository.ProjectRepository;
+import top.jach.tes.core.api.domain.Project;
+import top.jach.tes.core.api.dto.PageQueryDto;
+import top.jach.tes.core.api.repository.ProjectRepository;
 
 @Component
 public class ProjectRepositoryImpl implements ProjectRepository {

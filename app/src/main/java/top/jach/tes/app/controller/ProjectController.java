@@ -2,17 +2,13 @@ package top.jach.tes.app.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import top.jach.tes.app.entity.ProjectEntity;
-import top.jach.tes.core.domain.Project;
-import top.jach.tes.core.dto.PageQueryDto;
-import top.jach.tes.core.repository.ProjectRepository;
-
-import java.security.Principal;
+import top.jach.tes.core.api.domain.Project;
+import top.jach.tes.core.api.dto.PageQueryDto;
+import top.jach.tes.core.api.repository.ProjectRepository;
 
 @RestController("/api/project")
 public class ProjectController {

@@ -1,7 +1,7 @@
 package top.jach.tes.plugin.tes.code.git.commit;
 
 import lombok.Data;
-import top.jach.tes.core.domain.info.Info;
+import top.jach.tes.core.api.domain.info.Info;
 
 import java.util.List;
 

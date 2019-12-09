@@ -1,17 +1,19 @@
 package top.jach.tes.plugin.tes.code.git.tree;
 
 import org.eclipse.jgit.lib.FileMode;
-import top.jach.tes.core.domain.action.*;
-import top.jach.tes.core.domain.context.Context;
-import top.jach.tes.core.domain.info.value.FileInfo;
-import top.jach.tes.core.domain.info.value.LongInfo;
-import top.jach.tes.core.domain.info.value.StringInfo;
-import top.jach.tes.core.domain.info.value.ValueInfo;
-import top.jach.tes.core.domain.meta.InfoField;
-import top.jach.tes.core.domain.meta.LongField;
-import top.jach.tes.core.domain.meta.Meta;
-import top.jach.tes.core.domain.meta.StringField;
-import top.jach.tes.plugin.tes.code.repo.RepoInfo;
+import top.jach.tes.core.api.domain.action.Action;
+import top.jach.tes.core.api.domain.action.InputInfos;
+import top.jach.tes.core.api.domain.action.OutputInfos;
+import top.jach.tes.core.api.domain.info.DefaultOutputInfos;
+import top.jach.tes.core.api.domain.context.Context;
+import top.jach.tes.core.impl.domain.info.value.FileInfo;
+import top.jach.tes.core.impl.domain.info.value.LongInfo;
+import top.jach.tes.core.impl.domain.info.value.StringInfo;
+import top.jach.tes.core.impl.domain.info.value.ValueInfo;
+import top.jach.tes.core.impl.domain.meta.InfoField;
+import top.jach.tes.core.impl.domain.meta.LongField;
+import top.jach.tes.core.api.domain.meta.Meta;
+import top.jach.tes.core.impl.domain.meta.StringField;
 import top.jach.tes.plugin.tes.utils.JGitUtil;
 
 import java.io.File;
@@ -26,6 +28,8 @@ public class GitTreeAction implements Action {
     public static final String COMMIT_SHA = "commit_sha";
     public static final String BRANCH = "branch";
     public static final String Tag = "tag";
+
+    public static final String GitTreeInfoName = "GitTreeInfo";
 
     @Override
     public String getName() {
@@ -49,12 +53,12 @@ public class GitTreeAction implements Action {
     }
 
     @Override
-    public OutputInfos execute(InputInfos inputInfo, Context context) {
-        File repoDir = ValueInfo.getValueFromInputInfos(inputInfo, LOCAL_REPO_DIR, FileInfo.class);
-        String sha = ValueInfo.getValueFromInputInfos(inputInfo, COMMIT_SHA, StringInfo.class);
-        String branch = ValueInfo.getValueFromInputInfos(inputInfo, BRANCH, StringInfo.class);
-        Long reposId = ValueInfo.getValueFromInputInfos(inputInfo, REPOS_ID, LongInfo.class);
-        String repoName = ValueInfo.getValueFromInputInfos(inputInfo, REPO_NAME, StringInfo.class);
+    public OutputInfos execute(InputInfos inputInfos, Context context) {
+        File repoDir = ValueInfo.getValueFromInputInfos(inputInfos, LOCAL_REPO_DIR, FileInfo.class);
+        String sha = ValueInfo.getValueFromInputInfos(inputInfos, COMMIT_SHA, StringInfo.class);
+        String branch = ValueInfo.getValueFromInputInfos(inputInfos, BRANCH, StringInfo.class);
+        Long reposId = ValueInfo.getValueFromInputInfos(inputInfos, REPOS_ID, LongInfo.class);
+        String repoName = ValueInfo.getValueFromInputInfos(inputInfos, REPO_NAME, StringInfo.class);
 
         String shaOrBranch = sha != null ? sha : branch;
         try {
@@ -79,7 +83,7 @@ public class GitTreeAction implements Action {
                                 .setFileMode(FileModeToString(treeWalk.getFileMode())));
                     });
             TreesInfo treesInfo = TreesInfo.createInfo().setTrees(treeList).setSha(sha).setBranchName(branch);
-            treesInfo.setName("GitTreeInfo");
+            treesInfo.setName(GitTreeInfoName);
             if(reposId != null) {
                 treesInfo.setReposId(reposId);
                 treesInfo.setRepoName(repoName);

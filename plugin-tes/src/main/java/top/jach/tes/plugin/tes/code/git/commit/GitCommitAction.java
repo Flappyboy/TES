@@ -1,13 +1,13 @@
 package top.jach.tes.plugin.tes.code.git.commit;
 
-import top.jach.tes.core.domain.action.OutputInfo;
-import top.jach.tes.core.domain.context.Context;
-import top.jach.tes.core.domain.action.Action;
-import top.jach.tes.core.domain.action.InputInfos;
-import top.jach.tes.core.domain.action.OutputInfos;
-import top.jach.tes.core.domain.info.Info;
-import top.jach.tes.core.domain.info.value.StringInfo;
-import top.jach.tes.core.domain.meta.Meta;
+import top.jach.tes.core.api.domain.action.OutputInfo;
+import top.jach.tes.core.api.domain.context.Context;
+import top.jach.tes.core.api.domain.action.Action;
+import top.jach.tes.core.api.domain.action.InputInfos;
+import top.jach.tes.core.api.domain.action.OutputInfos;
+import top.jach.tes.core.api.domain.info.Info;
+import top.jach.tes.core.impl.domain.info.value.StringInfo;
+import top.jach.tes.core.api.domain.meta.Meta;
 
 import java.util.Arrays;
 import java.util.HashSet;

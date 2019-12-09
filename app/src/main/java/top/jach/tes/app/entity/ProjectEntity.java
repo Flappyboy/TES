@@ -3,7 +3,7 @@ package top.jach.tes.app.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import top.jach.tes.core.domain.Project;
+import top.jach.tes.core.api.domain.Project;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

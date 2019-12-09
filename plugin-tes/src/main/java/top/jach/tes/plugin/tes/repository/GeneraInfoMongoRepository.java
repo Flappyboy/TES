@@ -10,15 +10,17 @@ import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.json.JsonWriterSettings;
-import top.jach.tes.core.domain.info.Info;
-import top.jach.tes.core.domain.info.InfoProfile;
-import top.jach.tes.core.dto.PageQueryDto;
-import top.jach.tes.core.repository.InfoRepository;
+import top.jach.tes.core.api.domain.info.Info;
+import top.jach.tes.core.api.domain.info.InfoProfile;
+import top.jach.tes.core.api.dto.PageQueryDto;
+import top.jach.tes.core.api.repository.InfoRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static com.alibaba.fastjson.serializer.SerializerFeature.DisableCircularReferenceDetect;
 
 public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<GeneraInfoMongoRepository.BsonType, Bson>> {
     public static final String PROJECT_ID = "_projectId";
@@ -36,7 +38,7 @@ public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<Gener
     @Override
     public Info saveProfile(Info info, Long projectId) {
         InfoProfile infoProfile = InfoProfile.createFromInfo(info);
-        Document document = Document.parse(JSONObject.toJSONString(infoProfile));
+        Document document = Document.parse(JSONObject.toJSONString(infoProfile, DisableCircularReferenceDetect));
         document.append("_projectId", projectId);
         mongoCollection.insertOne(document);
         return info;
@@ -49,7 +51,7 @@ public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<Gener
 
     @Override
     public Info updateProfileByInfoId(Info info) {
-        Document document = Document.parse(JSONObject.toJSONString(info));
+        Document document = Document.parse(JSONObject.toJSONString(info, DisableCircularReferenceDetect));
         List<Bson> updates = new ArrayList<>();
         for (Map.Entry<String, Object> entry :
                 document.entrySet()) {

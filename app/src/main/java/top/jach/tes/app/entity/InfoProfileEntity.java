@@ -2,10 +2,8 @@ package top.jach.tes.app.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import top.jach.tes.core.domain.action.InputInfos;
-import top.jach.tes.core.domain.info.DefaultInputInfos;
-import top.jach.tes.core.domain.info.Info;
-import top.jach.tes.core.domain.info.InfoProfile;
+import top.jach.tes.core.api.domain.info.Info;
+import top.jach.tes.core.api.domain.info.InfoProfile;
 
 import javax.persistence.*;
 import java.util.HashMap;

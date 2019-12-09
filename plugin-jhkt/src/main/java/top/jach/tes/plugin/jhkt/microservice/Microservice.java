@@ -1,18 +1,25 @@
 package top.jach.tes.plugin.jhkt.microservice;
 
 import lombok.Data;
+import top.jach.tes.core.impl.domain.element.Element;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Data
-public class Microservice {
+public class Microservice extends Element {
     String path;
 
     Long annotationLines;
     Long codeLines;
-    Set<String> pubTopics;
-    Set<String> subTopics;
+    Set<String> pubTopics = new HashSet<>();
+    Set<String> subTopics = new HashSet<>();
+
+    public Microservice setElementName(String elementName){
+        this.elementName = elementName;
+        return this;
+    }
 
     public Microservice setPath(String path) {
         this.path = path;

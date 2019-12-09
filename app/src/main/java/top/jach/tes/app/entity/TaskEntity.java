@@ -3,8 +3,8 @@ package top.jach.tes.app.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import top.jach.tes.core.domain.Task;
-import top.jach.tes.core.domain.action.StatefulAction;
+import top.jach.tes.core.api.domain.Task;
+import top.jach.tes.core.api.domain.action.StatefulAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;

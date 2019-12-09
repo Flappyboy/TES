@@ -1,12 +1,13 @@
 package top.jach.tes.plugin.tes.code.git.tree;
 
-import lombok.Data;
-import top.jach.tes.core.domain.info.Info;
+import lombok.Getter;
+import top.jach.tes.core.api.domain.info.Info;
+import top.jach.tes.plugin.tes.code.repo.WithRepo;
 
 import java.util.List;
 
-@Data
-public class TreesInfo extends Info {
+@Getter
+public class TreesInfo extends Info implements WithRepo {
     Long reposId;
     String repoName;
     String sha;
