@@ -32,7 +32,3 @@ subprojects {
         options.encoding = "UTF-8"
     }
 }
-
-dependencies {
-    implementation 'org.jetbrains:annotations:15.0'
-}
