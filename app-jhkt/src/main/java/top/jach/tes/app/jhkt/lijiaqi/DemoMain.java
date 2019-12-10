@@ -22,6 +22,5 @@ public class DemoMain extends DevApp {
 
         Action action = new DemoAction();
         TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
-
     }
 }
