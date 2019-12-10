@@ -2,9 +2,9 @@ package top.jach.tes.plugin.tes.code.git.tree;
 
 import org.junit.Test;
 import top.jach.tes.core.api.domain.action.Action;
-import top.jach.tes.core.easy.InfoTool;
-import top.jach.tes.core.easy.InputInfoProfiles;
-import top.jach.tes.core.easy.TaskTool;
+import top.jach.tes.app.mock.InfoTool;
+import top.jach.tes.app.mock.InputInfoProfiles;
+import top.jach.tes.app.mock.TaskTool;
 import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 

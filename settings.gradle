@@ -12,12 +12,13 @@ pluginManagement {
 }
 
 rootProject.name = 'tes-parent'
-include 'app'
 include 'core'
 include 'plugin'
 include 'plugin-tes'
-include 'dev-app'
-include 'jhkt-app'
 include 'plugin-jhkt'
+include 'app'
+include 'app-mock'
+include 'app-dev'
+include 'app-jhkt'
 include 'web'
 include 'other'

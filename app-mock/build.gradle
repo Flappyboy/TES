@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group 'top.jach.tes'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile project(':core')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+    
+    compile group: 'com.github.bingoohuang', name: 'idworker-client', version: '0.0.8'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.29'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.62'
+}
