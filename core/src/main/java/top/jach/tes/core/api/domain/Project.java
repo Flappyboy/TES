@@ -3,6 +3,7 @@ package top.jach.tes.core.api.domain;
 import lombok.Getter;
 
 /**
+ * 代表一个项目工程
  * 目前没有什么业务，仅用于对Info和Task做一个隔离
  */
 @Getter

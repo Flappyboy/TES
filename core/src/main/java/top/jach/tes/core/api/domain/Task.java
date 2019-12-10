@@ -5,11 +5,14 @@ import top.jach.tes.core.api.domain.context.Context;
 import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.action.InputInfos;
 import top.jach.tes.core.api.domain.action.OutputInfos;
-import top.jach.tes.core.api.domain.info.DefaultInputInfos;
+import top.jach.tes.core.api.domain.action.DefaultInputInfos;
 import top.jach.tes.core.api.domain.info.InfoProfile;
 
 import java.util.Map;
 
+/**
+ * 表示执行的一个任务实体，包括输入，执行的acion,执行的状态等。
+ */
 @Getter
 public class Task extends Entity {
 

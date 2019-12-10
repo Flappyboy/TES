@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.ToString;
 import top.jach.tes.core.api.domain.Entity;
 
+/**
+ * Info是系统处理数据的最小粒度，继承Info的类都需要是想一个静态的createInfo()方法
+ */
 @Getter
 @ToString
 public abstract class Info extends Entity {

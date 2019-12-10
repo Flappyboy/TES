@@ -1,6 +1,7 @@
-package top.jach.tes.core.api.domain.info;
+package top.jach.tes.core.api.domain.action;
 
-import top.jach.tes.core.api.domain.action.InputInfos;
+import top.jach.tes.core.api.domain.info.Info;
+
 import java.util.HashMap;
 
 public class DefaultInputInfos extends HashMap<String, Info> implements InputInfos {

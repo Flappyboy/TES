@@ -18,4 +18,11 @@ public class DefaultTempSpace implements TempSpace {
         }
         return file;
     }
+
+    @Override
+    public void dispose() {
+        if(file != null && file.exists()){
+            file.delete();
+        }
+    }
 }

@@ -5,6 +5,10 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 用于封装查询的条件和结果
+ * @param <T>
+ */
 @Data
 public class PageQueryDto<T> {
 

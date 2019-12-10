@@ -1,7 +1,7 @@
 package top.jach.tes.app.mock;
 
 import top.jach.tes.core.api.domain.action.InputInfos;
-import top.jach.tes.core.api.domain.info.DefaultInputInfos;
+import top.jach.tes.core.api.domain.action.DefaultInputInfos;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.info.InfoProfile;
 import top.jach.tes.core.impl.domain.info.value.ValueInfo;

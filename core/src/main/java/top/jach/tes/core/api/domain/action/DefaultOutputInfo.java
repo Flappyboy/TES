@@ -1,6 +1,6 @@
-package top.jach.tes.core.api.domain.info;
+package top.jach.tes.core.api.domain.action;
 
-import top.jach.tes.core.api.domain.action.OutputInfo;
+import top.jach.tes.core.api.domain.info.Info;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -4,7 +4,7 @@ import org.eclipse.jgit.lib.FileMode;
 import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.action.InputInfos;
 import top.jach.tes.core.api.domain.action.OutputInfos;
-import top.jach.tes.core.api.domain.info.DefaultOutputInfos;
+import top.jach.tes.core.api.domain.action.DefaultOutputInfos;
 import top.jach.tes.core.api.domain.context.Context;
 import top.jach.tes.core.impl.domain.info.value.FileInfo;
 import top.jach.tes.core.impl.domain.info.value.LongInfo;

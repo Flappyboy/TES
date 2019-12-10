@@ -1,5 +1,8 @@
 package top.jach.tes.core.api.exception;
 
+/**
+ * 任务执行失败
+ */
 public class ActionExecuteFailedException extends Exception {
     public ActionExecuteFailedException() {
     }

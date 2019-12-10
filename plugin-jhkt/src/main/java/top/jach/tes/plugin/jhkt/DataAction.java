@@ -4,7 +4,7 @@ import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.action.InputInfos;
 import top.jach.tes.core.api.domain.action.OutputInfos;
 import top.jach.tes.core.api.domain.context.Context;
-import top.jach.tes.core.api.domain.info.DefaultInputInfos;
+import top.jach.tes.core.api.domain.action.DefaultInputInfos;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.meta.Meta;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;

@@ -1,7 +1,6 @@
-package top.jach.tes.core.api.domain.info;
+package top.jach.tes.core.api.domain.action;
 
-import top.jach.tes.core.api.domain.action.OutputInfo;
-import top.jach.tes.core.api.domain.action.OutputInfos;
+import top.jach.tes.core.api.domain.info.Info;
 
 import java.util.ArrayList;
 import java.util.List;

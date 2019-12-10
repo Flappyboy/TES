@@ -2,7 +2,7 @@ package top.jach.tes.core.impl.domain.action;
 
 import top.jach.tes.core.api.domain.action.*;
 import top.jach.tes.core.api.domain.context.Context;
-import top.jach.tes.core.api.domain.info.DefaultInputInfos;
+import top.jach.tes.core.api.domain.action.DefaultInputInfos;
 import top.jach.tes.core.api.domain.meta.Meta;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 

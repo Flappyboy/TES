@@ -61,6 +61,6 @@ public class SimpleContext extends Context {
 
     @Override
     public void dispose() {
-
+        TempSpace().dispose();
     }
 }

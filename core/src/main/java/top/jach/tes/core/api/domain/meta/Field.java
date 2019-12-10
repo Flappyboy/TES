@@ -3,6 +3,10 @@ package top.jach.tes.core.api.domain.meta;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.factory.InfoRepositoryFactory;
 
+/**
+ * 代表了输入中的某个字段，所有的字段最后都会被转化为Info
+ * @param <I>
+ */
 public interface Field<I> {
 
     /**

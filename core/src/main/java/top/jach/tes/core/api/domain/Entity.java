@@ -3,6 +3,9 @@ package top.jach.tes.core.api.domain;
 import lombok.Getter;
 import top.jach.tes.core.api.factory.IdGenerator;
 
+/**
+ * 基本的实体类，继承该实体的类，在创建对象时需要执行{@link #initBuild()}来初始化实体
+ */
 @Getter
 public abstract class Entity {
     private Long id;
