@@ -10,9 +10,7 @@ import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.plugin.tes.utils.JGitUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Data
 public class GitCommitsInfo extends Info {
@@ -23,6 +21,7 @@ public class GitCommitsInfo extends Info {
 
     public static GitCommitsInfo createInfo(Long reposId, String repoName){
         GitCommitsInfo info = new GitCommitsInfo();
+        info.setRepoName(repoName).setReposId(reposId);
         info.initBuild();
         return info;
     }
@@ -31,9 +30,17 @@ public class GitCommitsInfo extends Info {
         List<Ref> refs = git.getRepository().getRefDatabase().getRefs();
         GitCommitsInfo info = createInfo(reposId, repoName);
         RevWalk revWalk = new RevWalk(git.getRepository());
+        Map<String, GitCommit> map = new HashMap<>();
         for (Ref ref :
                 refs) {
             GitCommit gitCommit = GitCommit.createByRef(ref, git);
+            if(gitCommit==null){
+                continue;
+            }
+            map.put(gitCommit.getSha(), gitCommit);
+        }
+        for (GitCommit gitCommit :
+                map.values()) {
             info.addGitCommits(gitCommit);
         }
         return info;

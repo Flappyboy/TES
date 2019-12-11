@@ -62,6 +62,7 @@ public class ImportDataAction implements Action {
                 info.initBuild();
                 if(info instanceof ReposInfo){
                     reposInfo = (ReposInfo) info;
+                    reposInfo.setId(1001l);
                 }
                 infos.add(info);
             }

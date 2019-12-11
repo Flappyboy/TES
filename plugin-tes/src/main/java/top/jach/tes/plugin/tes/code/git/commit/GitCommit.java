@@ -116,6 +116,9 @@ public class GitCommit {
     public GitCommit addDiffFiles(DiffFile... diffFiles){
         for (DiffFile diffFile:
                 diffFiles) {
+            if (diffFile == null){
+                continue;
+            }
             this.diffFiles.add(diffFile);
         }
         return this;

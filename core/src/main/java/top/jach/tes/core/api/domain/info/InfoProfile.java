@@ -9,19 +9,15 @@ import java.util.List;
 @ToString
 public class InfoProfile extends Info {
 
-    Class<? extends Info> clazz;
+    Class<? extends Info> infoClass;
 
-    public InfoProfile(Long id, Class<? extends Info> clazz) {
+    public InfoProfile(Long id, Class<? extends Info> infoClass) {
         this.setId(id);
-        this.clazz = clazz;
+        this.infoClass = infoClass;
     }
 
-    public Class<? extends Info> getClazz() {
-        return clazz;
-    }
-
-    public InfoProfile setClazz(Class<? extends Info> clazz) {
-        this.clazz = clazz;
+    public InfoProfile setInfoClass(Class<? extends Info> infoClass) {
+        this.infoClass = infoClass;
         return this;
     }
 
@@ -39,7 +35,7 @@ public class InfoProfile extends Info {
 
     @Override
     public Class<? extends Info> getInfoClass() {
-        return clazz;
+        return infoClass;
     }
 
     public Info toInfoWithDetail(InfoRepositoryFactory infoRepositoryFactory){

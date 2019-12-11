@@ -20,11 +20,17 @@ public class DiffFile {
     }
 
     public DiffFile setOldPath(String oldPath) {
+        if ("/dev/null".equals(oldPath)){
+            return this;
+        }
         this.oldPath = oldPath;
         return this;
     }
 
     public DiffFile setNewPath(String newPath) {
+        if ("/dev/null".equals(newPath)){
+            return this;
+        }
         this.newPath = newPath;
         return this;
     }
