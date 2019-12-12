@@ -1,9 +1,7 @@
-package top.jach.tes.plugin.tes.code.git.commit;
+package top.jach.tes.plugin.jhkt.git.commit;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.NameFilter;
-import com.alibaba.fastjson.serializer.PropertyFilter;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.*;
@@ -15,39 +13,44 @@ import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.info.InfoProfile;
 import top.jach.tes.core.api.dto.PageQueryDto;
 import top.jach.tes.core.api.repository.InfoRepository;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommit;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitMongoReository;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitRepository;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
 import top.jach.tes.plugin.tes.repository.GeneraInfoMongoRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.alibaba.fastjson.parser.Feature.DisableFieldSmartMatch;
 import static com.alibaba.fastjson.serializer.SerializerFeature.DisableCircularReferenceDetect;
 
-public class GitCommitsInfoMongoRepository implements InfoRepository<GitCommitsInfo, Map<GeneraInfoMongoRepository.BsonType, Bson>> {
+public class GitCommitsForMicroserviceInfoMongoRepository implements InfoRepository<GitCommitsInfo, Map<GeneraInfoMongoRepository.BsonType, Bson>> {
     public static final String PROJECT_ID = "_projectId";
     public static final String INFO_ID = "id";
     public static final String COMMIT_SHAS = "_commit_shas";
 
     MongoCollection infoProfileCollection;
 
-    PropertyFilter profilter = (object, name, value) -> {
-        if(name.equals("gitCommits")) {
-            return false;
-        }
-        return true;
-    };
-
     GitCommitRepository gitCommitRepository;
 
-    public GitCommitsInfoMongoRepository(MongoCollection infoProfileCollection, GitCommitRepository gitCommitRepository) {
+    public GitCommitsForMicroserviceInfoMongoRepository(MongoCollection infoProfileCollection, MongoCollection infoDetailCollection) {
         this.infoProfileCollection = infoProfileCollection;
         infoProfileCollection.createIndex(Indexes.ascending(INFO_ID));
-        this.gitCommitRepository = gitCommitRepository;
+
+        gitCommitRepository = new GitCommitMongoReository(infoDetailCollection);
     }
 
     @Override
     public GitCommitsInfo saveProfile(GitCommitsInfo info, Long projectId) {
-        Document document = Document.parse(JSONObject.toJSONString(info, profilter, DisableCircularReferenceDetect))
-                .append(PROJECT_ID, projectId);
+        InfoProfile infoProfile = InfoProfile.createFromInfo(info);
+        Document document = Document.parse(JSONObject.toJSONString(infoProfile, DisableCircularReferenceDetect))
+                .append(PROJECT_ID, projectId)
+                .append("reposId", info.getReposId())
+                .append("repoName", info.getRepoName());
+        document.remove("infoClass");
         document.append(COMMIT_SHAS, info.allShas());
         infoProfileCollection.insertOne(document);
         return info;
@@ -62,7 +65,11 @@ public class GitCommitsInfoMongoRepository implements InfoRepository<GitCommitsI
 
     @Override
     public GitCommitsInfo updateProfileByInfoId(GitCommitsInfo info) {
-        Document document = Document.parse(JSONObject.toJSONString(info, profilter, DisableCircularReferenceDetect));
+        InfoProfile infoProfile = InfoProfile.createFromInfo(info);
+        Document document = Document.parse(JSONObject.toJSONString(infoProfile, DisableCircularReferenceDetect))
+                .append("reposId", info.getReposId())
+                .append("repoName", info.getRepoName());
+        document.remove("infoClass");
         List<Bson> updates = new ArrayList<>();
         for (Map.Entry<String, Object> entry :
                 document.entrySet()) {
@@ -114,14 +121,9 @@ public class GitCommitsInfoMongoRepository implements InfoRepository<GitCommitsI
         ;
         for (Document document :
                 documents) {
-            Info info = null;
-            try {
-                info = (Info) JSON.parseObject(document.toJson(JsonWriterSettings.builder().build()),
-                        Class.forName(document.getString("infoClass")), DisableFieldSmartMatch);
-                pageQueryDto.resultAdd(info);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+            Info info = (Info) JSON.parseObject(document.toJson(JsonWriterSettings.builder().build()),
+                    GitCommitsInfo.class, DisableFieldSmartMatch);
+            pageQueryDto.resultAdd(info);
         }
         return pageQueryDto;
     }
@@ -132,18 +134,14 @@ public class GitCommitsInfoMongoRepository implements InfoRepository<GitCommitsI
         List<GitCommitsInfo> gitCommitsInfos = new ArrayList<>();
         for (Document document :
                 documents) {
-            try {
-                GitCommitsInfo info = (GitCommitsInfo) JSON.parseObject(document.toJson(JsonWriterSettings.builder().build()),
-                        Class.forName(document.getString("infoClass")), DisableFieldSmartMatch);
-                gitCommitsInfos.add(info);
+            GitCommitsInfo info = (GitCommitsInfo) JSON.parseObject(document.toJson(JsonWriterSettings.builder().build()),
+                    GitCommitsInfo.class, DisableFieldSmartMatch);
+            gitCommitsInfos.add(info);
 
-                Iterable<GitCommit> gitCommitIterator = gitCommitRepository.findByRepoAndShas(info.getReposId(), info.getRepoName(), document.getList(COMMIT_SHAS, String.class));
-                for (GitCommit gitCommit :
-                        gitCommitIterator) {
-                    info.addGitCommits(gitCommit);
-                }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            Iterable<GitCommit> gitCommitIterator = gitCommitRepository.findByRepoAndShas(info.getReposId(), info.getRepoName(), document.getList(COMMIT_SHAS, String.class));
+            for (GitCommit gitCommit :
+                    gitCommitIterator) {
+                info.addGitCommits(gitCommit);
             }
         }
         return gitCommitsInfos;

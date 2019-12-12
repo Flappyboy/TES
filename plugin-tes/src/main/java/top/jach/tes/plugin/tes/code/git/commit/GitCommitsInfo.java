@@ -7,13 +7,14 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import top.jach.tes.core.api.domain.info.Info;
+import top.jach.tes.plugin.tes.code.repo.WithRepo;
 import top.jach.tes.plugin.tes.utils.JGitUtil;
 
 import java.io.IOException;
 import java.util.*;
 
 @Data
-public class GitCommitsInfo extends Info {
+public class GitCommitsInfo extends Info implements WithRepo {
     private Long reposId;
     private String repoName;
 
@@ -44,6 +45,15 @@ public class GitCommitsInfo extends Info {
             info.addGitCommits(gitCommit);
         }
         return info;
+    }
+
+    public Set<String> allShas(){
+        Set<String> shas = new HashSet<>();
+        for (GitCommit gitCommit :
+                getGitCommits()) {
+            shas.add(gitCommit.getSha());
+        }
+        return shas;
     }
 
     public GitCommitsInfo addGitCommits(GitCommit... gitCommits){

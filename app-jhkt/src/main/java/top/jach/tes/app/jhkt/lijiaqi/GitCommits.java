@@ -21,11 +21,6 @@ import java.io.IOException;
 
 public class GitCommits extends DevApp {
     public static void main(String[] args) throws IOException, GitAPIException {
-        MongoClient mongoClient = new MongoClient();
-        MongoCollection mongoCollection = mongoClient.getDatabase("tes_dev").getCollection("git_commit_info_profile");
-        MongoCollection gitCommitCollection = mongoClient.getDatabase("tes_dev").getCollection("git_commit_info_detail");
-        DevApp.addInfoPrpositoryFactoryMatching(new GitCommitsInfoMongoRepository(mongoCollection, gitCommitCollection), GitCommitsInfo.class);
-
         ReposInfo reposInfo = ReposInfo.createInfo();
         reposInfo.addRepo(new Repo().setName("tes")).setId(20002l);
         GitCommitsInfo gitCommitsInfo = GitCommitsInfo.createInfoForAllRefs(reposInfo.getId(), "tes",

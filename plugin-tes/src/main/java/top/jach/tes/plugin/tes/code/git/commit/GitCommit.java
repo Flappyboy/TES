@@ -1,6 +1,7 @@
 package top.jach.tes.plugin.tes.code.git.commit;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.*;
@@ -20,11 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 public class GitCommit {
+    public static final String _data_struct_version = "2019-12-12-001";
     private String sha;
     private String message;
     private String author;
     private List<DiffFile> diffFiles = new ArrayList<>();
+    private StatisticDiffFiles statisticDiffFiles;
 
     public static GitCommit createByRevCommit(RevCommit commit, Git git, RevWalk revWalk, DiffFormatter df) throws IOException, GitAPIException {
         GitCommit gitCommit = new GitCommit();
@@ -57,46 +61,9 @@ public class GitCommit {
         // 每个DiffEntry就是一个文件的修改
         for (DiffEntry diffEntry :
                 diffEntries) {
-            // 相似度
-            diffEntry.getScore();
-
-            FileHeader fileHeader = df.toFileHeader(diffEntry);
-            List<HunkHeader> hunks = (List<HunkHeader>) fileHeader.getHunks();
-            int addSize = 0, subSize = 0, modifyAddSize = 0, modifySubSize = 0;
-
-            for (HunkHeader hunkHeader :
-                    hunks) {
-                EditList editList = hunkHeader.toEditList();
-                for (Edit edit :
-                        editList) {
-                    edit.getType().name();
-                    switch (edit.getType()){
-                        case INSERT:
-                            addSize += edit.getLengthB();
-                            break;
-                        case DELETE:
-                            subSize += edit.getLengthA();
-                        case REPLACE:
-                            modifyAddSize += edit.getLengthB();
-                            modifySubSize += edit.getLengthA();
-                            break;
-                        case EMPTY:
-                            break;
-                    }
-                }
-            }
-            gitCommit.addDiffFiles(new DiffFile().setChangeType(diffEntry.getChangeType().name())
-                    .setOldPath(diffEntry.getOldPath())
-                    .setNewPath(diffEntry.getNewPath())
-                    .setAddSize(addSize)
-                    .setSubSize(subSize)
-                    .setModifyAddSize(modifyAddSize)
-                    .setModifySubSize(modifySubSize)
-            );
-                    /*diffEntry.getChangeType().name();
-                    diffEntry.getNewPath();
-                    diffEntry.getOldPath();*/
+            gitCommit.addDiffFiles(DiffFile.createFromDiffEntry(diffEntry, df));
         }
+        gitCommit.setStatisticDiffFiles(StatisticDiffFiles.create(gitCommit.getDiffFiles()));
         return gitCommit;
     }
 
