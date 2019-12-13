@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.*;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
@@ -65,6 +66,12 @@ public class GitCommit {
         }
         gitCommit.setStatisticDiffFiles(StatisticDiffFiles.create(gitCommit.getDiffFiles()));
         return gitCommit;
+    }
+
+    public static GitCommit createBySha(String sha, Git git) throws IOException, GitAPIException {
+        RevWalk revWalk = new RevWalk(git.getRepository());
+        RevCommit revCommit = revWalk.parseCommit(ObjectId.fromString(sha));
+        return createByRevCommit(revCommit, git);
     }
 
     public static GitCommit createByRef(Ref ref, Git git) throws IOException, GitAPIException {
