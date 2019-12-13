@@ -4,6 +4,7 @@ import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.dto.PageQueryDto;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public interface InfoRepository<I extends Info, C> extends Repository {
@@ -63,6 +64,9 @@ public interface InfoRepository<I extends Info, C> extends Repository {
     default List<I> queryDetailsByInfoAndProjectId(Info info, Long projectId, PageQueryDto pageQueryDto){
         pageQueryDto = queryProfileByInfoAndProjectId(info, projectId, pageQueryDto);
         List<I> infos = pageQueryDto.getResult();
+        if (infos == null || infos.size() <=0 ){
+            return Collections.emptyList();
+        }
         List<Long> infoIds = new ArrayList<>();
         for (I i :
                 infos) {
