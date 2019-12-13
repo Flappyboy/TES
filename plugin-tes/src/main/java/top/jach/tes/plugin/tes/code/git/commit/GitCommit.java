@@ -28,6 +28,7 @@ public class GitCommit {
     private String sha;
     private String message;
     private String author;
+    private Integer parentCount;
     private List<DiffFile> diffFiles = new ArrayList<>();
     private StatisticDiffFiles statisticDiffFiles;
 
@@ -36,6 +37,7 @@ public class GitCommit {
         gitCommit.setSha(commit.getName());
         gitCommit.setAuthor(commit.getAuthorIdent().getEmailAddress());
         gitCommit.setMessage(commit.getFullMessage());
+        gitCommit.setParentCount(commit.getParentCount());
 
         System.out.println(commit.getName());
                 /*commit.getName();
@@ -44,13 +46,15 @@ public class GitCommit {
                 commit.getFullMessage();*/
 
         // 忽略Merge
-        if(commit.getParentCount()>=2 || commit.getParentCount()<=0){
-            return null;
+        if(commit.getParentCount()<=0){
+            return gitCommit;
         }
         RevCommit parent = commit.getParent(0);
         if(parent == null){
-            return null;
+            return gitCommit;
         }
+
+
 
         AbstractTreeIterator treeParser = new CanonicalTreeParser(null, git.getRepository().newObjectReader(), commit.getTree());
 

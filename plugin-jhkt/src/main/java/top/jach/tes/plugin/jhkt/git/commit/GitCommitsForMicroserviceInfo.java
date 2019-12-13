@@ -66,6 +66,9 @@ public class GitCommitsForMicroserviceInfo extends GitCommitsInfo implements Wit
         for (GitCommit commit:
                 gitCommitsInfo.getGitCommits()) {
             // 用于判断commit是否已经被加入
+            if (commit.getParentCount()>1){
+                continue;
+            }
             boolean tag = false;
             for (DiffFile diffFile :
                     commit.getDiffFiles()) {
