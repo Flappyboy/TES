@@ -40,8 +40,8 @@ public class InfoTool {
     }
 
     public static <I extends Info> I queryLastInfoByNameAndInfoClass(String infoName, Class<I> infoClass){
-        PageQueryDto<I> result = Environment.infoRepositoryFactory.getRepository(infoClass)
-                .queryProfileByInfoAndProjectId(new Info() {
+        List<I> infos = Environment.infoRepositoryFactory.getRepository(infoClass)
+                .queryDetailsByInfoAndProjectId(new Info() {
                     @Override
                     public String getName() {
                         return infoName;
@@ -51,7 +51,6 @@ public class InfoTool {
                         return infoClass;
                     }
                 }, Environment.defaultProject.getId(), PageQueryDto.create(1, 1).setSortField("createdTime"));
-        List<I> infos = result.getResult();
         if(infos.size()==0){
             return null;
         }
