@@ -74,10 +74,8 @@ public class GitCommit {
     }
 
     public static GitCommit createByRevCommit(RevCommit commit, Git git) throws IOException, GitAPIException {
-        DiffFormatter df = new DiffFormatter(new ByteArrayOutputStream());
-        df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
-        df.setRepository(git.getRepository());
-        return createByRevCommit(commit, git, new RevWalk(git.getRepository()),  df);
+        DiffFormatter df = Utils.diffFormatter(git.getRepository());
+        return createByRevCommit(commit, git, new RevWalk(git.getRepository()), df);
     }
 
     public GitCommit addDiffFiles(DiffFile... diffFiles){

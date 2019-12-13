@@ -27,7 +27,7 @@ public class GitCommitForMicroservice extends DevApp {
         File file = new File("./");
 
         ReposInfo reposInfo = ReposInfo.createInfo();
-        reposInfo.addRepo(new Repo().setName("tes"));
+        reposInfo.addRepo(new Repo().setName("tes")).setId(20002l);
         GitCommitsInfo gitCommitsInfo = GitCommitsInfo.createInfoForAllRefs(reposInfo.getId(), "tes",
                 Git.open(file));
 

@@ -73,9 +73,7 @@ public class GitCommitForSpecificCommitsAction implements Action {
             RevWalk revWalk = new RevWalk(git.getRepository());
             Iterable<RevCommit> commits = log.call();
 
-            DiffFormatter df = new DiffFormatter(new ByteArrayOutputStream());
-            df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
-            df.setRepository(git.getRepository());
+            DiffFormatter df = Utils.diffFormatter(git.getRepository());
             for (RevCommit commit :
                 commits) {
                 GitCommit gitCommit = GitCommit.createByRevCommit(commit, git, revWalk, df);
