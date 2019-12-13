@@ -72,7 +72,7 @@ public class GitCommitMongoReository implements GitCommitRepository {
     }
 
     @Override
-    public Iterable<GitCommit> findByRepoAndShas(Long reposId, String repoName, List<String> shas) {
+    public Iterable<GitCommit> findByRepoAndShas(Long reposId, String repoName, Iterable<String> shas) {
         Iterable<Document> documents = collection.find(Filters.and(Filters.eq(COMMIT_REPOS_ID, reposId),
                 Filters.eq(COMMIT_REPO_NAME, repoName),
                 Filters.eq(GIT_COMMIT_DATA_STRUCT_VERSION, GitCommit._data_struct_version),
