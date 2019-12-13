@@ -7,6 +7,6 @@ import java.util.Set;
 public interface GitCommitRepository {
     void saveGitCommits(List<GitCommit> gitCommits, Long reposId, String repoName);
     Set<String> findShasByRepo(Long reposId, String repoName);
-    Iterable<GitCommit> findByRepoAndShas(Long reposId, String repoName, List<String> shas);
+    Iterable<GitCommit> findByRepoAndShas(Long reposId, String repoName, Iterable<String> shas);
     void deleteOldVersionData(Long reposId, String repoName);
 }
