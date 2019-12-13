@@ -39,6 +39,8 @@ public abstract class DevApp {
         Environment.defaultProject.setId(1l).setCreatedTime(1575784638000l).setUpdatedTime(1575784638000l);
     }
     private static DefaultInfoRepositoryFactory defaultInfoRepositoryFactory;
+    public static GitCommitRepository gitCommitRepository;
+
     private static DefaultInfoRepositoryFactory infoRepositoryFactory(){
         DefaultInfoRepositoryFactory factory = new DefaultInfoRepositoryFactory();
         DefaultNToOneMatchingStrategy<Class<? extends Info>, InfoRepository> strategy = new DefaultNToOneMatchingStrategy<>();
@@ -75,7 +77,7 @@ public abstract class DevApp {
         MongoClient mongoClient = new MongoClient();
         MongoCollection profileCollection = mongoClient.getDatabase("tes_dev").getCollection("git_commits_info_profile");
         MongoCollection commitsCollection = mongoClient.getDatabase("tes_dev").getCollection("git_commits");
-        GitCommitRepository gitCommitRepository = new GitCommitMongoReository(commitsCollection);
+        gitCommitRepository = new GitCommitMongoReository(commitsCollection);
         GitCommitsInfoMongoRepository infoRepository = new GitCommitsInfoMongoRepository(profileCollection, gitCommitRepository);
 
         defaultInfoRepositoryFactory.register(new NToOneMatchingStrategy<Class<? extends Info>, InfoRepository>() {
