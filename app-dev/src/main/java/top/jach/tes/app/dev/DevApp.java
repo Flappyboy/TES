@@ -12,6 +12,10 @@ import top.jach.tes.core.impl.factory.DefaultInfoRepositoryFactory;
 import top.jach.tes.core.impl.matching.DefaultNToOneMatchingStrategy;
 import top.jach.tes.core.impl.matching.NToOneMatchingStrategy;
 import top.jach.tes.core.impl.service.DefaultInfoService;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitMongoReository;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitRepository;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfoMongoRepository;
 import top.jach.tes.plugin.tes.repository.GeneraInfoMongoRepository;
 
 import java.util.Set;
@@ -25,13 +29,19 @@ public abstract class DevApp {
         if(inited){
             return;
         }
-        Environment.infoRepositoryFactory = infoRepositoryFactory();
+        defaultInfoRepositoryFactory = infoRepositoryFactory();
+        addGitCommitInfoRepository();
+
+        Environment.infoRepositoryFactory = defaultInfoRepositoryFactory;
         Environment.contextFactory = new BaseContextFactory(Environment.iLoggerFactory, Environment.infoRepositoryFactory);
         Environment.infoService = new DefaultInfoService(Environment.contextFactory);
         Environment.defaultProject = new Project().setName("DevProject").setDesc("project for dev");
         Environment.defaultProject.setId(1l).setCreatedTime(1575784638000l).setUpdatedTime(1575784638000l);
     }
-    private static InfoRepositoryFactory infoRepositoryFactory(){
+    private static DefaultInfoRepositoryFactory defaultInfoRepositoryFactory;
+    public static GitCommitRepository gitCommitRepository;
+
+    private static DefaultInfoRepositoryFactory infoRepositoryFactory(){
         DefaultInfoRepositoryFactory factory = new DefaultInfoRepositoryFactory();
         DefaultNToOneMatchingStrategy<Class<? extends Info>, InfoRepository> strategy = new DefaultNToOneMatchingStrategy<>();
         factory.register(new NToOneMatchingStrategy<Class<? extends Info>, InfoRepository>() {
@@ -47,5 +57,41 @@ public abstract class DevApp {
             }
         });
         return factory;
+    }
+    public static void addInfoPrpositoryFactoryMatching(InfoRepository infoRepository, Class<? extends Info> clazz){
+        defaultInfoRepositoryFactory.register(new NToOneMatchingStrategy<Class<? extends Info>, InfoRepository>() {
+            @Override
+            public InfoRepository NToM(Class<? extends Info> aClass) {
+                if (clazz.equals(aClass)) {
+                    return infoRepository;
+                }
+                return null;
+            }
+            @Override
+            public Set<Class<? extends Info>> MToN(InfoRepository infoRepository) {
+                return null;
+            }
+        });
+    }
+    private static void addGitCommitInfoRepository(){
+        MongoClient mongoClient = new MongoClient();
+        MongoCollection profileCollection = mongoClient.getDatabase("tes_dev").getCollection("git_commits_info_profile");
+        MongoCollection commitsCollection = mongoClient.getDatabase("tes_dev").getCollection("git_commits");
+        gitCommitRepository = new GitCommitMongoReository(commitsCollection);
+        GitCommitsInfoMongoRepository infoRepository = new GitCommitsInfoMongoRepository(profileCollection, gitCommitRepository);
+
+        defaultInfoRepositoryFactory.register(new NToOneMatchingStrategy<Class<? extends Info>, InfoRepository>() {
+            @Override
+            public InfoRepository NToM(Class<? extends Info> aClass) {
+                if (GitCommitsInfo.class.isAssignableFrom(aClass)) {
+                    return infoRepository;
+                }
+                return null;
+            }
+            @Override
+            public Set<Class<? extends Info>> MToN(InfoRepository infoRepository) {
+                return null;
+            }
+        });
     }
 }

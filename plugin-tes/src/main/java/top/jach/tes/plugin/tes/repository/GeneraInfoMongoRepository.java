@@ -25,7 +25,7 @@ import static com.alibaba.fastjson.serializer.SerializerFeature.DisableCircularR
 
 public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<GeneraInfoMongoRepository.BsonType, Bson>> {
     public static final String PROJECT_ID = "_projectId";
-    MongoCollection mongoCollection;
+    private MongoCollection mongoCollection;
 
     public enum BsonType{
         Filter(),
@@ -38,6 +38,8 @@ public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<Gener
 
     @Override
     public Info saveProfile(Info info, Long projectId) {
+        mongoCollection.deleteMany(Filters.eq("id", info.getId()));
+
         InfoProfile infoProfile = InfoProfile.createFromInfo(info);
         Document document = Document.parse(JSONObject.toJSONString(infoProfile, DisableCircularReferenceDetect));
         document.append("_projectId", projectId);
@@ -131,7 +133,7 @@ public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<Gener
         return infos;
     }
 
-    private Bson getBson(Map<BsonType, Bson> bsonTypeBsonMap, BsonType bsonType){
+    public static Bson getBson(Map<BsonType, Bson> bsonTypeBsonMap, BsonType bsonType){
         Bson bson = bsonTypeBsonMap.get(bsonType);
         if(bson != null){
             return bson;

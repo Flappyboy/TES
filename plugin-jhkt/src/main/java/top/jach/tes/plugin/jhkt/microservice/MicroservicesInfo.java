@@ -1,6 +1,8 @@
 package top.jach.tes.plugin.jhkt.microservice;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.info.InfoProfile;
@@ -15,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 
 @Getter
+@Setter
+@ToString(callSuper = true)
 public class MicroservicesInfo extends ElementsInfo<Microservice> implements WithRepo {
     Long reposId;
 

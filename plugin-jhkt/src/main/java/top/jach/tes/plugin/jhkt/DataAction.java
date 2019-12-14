@@ -19,6 +19,7 @@ import java.util.List;
 
 public class DataAction implements Action {
     public static final String DATA_FILE = "data_file";
+    public static final Long DefaultReposId = 10001l;
 
     @Override
     public String getName() {
@@ -41,6 +42,7 @@ public class DataAction implements Action {
                 putInfo(ImportDataAction.DATA_FILE, inputInfos.getInfo(DATA_FILE, FileInfo.class)), context).getInfoList();
 
         ReposInfo reposInfo = findOne(infos, ReposInfo.class);
+        reposInfo.setId(DefaultReposId);
 
         MicroservicesInfo microservices = MicroservicesInfo.createInfo(infos.toArray(new Info[infos.size()])).setReposId(reposInfo.getId());
         microservices.setName(InfoNameConstant.MicroservicesForRepos);
