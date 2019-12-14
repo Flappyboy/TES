@@ -1,11 +1,11 @@
-package top.jach.tes.app.jhkt.lijiaqi;
+package top.jach.tes.app.jhkt.chenjiali;
 
-import top.jach.tes.core.api.domain.action.Action;
+import top.jach.tes.app.dev.DevApp;
 import top.jach.tes.app.mock.InfoTool;
 import top.jach.tes.app.mock.InputInfoProfiles;
 import top.jach.tes.app.mock.TaskTool;
+import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
-import top.jach.tes.app.dev.DevApp;
 import top.jach.tes.plugin.jhkt.InfoNameConstant;
 import top.jach.tes.plugin.jhkt.arcsmell.DemoAction;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;

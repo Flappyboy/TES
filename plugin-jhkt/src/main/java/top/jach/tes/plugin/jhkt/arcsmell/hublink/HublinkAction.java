@@ -1,10 +1,10 @@
-package top.jach.tes.plugin.jhkt.arcsmell;
+package top.jach.tes.plugin.jhkt.arcsmell.hublink;
 
 import top.jach.tes.core.api.domain.action.Action;
+import top.jach.tes.core.api.domain.action.DefaultOutputInfos;
 import top.jach.tes.core.api.domain.action.InputInfos;
 import top.jach.tes.core.api.domain.action.OutputInfos;
 import top.jach.tes.core.api.domain.context.Context;
-import top.jach.tes.core.api.domain.action.DefaultOutputInfos;
 import top.jach.tes.core.api.domain.meta.Meta;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.element.ElementsInfo;
@@ -14,7 +14,7 @@ import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
 
 import java.util.Arrays;
 
-public class DemoAction implements Action {
+public class HublinkAction implements Action {
     public static final String Elements_INFO = "elements_info";
     public static final String PAIR_RELATIONS_INFO = "PairRelationsInfo";
     @Override
