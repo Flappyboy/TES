@@ -9,6 +9,7 @@ import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
 import top.jach.tes.plugin.jhkt.InfoNameConstant;
 import top.jach.tes.plugin.jhkt.arcsmell.DemoAction;
 import top.jach.tes.plugin.jhkt.arcsmell.cyclic.CyclicAction;
+import top.jach.tes.plugin.jhkt.arcsmell.hublink.HublinkAction;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 
 public class DemoMain extends DevApp {
@@ -22,7 +23,7 @@ public class DemoMain extends DevApp {
                 .addInfoProfile(DemoAction.PAIR_RELATIONS_INFO, callRelations)
                 ;
 
-        Action action = new CyclicAction();
+        Action action = new HublinkAction();
         TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
     }
 }
