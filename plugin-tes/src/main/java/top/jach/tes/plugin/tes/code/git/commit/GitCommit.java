@@ -44,7 +44,7 @@ public class GitCommit extends Element {
         gitCommit.setReposId(reposId);
         gitCommit.setRepoName(repoName);
 
-        System.out.println(commit.getName());
+//        System.out.println(commit.getName());
                 /*commit.getName();
                 commit.getAuthorIdent().getEmailAddress();
                 commit.getAuthorIdent().getName();
