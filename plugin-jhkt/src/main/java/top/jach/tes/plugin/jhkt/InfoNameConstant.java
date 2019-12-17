@@ -11,6 +11,8 @@ public interface InfoNameConstant {
     String GoAstPackageForRepo = "GoAstPackage";
     String TargetSystem = "TargetSystem";
     String GitTreeInfoForRepo = GitTreeAction.GitTreeInfoName;
+    String GitCommitsForRepo = "GitCommitsForRepo";
+    String GitCommitsForMicroservice = "GitCommitsForMicroservice";
 
     String MicroserviceCallRelation = "MicroserviceCallRelation";
 }
