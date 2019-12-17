@@ -13,6 +13,6 @@ public class Bug extends Element {
 
     @Override
     public String getElementName() {
-        return super.getElementName();
+        return name;
     }
 }
