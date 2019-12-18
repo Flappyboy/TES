@@ -41,7 +41,7 @@ public class GitCommit extends Element {
         GitCommit gitCommit = new GitCommit();
         gitCommit.setSha(commit.getName());
         gitCommit.setAuthor(commit.getAuthorIdent().getName());
-        gitCommit.setAuthor(commit.getAuthorIdent().getEmailAddress());
+        gitCommit.setAuthorEmail(commit.getAuthorIdent().getEmailAddress());
         gitCommit.setCommitTime(commit.getCommitTime());
         gitCommit.setMessage(commit.getFullMessage());
         gitCommit.setParentCount(commit.getParentCount());
