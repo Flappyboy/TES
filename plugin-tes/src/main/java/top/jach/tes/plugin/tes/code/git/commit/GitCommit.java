@@ -28,6 +28,8 @@ public class GitCommit {
     private String sha;
     private String message;
     private String author;
+    private String authorEmail;
+    private Integer commitTime;
     private Integer parentCount;
     private List<DiffFile> diffFiles = new ArrayList<>();
     private StatisticDiffFiles statisticDiffFiles;
@@ -35,7 +37,9 @@ public class GitCommit {
     public static GitCommit createByRevCommit(RevCommit commit, Git git, RevWalk revWalk, DiffFormatter df) throws IOException, GitAPIException {
         GitCommit gitCommit = new GitCommit();
         gitCommit.setSha(commit.getName());
+        gitCommit.setAuthor(commit.getAuthorIdent().getName());
         gitCommit.setAuthor(commit.getAuthorIdent().getEmailAddress());
+        gitCommit.setCommitTime(commit.getCommitTime());
         gitCommit.setMessage(commit.getFullMessage());
         gitCommit.setParentCount(commit.getParentCount());
 
