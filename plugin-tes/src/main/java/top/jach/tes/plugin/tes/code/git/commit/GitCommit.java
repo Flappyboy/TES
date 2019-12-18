@@ -24,7 +24,7 @@ import java.util.List;
 @Getter
 @Setter
 public class GitCommit {
-    public static final String _data_struct_version = "2019-12-12-001";
+    public static final String _data_struct_version = "2019-12-18-001";
     private String sha;
     private String message;
     private String author;
