@@ -25,12 +25,14 @@ import java.util.List;
 @Getter
 @Setter
 public class GitCommit extends Element {
-    public static final String _data_struct_version = "2019-12-12-001";
+    public static final String _data_struct_version = "2019-12-18-001";
     private Long reposId;
     private String repoName;
     private String sha;
     private String message;
     private String author;
+    private String authorEmail;
+    private Integer commitTime;
     private Integer parentCount;
     private List<DiffFile> diffFiles = new ArrayList<>();
     private StatisticDiffFiles statisticDiffFiles;
@@ -38,7 +40,9 @@ public class GitCommit extends Element {
     public static GitCommit createByRevCommit(Long reposId, String repoName, RevCommit commit, Git git, RevWalk revWalk, DiffFormatter df) throws IOException, GitAPIException {
         GitCommit gitCommit = new GitCommit();
         gitCommit.setSha(commit.getName());
+        gitCommit.setAuthor(commit.getAuthorIdent().getName());
         gitCommit.setAuthor(commit.getAuthorIdent().getEmailAddress());
+        gitCommit.setCommitTime(commit.getCommitTime());
         gitCommit.setMessage(commit.getFullMessage());
         gitCommit.setParentCount(commit.getParentCount());
         gitCommit.setReposId(reposId);
