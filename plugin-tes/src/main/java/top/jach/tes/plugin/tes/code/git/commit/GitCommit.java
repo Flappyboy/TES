@@ -15,6 +15,7 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import top.jach.tes.core.impl.domain.element.Element;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,8 +24,10 @@ import java.util.List;
 
 @Getter
 @Setter
-public class GitCommit {
+public class GitCommit extends Element {
     public static final String _data_struct_version = "2019-12-18-001";
+    private Long reposId;
+    private String repoName;
     private String sha;
     private String message;
     private String author;
@@ -34,7 +37,7 @@ public class GitCommit {
     private List<DiffFile> diffFiles = new ArrayList<>();
     private StatisticDiffFiles statisticDiffFiles;
 
-    public static GitCommit createByRevCommit(RevCommit commit, Git git, RevWalk revWalk, DiffFormatter df) throws IOException, GitAPIException {
+    public static GitCommit createByRevCommit(Long reposId, String repoName, RevCommit commit, Git git, RevWalk revWalk, DiffFormatter df) throws IOException, GitAPIException {
         GitCommit gitCommit = new GitCommit();
         gitCommit.setSha(commit.getName());
         gitCommit.setAuthor(commit.getAuthorIdent().getName());
@@ -42,8 +45,10 @@ public class GitCommit {
         gitCommit.setCommitTime(commit.getCommitTime());
         gitCommit.setMessage(commit.getFullMessage());
         gitCommit.setParentCount(commit.getParentCount());
+        gitCommit.setReposId(reposId);
+        gitCommit.setRepoName(repoName);
 
-        System.out.println(commit.getName());
+//        System.out.println(commit.getName());
                 /*commit.getName();
                 commit.getAuthorIdent().getEmailAddress();
                 commit.getAuthorIdent().getName();
@@ -76,21 +81,26 @@ public class GitCommit {
         return gitCommit;
     }
 
-    public static GitCommit createBySha(String sha, Git git) throws IOException, GitAPIException {
+    public static GitCommit createBySha(Long reposId, String repoName, String sha, Git git) throws IOException, GitAPIException {
         RevWalk revWalk = new RevWalk(git.getRepository());
         RevCommit revCommit = revWalk.parseCommit(ObjectId.fromString(sha));
-        return createByRevCommit(revCommit, git);
+        return createByRevCommit(reposId, repoName, revCommit, git);
     }
 
-    public static GitCommit createByRef(Ref ref, Git git) throws IOException, GitAPIException {
+    public static GitCommit createByRef(Long reposId, String repoName, Ref ref, Git git) throws IOException, GitAPIException {
         RevWalk revWalk = new RevWalk(git.getRepository());
         RevCommit revCommit = revWalk.parseCommit(ref.getObjectId());
-        return createByRevCommit(revCommit, git);
+        return createByRevCommit(reposId, repoName, revCommit, git);
     }
 
-    public static GitCommit createByRevCommit(RevCommit commit, Git git) throws IOException, GitAPIException {
+    public static GitCommit createByRevCommit(Long reposId, String repoName, RevCommit commit, Git git) throws IOException, GitAPIException {
         DiffFormatter df = Utils.diffFormatter(git.getRepository());
-        return createByRevCommit(commit, git, new RevWalk(git.getRepository()), df);
+        return createByRevCommit(reposId, repoName, commit, git, new RevWalk(git.getRepository()), df);
+    }
+
+    @Override
+    public String getElementName() {
+        return reposId+"&"+repoName+"&"+sha;
     }
 
     public GitCommit addDiffFiles(DiffFile... diffFiles){

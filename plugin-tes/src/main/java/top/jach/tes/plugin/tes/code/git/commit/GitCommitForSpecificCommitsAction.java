@@ -76,7 +76,7 @@ public class GitCommitForSpecificCommitsAction implements Action {
             DiffFormatter df = Utils.diffFormatter(git.getRepository());
             for (RevCommit commit :
                 commits) {
-                GitCommit gitCommit = GitCommit.createByRevCommit(commit, git, revWalk, df);
+                GitCommit gitCommit = GitCommit.createByRevCommit(reposId, repoName, commit, git, revWalk, df);
                 if(gitCommit !=null ){
                     result.addGitCommits(gitCommit);
                 }

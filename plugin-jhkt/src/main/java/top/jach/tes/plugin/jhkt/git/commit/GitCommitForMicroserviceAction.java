@@ -11,6 +11,7 @@ import top.jach.tes.core.impl.domain.info.value.FileInfo;
 import top.jach.tes.core.impl.domain.meta.InfoField;
 import top.jach.tes.core.impl.domain.meta.LongField;
 import top.jach.tes.core.impl.domain.meta.StringField;
+import top.jach.tes.plugin.jhkt.InfoNameConstant;
 import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
@@ -44,6 +45,10 @@ public class GitCommitForMicroserviceAction implements Action {
         MicroservicesInfo microservices = inputInfos.getInfo(MICROSERVICES_INFO, MicroservicesInfo.class);
         GitCommitsInfo gitCommitsInfo = inputInfos.getInfo(GIT_COMMITS_INFO, GitCommitsInfo.class);
         List<GitCommitsForMicroserviceInfo> infoList = GitCommitsForMicroserviceInfo.createInfoFromMicroservicesInfo(microservices, gitCommitsInfo);
+        for (GitCommitsForMicroserviceInfo info :
+                infoList) {
+            info.setName(InfoNameConstant.GitCommitsForMicroservice);
+        }
         return new DefaultOutputInfos().addInfoReadyToSave(infoList.toArray(new GitCommitsForMicroserviceInfo[infoList.size()]));
     }
 }
