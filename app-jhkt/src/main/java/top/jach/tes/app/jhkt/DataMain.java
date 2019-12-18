@@ -7,6 +7,7 @@ import top.jach.tes.plugin.jhkt.DataAction;
 
 import java.io.File;
 
+// 用于导入从企业获取的
 public class DataMain extends DevApp {
     public static void main(String[] args) {
         String dataFilePath = null;
