@@ -13,6 +13,7 @@ import top.jach.tes.plugin.tes.utils.JGitUtil;
 import java.io.IOException;
 import java.util.*;
 
+// 包含一个代码仓下的所有commit
 @Data
 public class GitCommitsInfo extends Info implements WithRepo {
     private Long reposId;
@@ -34,7 +35,7 @@ public class GitCommitsInfo extends Info implements WithRepo {
         Map<String, GitCommit> map = new HashMap<>();
         for (Ref ref :
                 refs) {
-            GitCommit gitCommit = GitCommit.createByRef(ref, git);
+            GitCommit gitCommit = GitCommit.createByRef(reposId, repoName, ref, git);
             if(gitCommit==null){
                 continue;
             }

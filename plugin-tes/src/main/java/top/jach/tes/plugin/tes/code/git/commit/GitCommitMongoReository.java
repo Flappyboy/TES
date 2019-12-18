@@ -16,8 +16,8 @@ import static com.alibaba.fastjson.parser.Feature.DisableFieldSmartMatch;
 import static com.alibaba.fastjson.serializer.SerializerFeature.DisableCircularReferenceDetect;
 
 public class GitCommitMongoReository implements GitCommitRepository {
-    public static final String COMMIT_REPOS_ID = "_reposId";
-    public static final String COMMIT_REPO_NAME = "_repoName";
+    public static final String COMMIT_REPOS_ID = "reposId";
+    public static final String COMMIT_REPO_NAME = "repoName";
     public static final String GIT_COMMIT_DATA_STRUCT_VERSION = "_data_struct_version";
 
     MongoCollection collection;
@@ -37,6 +37,8 @@ public class GitCommitMongoReository implements GitCommitRepository {
                 if (gitCommit == null) {
                     continue;
                 }
+                assert reposId == gitCommit.getReposId();
+                assert repoName == gitCommit.getRepoName();
                 if (shas.contains(gitCommit.getSha())) {
                     continue;
                 }
