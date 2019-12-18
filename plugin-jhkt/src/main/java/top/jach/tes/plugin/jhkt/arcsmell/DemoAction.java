@@ -41,11 +41,12 @@ public class DemoAction implements Action {
                 InfoField.createField(PAIR_RELATIONS_INFO).setInfoClass(PairRelationsInfo.class)
         );
     }
-
+//该方法根据元素和元素之间的关系，以此为参数调用方法，输出架构异味
     @Override
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {
-        ElementsInfo<Element> elementsInfo = inputInfos.getInfo(Elements_INFO, ElementsInfo.class);
+        ElementsInfo elementsInfo = inputInfos.getInfo(Elements_INFO, ElementsInfo.class);//元素
         PairRelationsInfo pairRelationsInfo = inputInfos.getInfo(PAIR_RELATIONS_INFO, PairRelationsInfo.class);
+        //元素之间的关系
 
         List<Element> elements = Lists.newArrayList(elementsInfo.iterator());
         List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
