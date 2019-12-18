@@ -25,7 +25,7 @@ import java.util.List;
 @Getter
 @Setter
 public class GitCommit extends Element {
-    public static final String _data_struct_version = "2019-12-18-001";
+    public static final String _data_struct_version = "2019-12-18-002";
     private Long reposId;
     private String repoName;
     private String sha;
