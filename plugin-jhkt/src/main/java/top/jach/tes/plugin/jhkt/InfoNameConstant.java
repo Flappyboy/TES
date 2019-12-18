@@ -5,6 +5,7 @@ import top.jach.tes.plugin.tes.code.git.tree.GitTreeAction;
 public interface InfoNameConstant {
     String MicroservicesForRepo = "Microservice";
     String MicroservicesForRepos = "MicroserviceForRepos";
+    String MicroservicesForReposExcludeSomeHistory = "MicroservicesForReposExcludeSomeHistory";
     String BugDts = "BugDts";
     String RelationBugAndCommit = "RelationBugAndGitCommit";
     String RelationBugAndMicroservice = "RelationBugAndMicroservice";
