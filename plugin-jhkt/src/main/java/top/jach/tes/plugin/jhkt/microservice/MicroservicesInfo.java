@@ -54,7 +54,7 @@ public class MicroservicesInfo extends ElementsInfo<Microservice> implements Wit
     public static MicroservicesInfo createInfoByExcludeMicroservice(MicroservicesInfo mInfo, String... excludeNames){
         MicroservicesInfo microservices = createInfo();
         microservices.setName(mInfo.getName());
-        mInfo.setReposId(mInfo.getReposId())
+        microservices.setReposId(mInfo.getReposId())
                 .setRepoName(mInfo.getRepoName())
                 .setVersion(mInfo.getVersion())
                 .setDesc(mInfo.getDesc());

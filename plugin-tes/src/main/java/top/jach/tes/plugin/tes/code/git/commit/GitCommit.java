@@ -25,7 +25,7 @@ import java.util.List;
 @Getter
 @Setter
 public class GitCommit extends Element {
-    public static final String _data_struct_version = "2019-12-18-001";
+    public static final String _data_struct_version = "2019-12-18-002";
     private Long reposId;
     private String repoName;
     private String sha;
@@ -41,7 +41,7 @@ public class GitCommit extends Element {
         GitCommit gitCommit = new GitCommit();
         gitCommit.setSha(commit.getName());
         gitCommit.setAuthor(commit.getAuthorIdent().getName());
-        gitCommit.setAuthor(commit.getAuthorIdent().getEmailAddress());
+        gitCommit.setAuthorEmail(commit.getAuthorIdent().getEmailAddress());
         gitCommit.setCommitTime(commit.getCommitTime());
         gitCommit.setMessage(commit.getFullMessage());
         gitCommit.setParentCount(commit.getParentCount());
