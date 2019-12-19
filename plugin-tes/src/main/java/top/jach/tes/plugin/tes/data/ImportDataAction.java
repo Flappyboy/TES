@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ImportDataAction implements Action {
-    public static final String DATA_FILE = "data_file";
+    public static final String ImportDir = "ImportDir";
     @Override
     public String getName() {
         return null;
@@ -40,48 +40,36 @@ public class ImportDataAction implements Action {
     @Override
     public Meta getInputMeta() {
         return () -> Arrays.asList(
-                InfoField.createField(DATA_FILE).setInfoClass(FileInfo.class));
+                InfoField.createField(ImportDir).setInfoClass(FileInfo.class));
     }
 
     @Override
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {
-        File dataFile = ValueInfo.getValueFromInputInfos(inputInfos, DATA_FILE, FileInfo.class);
-        if(dataFile == null || !dataFile.exists()){
-            throw new ActionExecuteFailedException("data file must be exist!");
+        File importDir = ValueInfo.getValueFromInputInfos(inputInfos, ImportDir, FileInfo.class);
+        if(importDir == null || !importDir.exists() || !importDir.isDirectory()){
+            throw new ActionExecuteFailedException("import dir must be exist and must be directory!");
         }
-        try {
-            DefaultOutputInfos result = new DefaultOutputInfos();
-            List<Info> infos = new ArrayList<>();
-            JSONArray dataArray = JSONObject.parseArray(FileUtils.readFileToString(dataFile, "utf8"));
-            ReposInfo reposInfo = null;
-            for (Object object :
-                    dataArray) {
-                JSONObject data = (JSONObject) object;
-                Class infoClass = Class.forName(data.getString("infoClass"));
-                Info info = (Info) data.toJavaObject(infoClass);
-                info.initBuild();
-                if(info instanceof ReposInfo){
-                    reposInfo = (ReposInfo) info;
-                    reposInfo.setId(1001l);
+        SaveInfoAction saveInfoAction = new SaveInfoAction();
+        if(importDir.isDirectory()){
+            for (File dataFile:
+                    importDir.listFiles()) {
+                try {
+                    DefaultOutputInfos result = new DefaultOutputInfos();
+                    JSONObject data = JSONObject.parseObject(FileUtils.readFileToString(dataFile, "utf8"));
+                    Class infoClass = Class.forName(data.getString("infoClass"));
+                    Info info = (Info) data.toJavaObject(infoClass);
+                    InputInfos tmp = new DefaultInputInfos();
+                    result.addInfo(info);
+                    tmp.put(String.valueOf(tmp.size()), info);
+                    saveInfoAction.execute(tmp, context);
+                    return result;
+                } catch (IOException e) {
+                    throw new ActionExecuteFailedException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new ActionExecuteFailedException(e);
                 }
-                infos.add(info);
             }
-            InputInfos tmp = new DefaultInputInfos();
-            for (Info info :
-                    infos) {
-                if (info instanceof WithRepo){
-                    ((WithRepo) info).setReposId(reposInfo.getId());
-                }
-                result.addInfo(info);
-                tmp.put(String.valueOf(tmp.size()), info);
-            }
-            SaveInfoAction saveInfoAction = new SaveInfoAction();
-            saveInfoAction.execute(tmp, context);
-            return result;
-        } catch (IOException e) {
-            throw new ActionExecuteFailedException(e);
-        } catch (ClassNotFoundException e) {
-            throw new ActionExecuteFailedException(e);
         }
+        return null;
     }
 }

@@ -39,7 +39,7 @@ public class DataAction implements Action {
     @Override
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {
         List<Info> infos = new ImportDataAction().execute(new DefaultInputInfos().
-                putInfo(ImportDataAction.DATA_FILE, inputInfos.getInfo(DATA_FILE, FileInfo.class)), context).getInfoList();
+                putInfo(ImportDataAction.ImportDir, inputInfos.getInfo(DATA_FILE, FileInfo.class)), context).getInfoList();
 
         ReposInfo reposInfo = findOne(infos, ReposInfo.class);
         reposInfo.setId(DefaultReposId);
