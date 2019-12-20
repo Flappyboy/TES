@@ -23,7 +23,7 @@ public class DemoMain extends DevApp {
                 .addInfoProfile(DemoAction.PAIR_RELATIONS_INFO, callRelations)
                 ;
 
-        Action action = new HublinkAction();
+        Action action = new CyclicAction();
         TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
     }
 }

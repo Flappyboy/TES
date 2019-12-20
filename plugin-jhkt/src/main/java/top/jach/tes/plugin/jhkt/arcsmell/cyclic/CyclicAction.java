@@ -16,9 +16,7 @@ import top.jach.tes.core.impl.domain.relation.PairRelation;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
 
 import javax.lang.model.util.Elements;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class CyclicAction implements Action {
     public static final String Elements_INFO = "elements_info";
@@ -98,6 +96,8 @@ public class CyclicAction implements Action {
             List<Integer> trace =new ArrayList<Integer>();
             //存储要打印输出的环回路
             List<String> result = new ArrayList<>();
+            //存储要计数并输出的节点名
+            List<String> output_res=new ArrayList<>();
             if(matrix.length>0){
                 findCycle(0,trace,result,elements,matrix);
             }
@@ -105,10 +105,40 @@ public class CyclicAction implements Action {
             if(result.size()==0){
                result.add("no cycle dependence");
             }
-            //打印输出环回路
+          /*  //打印输出环回路
             for (String string : result) {
                 context.Logger().info(string);
+            }*/
+
+
+            //遍历result里存储的每一个元素（也就是一个环），将元素按-切分成子字符串,并存入output_res中
+            for(String string:result){
+                String [] tmp=string.split("-");
+                for(String outp:tmp){
+                    output_res.add(outp);
+                }
             }
+
+            //得到节点出现次数的排序，并打印输出节点名与出现在环中的次数
+            HashMap<String, Integer> map = new HashMap<>();
+            for (int i = 0; i < output_res.size(); i++) {
+                if (map.containsKey(output_res.get(i))) {
+                    int temp = map.get(output_res.get(i));
+                    map.put(output_res.get(i), temp + 1);
+                } else {
+                    map.put(output_res.get(i), 1);
+                }
+            }
+            Set set=map.entrySet();
+            List<Map.Entry<String,Integer>> list=new ArrayList<Map.Entry<String,Integer>>(set);
+            Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+            //输出节点名---出现次数键值对
+            for(Map.Entry<String, Integer> entry : list){
+                String key=entry.getKey();
+                int value=entry.getValue();
+                context.Logger().info(key+"---"+value);
+            }
+
         }
 
         return null;//暂时return null就可以了
