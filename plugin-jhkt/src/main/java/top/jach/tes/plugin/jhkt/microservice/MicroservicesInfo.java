@@ -51,6 +51,32 @@ public class MicroservicesInfo extends ElementsInfo<Microservice> implements Wit
         return microservices;
     }
 
+    public static MicroservicesInfo createInfoByExcludeMicroservice(MicroservicesInfo mInfo, String... excludeNames){
+        MicroservicesInfo microservices = createInfo();
+        microservices.setName(mInfo.getName());
+        microservices.setReposId(mInfo.getReposId())
+                .setRepoName(mInfo.getRepoName())
+                .setVersion(mInfo.getVersion())
+                .setDesc(mInfo.getDesc());
+
+        for (Microservice m :
+                mInfo.getMicroservices()) {
+            boolean exclude = false;
+            for (String name :
+                    excludeNames) {
+                if (StringUtils.isNoneBlank(name) && name.equals(m.getElementName())) {
+                    exclude = true;
+                    System.out.println("Exclude microservice: "+name);
+                    break;
+                }
+            }
+            if(!exclude){
+                microservices.addMicroservice(m);
+            }
+        }
+        return microservices;
+    }
+
     public PairRelationsInfo callRelationsInfoByTopic(){
         PairRelationsInfo pairRelations = PairRelationsInfo.createInfo().setSourceElementsInfo(InfoProfile.createFromInfo(this));
         for (Microservice microservice :

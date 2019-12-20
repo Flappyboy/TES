@@ -84,7 +84,7 @@ public class GitCommitsInfoMongoRepository implements InfoRepository<GitCommitsI
         Map<GeneraInfoMongoRepository.BsonType, Bson> bsonTypeBsonMap = new HashMap<>();
         bsonTypeBsonMap.put(GeneraInfoMongoRepository.BsonType.Filter, bson);
         bsonTypeBsonMap.put(GeneraInfoMongoRepository.BsonType.Projection, Projections.include(
-                "id","createdTime","updatedTime","name", "status", "desc", "reposId", "repoName"
+                "id","createdTime","updatedTime","name", "status", "desc", "reposId", "repoName", "infoClass"
         ));
         return queryProfileByCustom(bsonTypeBsonMap, pageQueryDto);
     }
