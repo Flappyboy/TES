@@ -64,10 +64,11 @@ public class HublinkAction implements Action {
         List<Map.Entry<String,Integer>> list=new ArrayList<Map.Entry<String,Integer>>(set);
         Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
         //输出
+        context.Logger().info("-------Results of hublink AS detecting---------");
         for(Map.Entry<String, Integer> entry : list){
             String key=entry.getKey();
             int value=entry.getValue();
-            context.Logger().info(key+"---"+value);
+            System.out.println(key+"---"+value);
         }
 
         return null;
