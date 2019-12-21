@@ -46,6 +46,7 @@ public class GitCommitsInfoMongoRepository implements InfoRepository<GitCommitsI
 
     @Override
     public GitCommitsInfo saveProfile(GitCommitsInfo info, Long projectId) {
+        infoProfileCollection.deleteMany(Filters.eq("id", info.getId()));
         Document document = Document.parse(JSONObject.toJSONString(info, profilter, DisableCircularReferenceDetect))
                 .append(PROJECT_ID, projectId);
         document.append(COMMIT_SHAS, info.allShas());
@@ -74,8 +75,10 @@ public class GitCommitsInfoMongoRepository implements InfoRepository<GitCommitsI
 
     @Override
     public GitCommitsInfo deleteByInfoId(Long infoId) {
-        infoProfileCollection.deleteMany(Filters.eq(INFO_ID, infoId));
-        return null;
+        List<GitCommitsInfo> infos = queryDetailsByInfoIds(Arrays.asList(infoId));
+        GitCommitsInfo info = infos.size()>0?infos.get(0):null;
+        infoProfileCollection.deleteOne(Filters.eq("id", infoId));
+        return info;
     }
 
     @Override

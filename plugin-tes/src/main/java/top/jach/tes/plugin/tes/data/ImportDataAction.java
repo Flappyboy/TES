@@ -50,19 +50,26 @@ public class ImportDataAction implements Action {
             throw new ActionExecuteFailedException("import dir must be exist and must be directory!");
         }
         SaveInfoAction saveInfoAction = new SaveInfoAction();
-        if(importDir.isDirectory()){
+
+        DefaultOutputInfos result = new DefaultOutputInfos();
+        File dataDir = DataDir.lastDataDir(importDir);
+        if(dataDir.isDirectory()){
             for (File dataFile:
-                    importDir.listFiles()) {
+                    dataDir.listFiles()) {
+                if(!dataFile.getName().endsWith(".json")){
+                    continue;
+                }
                 try {
-                    DefaultOutputInfos result = new DefaultOutputInfos();
                     JSONObject data = JSONObject.parseObject(FileUtils.readFileToString(dataFile, "utf8"));
                     Class infoClass = Class.forName(data.getString("infoClass"));
                     Info info = (Info) data.toJavaObject(infoClass);
+                    context.InfoRepositoryFactory().getRepository(info.getInfoClass()).deleteByInfoId(info.getId());
+                    info.setCreatedTime(System.currentTimeMillis());
+                    info.setUpdatedTime(System.currentTimeMillis());
                     InputInfos tmp = new DefaultInputInfos();
                     result.addInfo(info);
                     tmp.put(String.valueOf(tmp.size()), info);
                     saveInfoAction.execute(tmp, context);
-                    return result;
                 } catch (IOException e) {
                     throw new ActionExecuteFailedException(e);
                 } catch (ClassNotFoundException e) {
@@ -70,6 +77,6 @@ public class ImportDataAction implements Action {
                 }
             }
         }
-        return null;
+        return result;
     }
 }

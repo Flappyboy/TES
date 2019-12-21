@@ -63,11 +63,15 @@ public class ExportDataAction implements Action {
     @Override
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {
         File exportDir = ValueInfo.getValueFromInputInfos(inputInfos, ExportDir, FileInfo.class);
-        File dataDir = getDataDir(exportDir);
+        File dataDir = null;
+        try {
+            dataDir = DataDir.createNewDataFile(exportDir);
+        } catch (IOException e) {
+            throw new ActionExecuteFailedException(e);
+        }
 
         DefaultOutputInfos outputInfos = new DefaultOutputInfos();
-        for (int i = 1; i < 9999; i++) {
-
+        for (int i = 1; i < Integer.MAX_VALUE; i++) {
             Info info = inputInfos.getInfo(InfoPrefix + i, Info.class);
             try {
                 if (info == null) {
@@ -95,18 +99,7 @@ public class ExportDataAction implements Action {
     }
 
     private File getDataDir(File exportDir) throws ActionExecuteFailedException {
-        try {
-            if (exportDir.exists()) {
-                if (!exportDir.isDirectory()) {
-                    FileUtils.forceDelete(exportDir);
-                    exportDir.mkdirs();
-                }
-            } else {
-                exportDir.mkdirs();
-            }
-        } catch (IOException e) {
-            throw new ActionExecuteFailedException("ExportData exportDir error", e);
-        }
+
 
 
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");

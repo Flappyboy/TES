@@ -11,6 +11,9 @@ public class InfoProfile extends Info {
 
     Class<? extends Info> infoClass;
 
+    public InfoProfile() {
+    }
+
     public InfoProfile(Long id, Class<? extends Info> infoClass) {
         this.setId(id);
         this.infoClass = infoClass;
