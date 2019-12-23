@@ -32,9 +32,11 @@ public class GitTreeActionTest {
 
         OutputInfos outputInfos = action.execute(infoProfileMap.toInputInfos(Environment.infoRepositoryFactory),
                 Environment.contextFactory.createContext(Environment.defaultProject));
-        for (Info info :
-                outputInfos.getInfoList()) {
-            System.out.println(info);
+        if(outputInfos!=null) {
+            for (Info info :
+                    outputInfos.getInfoList()) {
+                System.out.println(info);
+            }
         }
     }
 }
