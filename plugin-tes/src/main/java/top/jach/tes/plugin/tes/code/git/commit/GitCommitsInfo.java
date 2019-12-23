@@ -19,6 +19,10 @@ public class GitCommitsInfo extends Info implements WithRepo {
     private Long reposId;
     private String repoName;
 
+    private Long startTime = null;
+
+    private Long endTime = null;
+
     private List<GitCommit> gitCommits = new ArrayList<>();
 
     public static GitCommitsInfo createInfo(Long reposId, String repoName){
@@ -59,6 +63,24 @@ public class GitCommitsInfo extends Info implements WithRepo {
 
     public GitCommitsInfo addGitCommits(GitCommit... gitCommits){
         this.gitCommits.addAll(Arrays.asList(gitCommits));
+        for (GitCommit gitCommit :
+                gitCommits) {
+            Integer time = gitCommit.getCommitTime();
+            if(this.getStartTime() != null) {
+                if (time < this.getStartTime()) {
+                    this.setStartTime(Long.valueOf(time));
+                }
+            }else{
+                this.setStartTime(Long.valueOf(time));
+            }
+            if(this.getEndTime() != null) {
+                if (time > this.getEndTime()) {
+                    this.setEndTime(Long.valueOf(time));
+                }
+            }else{
+                this.setEndTime(Long.valueOf(time));
+            }
+        }
         return this;
     }
 

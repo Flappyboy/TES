@@ -22,10 +22,6 @@ public class GitCommitsForMicroserviceInfo extends GitCommitsInfo implements Wit
 
     private String microserviceName;
 
-    private Long startTime;
-
-    private Long endTime;
-
     private Long commitsCount;
 
     private StatisticDiffFiles statisticDiffFiles;
@@ -65,7 +61,8 @@ public class GitCommitsForMicroserviceInfo extends GitCommitsInfo implements Wit
         info.setStatisticDiffFiles(statisticDiffFiles);
         for (GitCommit commit:
                 gitCommitsInfo.getGitCommits()) {
-            // 用于判断commit是否已经被加入
+
+            // 目前排除了merge
             if (commit.getParentCount()>1){
                 continue;
             }
@@ -100,16 +97,6 @@ public class GitCommitsForMicroserviceInfo extends GitCommitsInfo implements Wit
 
     public GitCommitsForMicroserviceInfo setMicroserviceName(String microserviceName) {
         this.microserviceName = microserviceName;
-        return this;
-    }
-
-    public GitCommitsForMicroserviceInfo setStartTime(Long startTime) {
-        this.startTime = startTime;
-        return this;
-    }
-
-    public GitCommitsForMicroserviceInfo setEndTime(Long endTime) {
-        this.endTime = endTime;
         return this;
     }
 
