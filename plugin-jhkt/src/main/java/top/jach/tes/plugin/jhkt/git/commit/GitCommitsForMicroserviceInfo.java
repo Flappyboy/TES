@@ -72,7 +72,7 @@ public class GitCommitsForMicroserviceInfo extends GitCommitsInfo implements Wit
                 String newPath = diffFile.getNewPath();
                 String oldPath = diffFile.getOldPath();
 
-                if ((newPath !=null && newPath.startsWith(path)) || (oldPath != null && oldPath.startsWith(path))){
+                if (StringUtils.isBlank(path) || "/".equals(path) || (newPath !=null && newPath.startsWith(path)) || (oldPath != null && oldPath.startsWith(path))){
                     if (!tag) {
                         info.addCommit(commit);
                         tag = true;

@@ -11,7 +11,10 @@ import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.action.SaveInfoAction;
 import top.jach.tes.core.impl.domain.info.value.FileInfo;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
+import top.jach.tes.plugin.jhkt.git.commit.GitCommitForMicroserviceAction;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
+import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 import top.jach.tes.plugin.tes.data.ImportDataAction;
 
@@ -55,6 +58,37 @@ public class DataAction implements Action {
         new SaveInfoAction().execute(new DefaultInputInfos().putInfo("1", pairRelationsInfo),context);
 
         // 根据GitCommitsInfo 和 MicroservicesForRepos 统计 各Microservice下的Commits
+        for (Repo repo :
+                reposInfo.getRepos()) {
+            GitCommitsInfo gitCommitsInfo = null;
+            for (Info info :
+                    infos) {
+                if (info instanceof GitCommitsInfo && ((GitCommitsInfo) info).getRepoName().equals(repo.getName())) {
+                    gitCommitsInfo = (GitCommitsInfo) info;
+                    break;
+                }
+            }
+            MicroservicesInfo microservicesInfo = null;
+            for (Info info :
+                    infos) {
+                if (info instanceof MicroservicesInfo && ((MicroservicesInfo) info).getRepoName().equals(repo.getName())) {
+                    microservicesInfo = (MicroservicesInfo) info;
+                    break;
+                }
+            }
+            if(microservicesInfo == null || gitCommitsInfo == null){
+                continue;
+            }
+            InputInfos inputInfosForGitCommitsForMicroservice = new DefaultInputInfos()
+                    .putInfo(GitCommitForMicroserviceAction.MICROSERVICES_INFO, microservicesInfo)
+                    .putInfo(GitCommitForMicroserviceAction.GIT_COMMITS_INFO, gitCommitsInfo);
+            OutputInfos outputInfos = new GitCommitForMicroserviceAction().execute(inputInfosForGitCommitsForMicroservice, context);
+            for (Info info :
+                    outputInfos.getInfoList()) {
+                new SaveInfoAction().execute(new DefaultInputInfos().putInfo("1", info),context);
+            }
+        }
+
 
         // 根据Microservice之间的CallRelation，计算依赖相关的架构异味
 

@@ -20,12 +20,14 @@ import top.jach.tes.core.impl.domain.element.Element;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 public class GitCommit extends Element {
-    public static final String _data_struct_version = "2019-12-18-002";
+    public static final String _data_struct_version = "2019-12-25-001";
     private Long reposId;
     private String repoName;
     private String sha;
@@ -34,6 +36,7 @@ public class GitCommit extends Element {
     private String authorEmail;
     private Integer commitTime;
     private Integer parentCount;
+    private Set<String> parentShas = new HashSet<>();
     private List<DiffFile> diffFiles = new ArrayList<>();
     private StatisticDiffFiles statisticDiffFiles;
 
@@ -54,10 +57,13 @@ public class GitCommit extends Element {
                 commit.getAuthorIdent().getName();
                 commit.getFullMessage();*/
 
-        // 忽略Merge
         if(commit.getParentCount()<=0){
             return gitCommit;
         }
+        for (int i = 0; i < commit.getParentCount(); i++) {
+            gitCommit.getParentShas().add(commit.getParent(i).getName());
+        }
+
         RevCommit parent = commit.getParent(0);
         if(parent == null){
             return gitCommit;
