@@ -15,9 +15,11 @@ import top.jach.tes.core.impl.matching.NToOneMatchingStrategy;
 import top.jach.tes.core.impl.repository.SimpleInfoRepository;
 import top.jach.tes.core.impl.service.DefaultInfoService;
 
+import java.io.File;
 import java.util.Set;
 
 public class Environment {
+    public static File appSpace = new File(System.getProperties().getProperty("user.home")+"/.tes-app");
     public static SimpleInfoRepository simpleInfoRepository = new SimpleInfoRepository();
     public static ILoggerFactory iLoggerFactory = new SimpleLoggerFactory();
     public static InfoRepositoryFactory infoRepositoryFactory;
@@ -26,6 +28,9 @@ public class Environment {
     public static Project defaultProject = Project.createNewProject("Easy", "project for easy");
 
     static {
+        if(!appSpace.exists()){
+            appSpace.mkdirs();
+        }
         infoRepositoryFactory = infoRepositoryFactory();
         contextFactory = new BaseContextFactory(iLoggerFactory, infoRepositoryFactory);
         infoService = new DefaultInfoService(contextFactory);
