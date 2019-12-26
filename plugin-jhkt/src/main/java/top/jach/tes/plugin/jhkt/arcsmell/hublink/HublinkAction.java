@@ -10,6 +10,7 @@ import top.jach.tes.core.api.domain.meta.Meta;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.element.Element;
 import top.jach.tes.core.impl.domain.element.ElementsInfo;
+import top.jach.tes.core.impl.domain.element.ElementsValue;
 import top.jach.tes.core.impl.domain.info.value.StringInfo;
 import top.jach.tes.core.impl.domain.meta.InfoField;
 import top.jach.tes.core.impl.domain.relation.PairRelation;
@@ -64,13 +65,18 @@ public class HublinkAction implements Action {
         List<Map.Entry<String,Integer>> list=new ArrayList<Map.Entry<String,Integer>>(set);
         Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
         //输出
-        context.Logger().info("-------Results of hublink AS detecting---------");
-        for(Map.Entry<String, Integer> entry : list){
+        // context.Logger().info("-------Results of hublink AS detecting---------");
+        /*for(Map.Entry<String, Integer> entry : list){
             String key=entry.getKey();
             int value=entry.getValue();
             System.out.println(key+"---"+value);
+        }*/
+        ElementsValue elementCyclic = ElementsValue.createInfo();
+        for(Map.Entry<String, Integer> entry : list){
+            String key=entry.getKey();
+            int value=entry.getValue();
+            elementCyclic.put(key, (double) value);
         }
-
-        return null;
+        return DefaultOutputInfos.WithSaveFlag(elementCyclic);
     }
 }

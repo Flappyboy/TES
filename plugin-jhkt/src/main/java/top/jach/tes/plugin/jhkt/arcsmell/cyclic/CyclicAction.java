@@ -1,15 +1,19 @@
 package top.jach.tes.plugin.jhkt.arcsmell.cyclic;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.compress.utils.Lists;
 import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.action.DefaultOutputInfos;
 import top.jach.tes.core.api.domain.action.InputInfos;
 import top.jach.tes.core.api.domain.action.OutputInfos;
 import top.jach.tes.core.api.domain.context.Context;
+import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.meta.Meta;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.element.Element;
 import top.jach.tes.core.impl.domain.element.ElementsInfo;
+import top.jach.tes.core.impl.domain.element.ElementsValue;
 import top.jach.tes.core.impl.domain.info.value.StringInfo;
 import top.jach.tes.core.impl.domain.meta.InfoField;
 import top.jach.tes.core.impl.domain.relation.PairRelation;
@@ -153,14 +157,19 @@ public class CyclicAction implements Action {
             List<Map.Entry<String,Integer>> list=new ArrayList<Map.Entry<String,Integer>>(set);
             Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
             //输出节点名---出现次数键值对
-            for(Map.Entry<String, Integer> entry : list){
+            /*for(Map.Entry<String, Integer> entry : list){
                 String key=entry.getKey();
                 int value=entry.getValue();
                 System.out.println("Node"+key+"--appears--"+value+"--times");
+            }*/
+            ElementsValue elementCyclic = ElementsValue.createInfo();
+            for(Map.Entry<String, Integer> entry : list){
+                String key=entry.getKey();
+                int value=entry.getValue();
+                elementCyclic.put(key, (double) value);
             }
-
+            return DefaultOutputInfos.WithSaveFlag(elementCyclic);
         }
-
         return null;//暂时return null就可以了
     }
 }
