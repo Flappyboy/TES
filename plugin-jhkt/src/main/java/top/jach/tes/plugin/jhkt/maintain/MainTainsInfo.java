@@ -157,6 +157,17 @@ public class MainTainsInfo extends Info {
         return this;
     }
 
+    public Map<String, MainTain> nameMainTainMap(){
+        Map<String, MainTain> map = new HashMap<>();
+        for (MainTain mainTain :
+                getMainTainList()) {
+            if(mainTain != null) {
+                map.put(mainTain.getElementName(), mainTain);
+            }
+        }
+        return map;
+    }
+
     public MainTainsInfo setReposId(Long reposId) {
         this.reposId = reposId;
         return this;

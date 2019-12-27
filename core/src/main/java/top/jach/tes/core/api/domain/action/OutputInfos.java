@@ -17,4 +17,14 @@ public interface OutputInfos {
         }
         return infos;
     }
+
+    default <I extends Info> I getFirstByInfoClass(Class<I> infoClass){
+        for (Info info :
+                getInfoList()) {
+            if (info.getClass().equals(infoClass)) {
+                return (I) info;
+            }
+        }
+        return null;
+    }
 }

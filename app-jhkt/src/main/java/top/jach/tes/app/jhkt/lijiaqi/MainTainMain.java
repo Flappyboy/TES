@@ -109,7 +109,8 @@ public class MainTainMain extends DevApp {
                     .append(',')
                     .append('\n')
             ;
-        }SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         format.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         try {
             System.out.println(sb);

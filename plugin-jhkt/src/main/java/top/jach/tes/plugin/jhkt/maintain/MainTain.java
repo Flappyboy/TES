@@ -9,7 +9,6 @@ public class MainTain {
     private Long commitCount;
     private Long commitAddLineCount;
     private Long commitDeleteLineCount;
-
     private Double CommitOverlapRatio;
     private Double CommitFilesetOverlapRatio;
     private Double PairwiseCommitterOverlap;

@@ -4,12 +4,10 @@ import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.app.mock.InfoTool;
 import top.jach.tes.app.mock.InputInfoProfiles;
 import top.jach.tes.app.mock.TaskTool;
-import top.jach.tes.core.api.domain.action.DefaultInputInfos;
-import top.jach.tes.core.impl.domain.action.SaveInfoAction;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
 import top.jach.tes.app.dev.DevApp;
 import top.jach.tes.plugin.jhkt.InfoNameConstant;
-import top.jach.tes.plugin.jhkt.arcsmell.DemoAction;
+import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
 import top.jach.tes.plugin.jhkt.arcsmell.cyclic.CyclicAction;
 import top.jach.tes.plugin.jhkt.arcsmell.hublink.HublinkAction;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
@@ -29,8 +27,8 @@ public class DemoMain extends DevApp {
 
 
         InputInfoProfiles infoProfileMap = InputInfoProfiles.InputInfoProfiles()
-                .addInfoProfile(DemoAction.Elements_INFO, microservices)
-                .addInfoProfile(DemoAction.PAIR_RELATIONS_INFO, pairRelationsInfo)
+                .addInfoProfile(ArcSmellAction.Elements_INFO, microservices)
+                .addInfoProfile(ArcSmellAction.PAIR_RELATIONS_INFO, pairRelationsInfo)
                 ;
 
         Action action = new HublinkAction();
