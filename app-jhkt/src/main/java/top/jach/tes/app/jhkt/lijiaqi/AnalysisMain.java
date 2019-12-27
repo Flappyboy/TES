@@ -1,6 +1,13 @@
 package top.jach.tes.app.jhkt.lijiaqi;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import top.jach.tes.app.dev.DevApp;
 import top.jach.tes.app.mock.Environment;
 import top.jach.tes.app.mock.InfoTool;
@@ -27,6 +34,8 @@ import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 
 import java.beans.Beans;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -79,7 +88,8 @@ public class AnalysisMain extends DevApp {
 
         List<MicroserviceAttrsInfo> microserviceAttrsInfos = microserviceAttrsInfos(microservices, dtssInfo, bugMicroserviceRelations, gitCommitsForMicroserviceInfoMap, arcSmellsInfo);
 
-        exportCSV(microserviceAttrsInfos, new File("F:\\data\\tes\\analysis"));
+        exportCSV(microserviceAttrsInfos, new File("F:\\data\\tes\\analysis\\csv"));
+        exportExcel(microserviceAttrsInfos, new File("F:\\data\\tes\\analysis"));
     }
 
     public static void exportCSV(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -122,8 +132,104 @@ public class AnalysisMain extends DevApp {
         return new String(items);
     }
 
-    public static void exportExcel(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir){
+    public static void exportExcel(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        FileOutputStream outputStream = null;
+        Workbook wb = new XSSFWorkbook();
+        Workbook wb_t_hublink_commitcount = new XSSFWorkbook(); //根据hublink划分两个样本
+        for (MicroserviceAttrsInfo mai :
+                microserviceAttrsInfos) {
+            String version = mai.getVersion();
+            Sheet sheet = wb.createSheet(version);
 
+            Row row = sheet.createRow(0);
+            Field[] fields = MicroserviceAttr.class.getDeclaredFields();
+            for (int i = 0; i < fields.length; i++) {
+                Cell cell = row.createCell(i);
+                cell.setCellValue(fields[i].getName());
+            }
+            List<MicroserviceAttr> mas = mai.getMicroserviceAttrs();
+            for (int i = 0; i < mas.size(); i++) {
+                MicroserviceAttr ma = mas.get(i);
+                Row r = sheet.createRow(i+1);
+                for (int j = 0; j < fields.length; j++) {
+                    Cell cell = r.createCell(j);
+
+                    Method m = ma.getClass().getMethod("get" + getMethodName(fields[j].getName()));
+                    Object val = m.invoke(ma);
+                    if (val != null) {
+                        if(val instanceof Double){
+                            cell.setCellValue((Double)val);
+                        }else if(val instanceof Long){
+                            cell.setCellValue((Long)val);
+                        }else if(val instanceof Integer){
+                            cell.setCellValue((Integer)val);
+                        }else if(val instanceof Float){
+                            cell.setCellValue((Float)val);
+                        }else if(val instanceof Date){
+                            cell.setCellValue((Date)val);
+                        }else {
+                            cell.setCellValue(val.toString());
+                        }
+                    }
+                }
+            }
+
+            // t 检验 hublink commitcount
+            Sheet sheet_t_arc = wb_t_hublink_commitcount.createSheet(version);
+            List<Pair<Long, Long>> pairs = new ArrayList<>();
+            for (MicroserviceAttr ma :
+                    mas) {
+                Long hublink = ma.getHublink();
+                Long commitCount = ma.getCommitCount();
+                if(hublink == null || commitCount == null){
+                    continue;
+                }
+                Pair<Long, Long> pair = Pair.of(hublink, commitCount);
+                pairs.add(pair);
+            }
+            Collections.sort(pairs, (o1, o2) -> {
+                /*if(o1.getLeft() == null && o2.getLeft() == null){
+                    return 0;
+                }
+                if(o1.getLeft()==null){
+                    return -1;
+                }else if(o2.getLeft()==null){
+                    return 1;
+                }*/
+                return o1.getLeft().intValue()-o2.getLeft().intValue();
+            });
+            for (int i = 0; i < pairs.size() / 2; i++) {
+                Row r = sheet_t_arc.getRow(i);
+                if(r==null){
+                    r = sheet_t_arc.createRow(i);
+                }
+                r.createCell(0).setCellValue(pairs.get(i).getRight());
+            }
+            for (int i = pairs.size() / 2; i < pairs.size(); i++) {
+                Row r = sheet_t_arc.getRow(i-pairs.size()/2);
+                if(r==null){
+                    r = sheet_t_arc.createRow(i-pairs.size()/2);
+                }
+                r.createCell(1).setCellValue(pairs.get(i).getRight());
+            }
+        }
+
+        File file = new File(dir.getAbsolutePath()+"/"+"analysis.xlsx");
+        if(file.exists()){
+            FileUtils.forceDelete(file);
+        }
+        file.createNewFile();
+        wb.write(new FileOutputStream(file));
+
+        File file_t_hublink_commitcount = new File(dir.getAbsolutePath()+"/"+"analysis_t_hublink_commitcount.xlsx");
+        if(file_t_hublink_commitcount.exists()){
+            FileUtils.forceDelete(file_t_hublink_commitcount);
+        }
+        file_t_hublink_commitcount.createNewFile();
+        wb_t_hublink_commitcount.write(new FileOutputStream(file_t_hublink_commitcount));
     }
 
     private static List<MicroserviceAttrsInfo> microserviceAttrsInfos(MicroservicesInfo microservices,
