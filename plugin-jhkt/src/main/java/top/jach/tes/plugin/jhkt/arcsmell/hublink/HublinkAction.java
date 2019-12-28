@@ -44,7 +44,7 @@ public class HublinkAction implements Action {
                 InfoField.createField(PAIR_RELATIONS_INFO).setInfoClass(PairRelationsInfo.class)
         );
     }
-    public void cal(List<String> nodes,HashMap<String,Integer> map){
+    public ElementsValue cal(List<String> nodes,HashMap<String,Integer> map){
         for(int i=0;i<nodes.size();i++){
             if (map.containsKey(nodes.get(i))) {
                 int temp2 = map.get(nodes.get(i));
@@ -53,6 +53,16 @@ public class HublinkAction implements Action {
                 map.put(nodes.get(i), 1);
             }
         }
+        Set set=map.entrySet();
+        List<Map.Entry<String,Integer>> list=new ArrayList<Map.Entry<String,Integer>>(set);
+        Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        ElementsValue element=ElementsValue.createInfo();
+        for(Map.Entry<String,Integer> entry:list){
+            String key=entry.getKey();
+            int value=entry.getValue();
+            element.put(key,(double)value);
+        }
+        return element;
     }
 
 //该方法根据元素和元素之间的关系，以此为参数调用方法，输出架构异味
@@ -75,53 +85,9 @@ public class HublinkAction implements Action {
         HashMap<String, Integer> map = new HashMap<>();
         HashMap<String, Integer> sourceMap = new HashMap<>();
         HashMap<String, Integer> endMap = new HashMap<>();
-        cal(nodes,map);
-        cal(sourceNodes,sourceMap);
-        cal(endNodes,endMap);
-
-
-        Set set=map.entrySet();
-        Set s_set=sourceMap.entrySet();
-        Set e_set=endMap.entrySet();
-        List<Map.Entry<String,Integer>> list=new ArrayList<Map.Entry<String,Integer>>(set);
-        Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-        List<Map.Entry<String,Integer>> s_list=new ArrayList<Map.Entry<String,Integer>>(s_set);
-        Collections.sort(s_list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-        List<Map.Entry<String,Integer>> e_list=new ArrayList<Map.Entry<String,Integer>>(e_set);
-        Collections.sort(e_list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-
-        //输出
-    /*    System.out.println("-------Results of hublink AS detecting_depend on others---------");
-        for(Map.Entry<String, Integer> entry : s_list){
-            String key=entry.getKey();
-            int value=entry.getValue();
-            System.out.println(key+"---"+value);
-        }
-        System.out.println("-------Results of hublink AS detecting_others depend on---------");
-        for(Map.Entry<String, Integer> entry : e_list){
-            String key=entry.getKey();
-            int value=entry.getValue();
-            System.out.println(key+"---"+value);
-        }*/
-
-        ElementsValue elementHublink=ElementsValue.createInfo();
-        for(Map.Entry<String,Integer> entry:list){
-            String key=entry.getKey();
-            int value=entry.getValue();
-            elementHublink.put(key,(double)value);
-        }
-        ElementsValue elementHublink_s=ElementsValue.createInfo();
-        for(Map.Entry<String,Integer> entry:e_list){
-            String key=entry.getKey();
-            int value=entry.getValue();
-            elementHublink_s.put(key,(double)value);
-        }
-        ElementsValue elementHublink_e=ElementsValue.createInfo();
-        for(Map.Entry<String,Integer> entry:e_list){
-            String key=entry.getKey();
-            int value=entry.getValue();
-            elementHublink_e.put(key,(double)value);
-        }
+        ElementsValue elementHublink=cal(nodes,map);
+        ElementsValue elementHublink_s=cal(sourceNodes,sourceMap);
+        ElementsValue elementHublink_e=cal(endNodes,endMap);
         return DefaultOutputInfos.WithSaveFlag(elementHublink,elementHublink_s,elementHublink_e);
 
     }
