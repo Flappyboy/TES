@@ -22,8 +22,8 @@ public class HublinkAction implements Action {
     public static final String Elements_INFO = "elements_info";
     public static final String PAIR_RELATIONS_INFO = "PairRelationsInfo";
     public static final String HUBLINK_IN_AND_OUT="hublinkElements";
-    public static final String HUBLINK_IN="hublinkElements_s";
-    public static final String HUBLINK__OUT="hublinkElements_e";
+    public static final String HUBLINK_IN="hublinkElements_e";
+    public static final String HUBLINK__OUT="hublinkElements_s";
 
 
     public static final int MAX_NODE_COUNT = 20;
