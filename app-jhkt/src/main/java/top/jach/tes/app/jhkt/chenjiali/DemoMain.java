@@ -31,9 +31,9 @@ public class DemoMain extends DevApp {
                 .addInfoProfile(ArcSmellAction.PAIR_RELATIONS_INFO, pairRelationsInfo)
                 ;
 
-        Action action = new CyclicAction();
+        Action action = new HublinkAction();
         TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
-        action = new HublinkAction();
+        action = new CyclicAction();
         TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
     }
 }
