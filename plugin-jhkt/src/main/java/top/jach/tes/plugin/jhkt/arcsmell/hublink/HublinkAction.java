@@ -44,7 +44,16 @@ public class HublinkAction implements Action {
                 InfoField.createField(PAIR_RELATIONS_INFO).setInfoClass(PairRelationsInfo.class)
         );
     }
-
+    public void cal(List<String> nodes,HashMap<String,Integer> map){
+        for(int i=0;i<nodes.size();i++){
+            if (map.containsKey(nodes.get(i))) {
+                int temp2 = map.get(nodes.get(i));
+                map.put(nodes.get(i), temp2 + 1);
+            } else {
+                map.put(nodes.get(i), 1);
+            }
+        }
+    }
 
 //该方法根据元素和元素之间的关系，以此为参数调用方法，输出架构异味
     @Override
@@ -66,27 +75,10 @@ public class HublinkAction implements Action {
         HashMap<String, Integer> map = new HashMap<>();
         HashMap<String, Integer> sourceMap = new HashMap<>();
         HashMap<String, Integer> endMap = new HashMap<>();
-        for (int i = 0; i < sourceNodes.size(); i++) {
-            if (map.containsKey(nodes.get(i))) {
-                int temp1 = map.get(nodes.get(i));
-                map.put(nodes.get(i), temp1 + 1);
-            } else {
-                map.put(nodes.get(i), 1);
-            }
-            if (sourceMap.containsKey(sourceNodes.get(i))) {
-                int temp1 = sourceMap.get(sourceNodes.get(i));
-                sourceMap.put(sourceNodes.get(i), temp1 + 1);
-            } else {
-                sourceMap.put(sourceNodes.get(i), 1);
-            }
-            if (endMap.containsKey(endNodes.get(i))) {
-                int temp2 = endMap.get(endNodes.get(i));
-                endMap.put(endNodes.get(i), temp2 + 1);
-            } else {
-                endMap.put(endNodes.get(i), 1);
-            }
+        cal(nodes,map);
+        cal(sourceNodes,sourceMap);
+        cal(endNodes,endMap);
 
-        }
 
         Set set=map.entrySet();
         Set s_set=sourceMap.entrySet();
