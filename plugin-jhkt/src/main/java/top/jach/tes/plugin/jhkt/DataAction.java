@@ -18,7 +18,7 @@ import top.jach.tes.plugin.tes.data.ImportDataAction;
 import java.util.List;
 
 public class DataAction implements Action {
-    public static final String DATA_FILE = "data_file";
+    public static final String DATAS_DIR = "data_file";
     public static final Long DefaultReposId = 10001l;
 
     @Override
@@ -38,21 +38,25 @@ public class DataAction implements Action {
 
     @Override
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {
+        // 导入数据
         List<Info> infos = new ImportDataAction().execute(new DefaultInputInfos().
-                putInfo(ImportDataAction.DATA_FILE, inputInfos.getInfo(DATA_FILE, FileInfo.class)), context).getInfoList();
+                putInfo(ImportDataAction.ImportDir, inputInfos.getInfo(DATAS_DIR, FileInfo.class)), context).getInfoList();
 
         ReposInfo reposInfo = findOne(infos, ReposInfo.class);
-        reposInfo.setId(DefaultReposId);
 
+        // 通过MicroserviceForRepo 统计 整个系统的 MicroservicesForRepos
         MicroservicesInfo microservices = MicroservicesInfo.createInfo(infos.toArray(new Info[infos.size()])).setReposId(reposInfo.getId());
         microservices.setName(InfoNameConstant.MicroservicesForRepos);
-        // TODO 去除重复的microservice
-
         new SaveInfoAction().execute(new DefaultInputInfos().putInfo("1", microservices),context);
 
+        // 根据Microservice的topic，统计出CallRelation
         PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic();
         pairRelationsInfo.setName(InfoNameConstant.MicroserviceCallRelation);
         new SaveInfoAction().execute(new DefaultInputInfos().putInfo("1", pairRelationsInfo),context);
+
+        // 根据GitCommitsInfo 和 MicroservicesForRepos 统计 各Microservice下的Commits
+
+        // 根据Microservice之间的CallRelation，计算依赖相关的架构异味
 
         return null;
     }
