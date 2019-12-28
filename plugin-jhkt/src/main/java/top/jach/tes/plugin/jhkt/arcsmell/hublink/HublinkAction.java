@@ -44,7 +44,7 @@ public class HublinkAction implements Action {
                 InfoField.createField(PAIR_RELATIONS_INFO).setInfoClass(PairRelationsInfo.class)
         );
     }
-    //计算每个节点在各个集合中出现次数+排序+输出
+    //计算每个节点在各个集合中出现次数+排序+输出所有步骤抽取成一个方法
     public ElementsValue cal(List<String> nodes,HashMap<String,Integer> map,String flag){
         for(int i=0;i<nodes.size();i++){
             if (map.containsKey(nodes.get(i))) {
