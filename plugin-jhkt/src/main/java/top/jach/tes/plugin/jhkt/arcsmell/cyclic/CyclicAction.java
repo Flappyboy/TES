@@ -98,7 +98,7 @@ public class CyclicAction implements Action {
             //存储要打印输出的环回路
             List<String> result = new ArrayList<>();
             //存储要计数并输出的节点名
-            List<HashSet<String>> quch=new ArrayList<HashSet<String>>();//最终输出里面那层String加上-
+            List<HashSet<String>> quch=new ArrayList<HashSet<String>>();//泛型。最终输出里面那层String加上-
             List<String> output_res=new ArrayList<>();
             //存储要去重的环回路
             List<List<String>> huans=new ArrayList<List<String>>();
