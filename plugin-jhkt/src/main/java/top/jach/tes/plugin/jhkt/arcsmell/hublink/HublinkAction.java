@@ -44,7 +44,7 @@ public class HublinkAction implements Action {
                 InfoField.createField(PAIR_RELATIONS_INFO).setInfoClass(PairRelationsInfo.class)
         );
     }
-    public ElementsValue cal(List<String> nodes,HashMap<String,Integer> map){
+    public ElementsValue cal(List<String> nodes,HashMap<String,Integer> map,String flag){
         for(int i=0;i<nodes.size();i++){
             if (map.containsKey(nodes.get(i))) {
                 int temp2 = map.get(nodes.get(i));
@@ -57,6 +57,7 @@ public class HublinkAction implements Action {
         List<Map.Entry<String,Integer>> list=new ArrayList<Map.Entry<String,Integer>>(set);
         Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
         ElementsValue element=ElementsValue.createInfo();
+        element.setName(flag);
         for(Map.Entry<String,Integer> entry:list){
             String key=entry.getKey();
             int value=entry.getValue();
@@ -85,9 +86,9 @@ public class HublinkAction implements Action {
         HashMap<String, Integer> map = new HashMap<>();
         HashMap<String, Integer> sourceMap = new HashMap<>();
         HashMap<String, Integer> endMap = new HashMap<>();
-        ElementsValue elementHublink=cal(nodes,map);
-        ElementsValue elementHublink_s=cal(sourceNodes,sourceMap);
-        ElementsValue elementHublink_e=cal(endNodes,endMap);
+        ElementsValue elementHublink=cal(nodes,map,HUBLINK_IN_AND_OUT);
+        ElementsValue elementHublink_s=cal(sourceNodes,sourceMap,HUBLINK__OUT);
+        ElementsValue elementHublink_e=cal(endNodes,endMap,HUBLINK_IN);
         return DefaultOutputInfos.WithSaveFlag(elementHublink,elementHublink_s,elementHublink_e);
 
     }
