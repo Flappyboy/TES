@@ -7,5 +7,7 @@ import lombok.Setter;
 @Getter
 public class ArcSmell {
     Long hublink;
+    Long hublinkForIn;
+    Long hublinkForOut;
     Long cyclic;
 }

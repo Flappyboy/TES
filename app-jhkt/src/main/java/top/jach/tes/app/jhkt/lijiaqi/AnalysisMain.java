@@ -139,6 +139,7 @@ public class AnalysisMain extends DevApp {
         FileOutputStream outputStream = null;
         Workbook wb = new XSSFWorkbook();
         Workbook wb_t_hublink_commitcount = new XSSFWorkbook(); //根据hublink划分两个样本
+        Workbook wb_t_commitcount_hublink = new XSSFWorkbook(); //根据commitCount划分两个样本
         for (MicroserviceAttrsInfo mai :
                 microserviceAttrsInfos) {
             String version = mai.getVersion();
@@ -190,17 +191,7 @@ public class AnalysisMain extends DevApp {
                 Pair<Long, Long> pair = Pair.of(hublink, commitCount);
                 pairs.add(pair);
             }
-            Collections.sort(pairs, (o1, o2) -> {
-                /*if(o1.getLeft() == null && o2.getLeft() == null){
-                    return 0;
-                }
-                if(o1.getLeft()==null){
-                    return -1;
-                }else if(o2.getLeft()==null){
-                    return 1;
-                }*/
-                return o1.getLeft().intValue()-o2.getLeft().intValue();
-            });
+            Collections.sort(pairs, Comparator.comparingInt(o -> o.getLeft().intValue()));
             for (int i = 0; i < pairs.size() / 2; i++) {
                 Row r = sheet_t_arc.getRow(i);
                 if(r==null){
@@ -214,6 +205,25 @@ public class AnalysisMain extends DevApp {
                     r = sheet_t_arc.createRow(i-pairs.size()/2);
                 }
                 r.createCell(1).setCellValue(pairs.get(i).getRight());
+            }
+
+
+            // t 检验  commitcount hublink
+            Sheet sheet_t_commitcount = wb_t_commitcount_hublink.createSheet(version);
+            Collections.sort(pairs, Comparator.comparingInt(o -> o.getRight().intValue()));
+            for (int i = 0; i < pairs.size() / 2; i++) {
+                Row r = sheet_t_commitcount.getRow(i);
+                if(r==null){
+                    r = sheet_t_commitcount.createRow(i);
+                }
+                r.createCell(0).setCellValue(pairs.get(i).getLeft());
+            }
+            for (int i = pairs.size() / 2; i < pairs.size(); i++) {
+                Row r = sheet_t_commitcount.getRow(i-pairs.size()/2);
+                if(r==null){
+                    r = sheet_t_commitcount.createRow(i-pairs.size()/2);
+                }
+                r.createCell(1).setCellValue(pairs.get(i).getLeft());
             }
         }
 
@@ -230,6 +240,13 @@ public class AnalysisMain extends DevApp {
         }
         file_t_hublink_commitcount.createNewFile();
         wb_t_hublink_commitcount.write(new FileOutputStream(file_t_hublink_commitcount));
+
+        File file_t_commitcount_hublink = new File(dir.getAbsolutePath()+"/"+"analysis_t_commitcount_hublink.xlsx");
+        if(file_t_commitcount_hublink.exists()){
+            FileUtils.forceDelete(file_t_commitcount_hublink);
+        }
+        file_t_commitcount_hublink.createNewFile();
+        wb_t_commitcount_hublink.write(new FileOutputStream(file_t_commitcount_hublink));
     }
 
     private static List<MicroserviceAttrsInfo> microserviceAttrsInfos(MicroservicesInfo microservices,
@@ -273,6 +290,8 @@ public class AnalysisMain extends DevApp {
                     ArcSmell arcSmell = arcSmellsInfo.find(name);
                     Long cyclic = arcSmell.getCyclic();
                     Long hublink = arcSmell.getHublink();
+                    Long hublinkForIn = arcSmell.getHublinkForIn();
+                    Long hublinkForOut = arcSmell.getHublinkForOut();
 
                     MainTain mainTain = map.get(name);
                     Long bugCount = mainTain.getBugCount();
@@ -291,6 +310,8 @@ public class AnalysisMain extends DevApp {
                             .setSubTopicCount(subTopicCount)
                             .setCyclic(cyclic==null?0:cyclic)
                             .setHublink(hublink==null?0:hublink)
+                            .setHublinkForIn(hublinkForIn==null?0:hublinkForIn)
+                            .setHublinkForOut(hublinkForOut==null?0:hublinkForOut)
                             .setBugCount(bugCount)
                             .setCommitCount(commitCount)
                             .setCommitAddLineCount(commitAddLineCount)

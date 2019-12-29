@@ -16,6 +16,8 @@ public class MicroserviceAttr {
     int subTopicCount;
     Long cyclic;
     Long hublink;
+    Long hublinkForIn;
+    Long hublinkForOut;
     Long bugCount;
     Long commitCount;
     Long commitAddLineCount;
@@ -26,6 +28,16 @@ public class MicroserviceAttr {
 
     public MicroserviceAttr setMicroserviceName(String microserviceName) {
         this.microserviceName = microserviceName;
+        return this;
+    }
+
+    public MicroserviceAttr setHublinkForIn(Long hublinkForIn) {
+        this.hublinkForIn = hublinkForIn;
+        return this;
+    }
+
+    public MicroserviceAttr setHublinkForOut(Long hublinkForOut) {
+        this.hublinkForOut = hublinkForOut;
         return this;
     }
 

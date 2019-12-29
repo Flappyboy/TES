@@ -27,4 +27,14 @@ public interface OutputInfos {
         }
         return null;
     }
+
+    default <I extends Info> I getFirstByInfoClassAndName(Class<I> infoClass, String infoName){
+        for (Info info :
+                getInfoList()) {
+            if (info.getClass().equals(infoClass) && infoName.equals(info.getName())) {
+                return (I) info;
+            }
+        }
+        return null;
+    }
 }

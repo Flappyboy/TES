@@ -58,13 +58,12 @@ public class ArcSmellAction implements Action {
         inputInfos.put(HublinkAction.Elements_INFO, elementsInfo);
         inputInfos.put(HublinkAction.PAIR_RELATIONS_INFO, pairRelationsInfo);
         outputInfos = hublinkAction.execute(inputInfos, context);
-        ElementsValue hublinkSmells = outputInfos.getFirstByInfoClass(ElementsValue.class);
-
-        Map<String, Double> cyclicSmellValues = cyclicSmells.getValueMap();
-        Map<String, Double> hublinkSmellValues = hublinkSmells.getValueMap();
+        ElementsValue hublinkSmells = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK_IN_AND_OUT);
+        ElementsValue hublinkSmellsForIn = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK_IN);
+        ElementsValue hublinkSmellsForOut = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK_OUT);
 
         for (Map.Entry<String, Double> entry:
-                cyclicSmellValues.entrySet()) {
+                cyclicSmells.getValueMap().entrySet()) {
             ArcSmell arcSmell = arcSmellsInfo.find(entry.getKey());
             if(arcSmell == null){
                 arcSmell = new ArcSmell();
@@ -73,13 +72,31 @@ public class ArcSmellAction implements Action {
             arcSmell.setCyclic(entry.getValue().longValue());
         }
         for (Map.Entry<String, Double> entry:
-                hublinkSmellValues.entrySet()) {
+                hublinkSmells.getValueMap().entrySet()) {
             ArcSmell arcSmell = arcSmellsInfo.find(entry.getKey());
             if(arcSmell == null){
                 arcSmell = new ArcSmell();
                 arcSmellsInfo.put(entry.getKey(), arcSmell);
             }
             arcSmell.setHublink(entry.getValue().longValue());
+        }
+        for (Map.Entry<String, Double> entry:
+                hublinkSmellsForIn.getValueMap().entrySet()) {
+            ArcSmell arcSmell = arcSmellsInfo.find(entry.getKey());
+            if(arcSmell == null){
+                arcSmell = new ArcSmell();
+                arcSmellsInfo.put(entry.getKey(), arcSmell);
+            }
+            arcSmell.setHublinkForIn(entry.getValue().longValue());
+        }
+        for (Map.Entry<String, Double> entry:
+                hublinkSmellsForOut.getValueMap().entrySet()) {
+            ArcSmell arcSmell = arcSmellsInfo.find(entry.getKey());
+            if(arcSmell == null){
+                arcSmell = new ArcSmell();
+                arcSmellsInfo.put(entry.getKey(), arcSmell);
+            }
+            arcSmell.setHublinkForOut(entry.getValue().longValue());
         }
         return DefaultOutputInfos.WithSaveFlag(arcSmellsInfo);
     }

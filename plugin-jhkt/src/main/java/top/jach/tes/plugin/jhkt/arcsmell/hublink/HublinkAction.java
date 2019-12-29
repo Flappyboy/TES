@@ -23,7 +23,7 @@ public class HublinkAction implements Action {
     public static final String PAIR_RELATIONS_INFO = "PairRelationsInfo";
     public static final String HUBLINK_IN_AND_OUT="hublinkElements";
     public static final String HUBLINK_IN="hublinkElements_s";
-    public static final String HUBLINK__OUT="hublinkElements_e";
+    public static final String HUBLINK_OUT="hublinkElements_e";
 
 
     public static final int MAX_NODE_COUNT = 20;
@@ -66,27 +66,31 @@ public class HublinkAction implements Action {
         HashMap<String, Integer> map = new HashMap<>();
         HashMap<String, Integer> sourceMap = new HashMap<>();
         HashMap<String, Integer> endMap = new HashMap<>();
-        for (int i = 0; i < sourceNodes.size(); i++) {
+        for (int i = 0; i < nodes.size(); i++) {
             if (map.containsKey(nodes.get(i))) {
                 int temp1 = map.get(nodes.get(i));
                 map.put(nodes.get(i), temp1 + 1);
             } else {
                 map.put(nodes.get(i), 1);
             }
-            if (sourceMap.containsKey(sourceNodes.get(i))) {
-                int temp1 = sourceMap.get(sourceNodes.get(i));
-                sourceMap.put(sourceNodes.get(i), temp1 + 1);
-            } else {
-                sourceMap.put(sourceNodes.get(i), 1);
+            if(i<sourceNodes.size()) {
+                if (sourceMap.containsKey(sourceNodes.get(i))) {
+                    int temp1 = sourceMap.get(sourceNodes.get(i));
+                    sourceMap.put(sourceNodes.get(i), temp1 + 1);
+                } else {
+                    sourceMap.put(sourceNodes.get(i), 1);
+                }
             }
-            if (endMap.containsKey(endNodes.get(i))) {
-                int temp2 = endMap.get(endNodes.get(i));
-                endMap.put(endNodes.get(i), temp2 + 1);
-            } else {
-                endMap.put(endNodes.get(i), 1);
+            if(i<endNodes.size()) {
+                if (endMap.containsKey(endNodes.get(i))) {
+                    int temp2 = endMap.get(endNodes.get(i));
+                    endMap.put(endNodes.get(i), temp2 + 1);
+                } else {
+                    endMap.put(endNodes.get(i), 1);
+                }
             }
-
         }
+
 
         Set set=map.entrySet();
         Set s_set=sourceMap.entrySet();
@@ -113,18 +117,21 @@ public class HublinkAction implements Action {
         }*/
 
         ElementsValue elementHublink=ElementsValue.createInfo();
+        elementHublink.setName(HUBLINK_IN_AND_OUT);
         for(Map.Entry<String,Integer> entry:list){
             String key=entry.getKey();
             int value=entry.getValue();
             elementHublink.put(key,(double)value);
         }
         ElementsValue elementHublink_s=ElementsValue.createInfo();
-        for(Map.Entry<String,Integer> entry:e_list){
+        elementHublink_s.setName(HUBLINK_IN);
+        for(Map.Entry<String,Integer> entry:s_list){
             String key=entry.getKey();
             int value=entry.getValue();
             elementHublink_s.put(key,(double)value);
         }
         ElementsValue elementHublink_e=ElementsValue.createInfo();
+        elementHublink_e.setName(HUBLINK_OUT);
         for(Map.Entry<String,Integer> entry:e_list){
             String key=entry.getKey();
             int value=entry.getValue();
