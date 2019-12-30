@@ -136,10 +136,16 @@ public class AnalysisMain extends DevApp {
         if(!dir.exists()){
             dir.mkdirs();
         }
-        FileOutputStream outputStream = null;
+        exportExcelBase(microserviceAttrsInfos, dir);
+        exportExcelForTCommitcountHubLink(microserviceAttrsInfos, dir);
+        exportExcelForTHubLinkCommitcount(microserviceAttrsInfos, dir);
+        exportExcelForTHubLinkPair(microserviceAttrsInfos, dir);
+
+    }
+
+    private static void exportExcelBase(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir)throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
         Workbook wb = new XSSFWorkbook();
-        Workbook wb_t_hublink_commitcount = new XSSFWorkbook(); //根据hublink划分两个样本
-        Workbook wb_t_commitcount_hublink = new XSSFWorkbook(); //根据commitCount划分两个样本
+
         for (MicroserviceAttrsInfo mai :
                 microserviceAttrsInfos) {
             String version = mai.getVersion();
@@ -154,35 +160,48 @@ public class AnalysisMain extends DevApp {
             List<MicroserviceAttr> mas = mai.getMicroserviceAttrs();
             for (int i = 0; i < mas.size(); i++) {
                 MicroserviceAttr ma = mas.get(i);
-                Row r = sheet.createRow(i+1);
+                Row r = sheet.createRow(i + 1);
                 for (int j = 0; j < fields.length; j++) {
                     Cell cell = r.createCell(j);
 
                     Method m = ma.getClass().getMethod("get" + getMethodName(fields[j].getName()));
                     Object val = m.invoke(ma);
                     if (val != null) {
-                        if(val instanceof Double){
-                            cell.setCellValue((Double)val);
-                        }else if(val instanceof Long){
-                            cell.setCellValue((Long)val);
-                        }else if(val instanceof Integer){
-                            cell.setCellValue((Integer)val);
-                        }else if(val instanceof Float){
-                            cell.setCellValue((Float)val);
-                        }else if(val instanceof Date){
-                            cell.setCellValue((Date)val);
-                        }else {
+                        if (val instanceof Double) {
+                            cell.setCellValue((Double) val);
+                        } else if (val instanceof Long) {
+                            cell.setCellValue((Long) val);
+                        } else if (val instanceof Integer) {
+                            cell.setCellValue((Integer) val);
+                        } else if (val instanceof Float) {
+                            cell.setCellValue((Float) val);
+                        } else if (val instanceof Date) {
+                            cell.setCellValue((Date) val);
+                        } else {
                             cell.setCellValue(val.toString());
                         }
                     }
                 }
             }
+        }
+        File file = new File(dir.getAbsolutePath()+"/"+"analysis.xlsx");
+        if(file.exists()){
+            FileUtils.forceDelete(file);
+        }
+        file.createNewFile();
+        wb.write(new FileOutputStream(file));
+    }
 
+    private static void exportExcelForTCommitcountHubLink(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir)
+            throws IOException {
+        Workbook wb_t_hublink_commitcount = new XSSFWorkbook(); //根据hublink划分两个样本
+        for (MicroserviceAttrsInfo mai :
+                microserviceAttrsInfos) {
             // t 检验 hublink commitcount
-            Sheet sheet_t_arc = wb_t_hublink_commitcount.createSheet(version);
+            Sheet sheet_t_arc = wb_t_hublink_commitcount.createSheet(mai.getVersion());
             List<Pair<Long, Long>> pairs = new ArrayList<>();
             for (MicroserviceAttr ma :
-                    mas) {
+                    mai.getMicroserviceAttrs()) {
                 Long hublink = ma.getHublink();
                 Long commitCount = ma.getCommitCount();
                 if(hublink == null || commitCount == null){
@@ -206,10 +225,33 @@ public class AnalysisMain extends DevApp {
                 }
                 r.createCell(1).setCellValue(pairs.get(i).getRight());
             }
+        }
+        File file_t_hublink_commitcount = new File(dir.getAbsolutePath()+"/"+"analysis_t_hublink_commitcount.xlsx");
+        if(file_t_hublink_commitcount.exists()){
+            FileUtils.forceDelete(file_t_hublink_commitcount);
+        }
+        file_t_hublink_commitcount.createNewFile();
+        wb_t_hublink_commitcount.write(new FileOutputStream(file_t_hublink_commitcount));
+    }
 
-
+    private static void exportExcelForTHubLinkCommitcount(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir)
+            throws IOException {
+        Workbook wb_t_commitcount_hublink = new XSSFWorkbook(); //根据commitCount划分两个样本
+        for (MicroserviceAttrsInfo mai :
+                microserviceAttrsInfos) {
             // t 检验  commitcount hublink
-            Sheet sheet_t_commitcount = wb_t_commitcount_hublink.createSheet(version);
+            List<Pair<Long, Long>> pairs = new ArrayList<>();
+            for (MicroserviceAttr ma :
+                    mai.getMicroserviceAttrs()) {
+                Long hublink = ma.getHublink();
+                Long commitCount = ma.getCommitCount();
+                if(hublink == null || commitCount == null){
+                    continue;
+                }
+                Pair<Long, Long> pair = Pair.of(hublink, commitCount);
+                pairs.add(pair);
+            }
+            Sheet sheet_t_commitcount = wb_t_commitcount_hublink.createSheet(mai.getVersion());
             Collections.sort(pairs, Comparator.comparingInt(o -> o.getRight().intValue()));
             for (int i = 0; i < pairs.size() / 2; i++) {
                 Row r = sheet_t_commitcount.getRow(i);
@@ -226,27 +268,54 @@ public class AnalysisMain extends DevApp {
                 r.createCell(1).setCellValue(pairs.get(i).getLeft());
             }
         }
-
-        File file = new File(dir.getAbsolutePath()+"/"+"analysis.xlsx");
-        if(file.exists()){
-            FileUtils.forceDelete(file);
-        }
-        file.createNewFile();
-        wb.write(new FileOutputStream(file));
-
-        File file_t_hublink_commitcount = new File(dir.getAbsolutePath()+"/"+"analysis_t_hublink_commitcount.xlsx");
-        if(file_t_hublink_commitcount.exists()){
-            FileUtils.forceDelete(file_t_hublink_commitcount);
-        }
-        file_t_hublink_commitcount.createNewFile();
-        wb_t_hublink_commitcount.write(new FileOutputStream(file_t_hublink_commitcount));
-
         File file_t_commitcount_hublink = new File(dir.getAbsolutePath()+"/"+"analysis_t_commitcount_hublink.xlsx");
         if(file_t_commitcount_hublink.exists()){
             FileUtils.forceDelete(file_t_commitcount_hublink);
         }
         file_t_commitcount_hublink.createNewFile();
         wb_t_commitcount_hublink.write(new FileOutputStream(file_t_commitcount_hublink));
+    }
+
+    private static void exportExcelForTHubLinkPair(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir)
+            throws IOException {
+        Workbook wb = new XSSFWorkbook(); //根据commitCount划分两个样本
+        for (MicroserviceAttrsInfo mai :
+                microserviceAttrsInfos) {
+            // t 检验  hublink PairwiseCommitterOverlap
+            List<Pair<Long, Double>> pairs = new ArrayList<>();
+            for (MicroserviceAttr ma :
+                    mai.getMicroserviceAttrs()) {
+                Long hublink = ma.getHublink();
+                Double pairwise = ma.getPairwiseCommitterOverlap();
+                if(hublink == null || pairwise == null){
+                    continue;
+                }
+                Pair<Long, Double> pair = Pair.of(hublink, pairwise);
+                pairs.add(pair);
+            }
+            Sheet sheet = wb.createSheet(mai.getVersion());
+            Collections.sort(pairs, Comparator.comparingInt(o -> o.getLeft().intValue()));
+            for (int i = 0; i < pairs.size() / 2; i++) {
+                Row r = sheet.getRow(i);
+                if(r==null){
+                    r = sheet.createRow(i);
+                }
+                r.createCell(0).setCellValue(pairs.get(i).getRight());
+            }
+            for (int i = pairs.size() / 2; i < pairs.size(); i++) {
+                Row r = sheet.getRow(i-pairs.size()/2);
+                if(r==null){
+                    r = sheet.createRow(i-pairs.size()/2);
+                }
+                r.createCell(1).setCellValue(pairs.get(i).getRight());
+            }
+        }
+        File file = new File(dir.getAbsolutePath()+"/"+"analysis_t_hublink_pairwiseCommitterOverlap.xlsx");
+        if(file.exists()){
+            FileUtils.forceDelete(file);
+        }
+        file.createNewFile();
+        wb.write(new FileOutputStream(file));
     }
 
     private static List<MicroserviceAttrsInfo> microserviceAttrsInfos(MicroservicesInfo microservices,
@@ -262,9 +331,9 @@ public class AnalysisMain extends DevApp {
             int d = ds[di];
             for (int i = 0; i+d < 7; i++) {
                 Calendar start = Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai"));
-                start.set(2019, 5+i, 1);
+                start.set(2019, 5+i, 1,0,0,0);
                 Calendar end = Calendar.getInstance(TimeZone.getTimeZone("Asia/Shanghai"));
-                end.set(2019, 5+i+d, 1);
+                end.set(2019, 5+i+d, 1,0,0,0);
 
                 MainTainsInfo mainTainsInfo = MainTainsInfo.createInfo(DataAction.DefaultReposId,
                         microservices,

@@ -60,7 +60,7 @@ public class ArcSmellAction implements Action {
         outputInfos = hublinkAction.execute(inputInfos, context);
         ElementsValue hublinkSmells = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK_IN_AND_OUT);
         ElementsValue hublinkSmellsForIn = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK_IN);
-        ElementsValue hublinkSmellsForOut = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK_OUT);
+        ElementsValue hublinkSmellsForOut = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK__OUT);
 
         for (Map.Entry<String, Double> entry:
                 cyclicSmells.getValueMap().entrySet()) {
