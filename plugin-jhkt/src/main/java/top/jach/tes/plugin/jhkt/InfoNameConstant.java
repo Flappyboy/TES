@@ -13,6 +13,7 @@ public interface InfoNameConstant {
     String TargetSystem = "TargetSystem";
     String GitTreeInfoForRepo = GitTreeAction.GitTreeInfoName;
     String GitCommitsForRepo = "GitCommitsForRepo";
+    String GitCommitsForRepoForVersion = "GitCommitsForRepoForVersion";
     String GitCommitsForMicroservice = "GitCommitsForMicroservice";
 
     String MicroserviceCallRelation = "MicroserviceCallRelation";
