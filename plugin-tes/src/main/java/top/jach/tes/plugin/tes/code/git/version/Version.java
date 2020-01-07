@@ -7,6 +7,7 @@ import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class Version {
     private String sha;
     private Map<String, String> repoShaMap = new HashMap<>();
 
-    public static Version VersionFromTag(ReposInfo reposInfo, Repo.RepoToGit repoToGit, String tag) throws GitAPIException {
+    public static Version VersionFromTag(ReposInfo reposInfo, Repo.RepoToGit repoToGit, String tag) throws GitAPIException, IOException {
         Version info = new Version();
         info.setTag(tag);
         for (Repo repo: reposInfo.getRepos()) {

@@ -2,6 +2,8 @@ package top.jach.tes.plugin.tes.code.repo;
 
 import org.eclipse.jgit.api.Git;
 
+import java.io.IOException;
+
 public class Repo {
     String name;
 
@@ -26,6 +28,6 @@ public class Repo {
     }
 
     public interface RepoToGit{
-        Git repoToGit(Repo repo);
+        Git repoToGit(Repo repo) throws IOException;
     }
 }
