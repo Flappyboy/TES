@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VersionsInfo extends Info {
+    public static final String INFO_NAME = "VersionsInfo";
     private Long reposId;
     private List<Version> versions = new ArrayList<>();
 
