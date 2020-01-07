@@ -42,14 +42,18 @@ public class MainTainsInfo extends Info {
                 .setStartTime(startTime)
                 .setEndTime(endTime);
         List<Dts> dtss = dtssInfo.getBugs();
+
+        // 建立问题单的Name和问题单的映射，方便用Name查找问题单
         Map<String, Dts> nameDtsMap = new HashMap<>();
         for (Dts dts:dtss) {
             nameDtsMap.put(dts.getName(), dts);
         }
+        // 遍历微服务，求每个微服务下的维护相关的指标
         for (Microservice microservice:
               microservicesInfo) {
             MainTain mainTain = new MainTain();
             mainTain.setElementName(microservice.getElementName());
+            // 每个微服务下的bug数
             long dtsCount = 0;
             for (PairRelation relation :
                     bugAndMicroserviceRelations.getRelations()) {
@@ -60,6 +64,7 @@ public class MainTainsInfo extends Info {
                 dtsCount++;
             }
             mainTain.setBugCount(dtsCount);
+
             GitCommitsForMicroserviceInfo gitCommitsForMicroserviceInfo = gitCommitsForMicroserviceInfoMap.get(microservice.getElementName());
             if (gitCommitsForMicroserviceInfo != null){
                 List<GitCommit> gitCommits = gitCommitsForMicroserviceInfo.getGitCommits();
