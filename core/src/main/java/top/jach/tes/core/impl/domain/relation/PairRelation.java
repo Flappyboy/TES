@@ -1,7 +1,9 @@
 package top.jach.tes.core.impl.domain.relation;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class PairRelation extends Relation{
     String sourceName;

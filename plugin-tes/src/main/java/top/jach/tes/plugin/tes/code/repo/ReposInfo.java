@@ -4,6 +4,7 @@ import top.jach.tes.core.api.domain.info.Info;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ReposInfo extends Info {
     private List<Repo> repos = new ArrayList<>();
@@ -18,6 +19,18 @@ public class ReposInfo extends Info {
         repos.add(repo);
         return this;
     }
+
+    public List<Repo> reposFromNames(Set<String> names) {
+        List<Repo> repos = new ArrayList<>();
+        for (Repo repo :
+                this.getRepos()) {
+            if (names.contains(repo.getName())) {
+                repos.add(repo);
+            }
+        }
+        return repos;
+    }
+
 
     public List<Repo> getRepos() {
         return repos;

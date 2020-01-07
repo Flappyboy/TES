@@ -1,5 +1,7 @@
 package top.jach.tes.plugin.tes.code.repo;
 
+import org.eclipse.jgit.api.Git;
+
 public class Repo {
     String name;
 
@@ -21,5 +23,9 @@ public class Repo {
     public Repo setRemoteUrl(String remoteUrl) {
         this.remoteUrl = remoteUrl;
         return this;
+    }
+
+    public interface RepoToGit{
+        Git repoToGit(Repo repo);
     }
 }
