@@ -24,3 +24,15 @@
             - data_v20191221001
                - xxx_xxx.json
                - xxx_xxx.json
+# 开发流程
+- 下载代码、更新代码仓
+    - git clone https://github.com/Flappyboy/TES.git
+    - git pull
+- 拉取自己的分支，分支名规则： 姓名的拼音/xxx
+    - git checkout -b 姓名的拼音/xxx
+- 提交自己的修改
+    - git add .
+    - git commit -m 'xxx'
+    - git push -u origin
+- 合并回master分支
+    - 在github上发起 pull request
