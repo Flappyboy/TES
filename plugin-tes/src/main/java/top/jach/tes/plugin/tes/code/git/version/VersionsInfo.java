@@ -1,5 +1,6 @@
 package top.jach.tes.plugin.tes.code.git.version;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.plugin.tes.code.repo.Repo;
@@ -23,6 +24,18 @@ public class VersionsInfo extends Info {
             info.addVersion(version);
         }
         return info;
+    }
+
+    public List<String> shasForRepo(String repoName){
+        List<String> shas = new ArrayList<>();
+        for (Version version :
+                versions) {
+            String sha = version.getRepoShaMap().get(repoName);
+            if(StringUtils.isNoneBlank(sha)){
+                shas.add(sha);
+            }
+        }
+        return shas;
     }
 
     public VersionsInfo addVersion(Version version){
