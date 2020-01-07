@@ -7,7 +7,6 @@ import java.util.List;
 
 @Data
 public class StatisticDiffFiles {
-
     private Long modifyFileCount = 0l;
     private Long addFileCount = 0l;
     private Long deleteFileCount = 0l;
@@ -28,31 +27,43 @@ public class StatisticDiffFiles {
         return statisticDiffFiles;
     }
 
-    public StatisticDiffFiles addDiffFiles(DiffFile diffFile){
-        if (diffFile == null){
-            return this;
+    public StatisticDiffFiles addDiffFiles(List<DiffFile> diffFiles){
+        for (DiffFile diffFile :
+                diffFiles) {
+            if(diffFile != null){
+                addDiffFiles(diffFile);
+            }
         }
-        DiffEntry.ChangeType changeType = DiffEntry.ChangeType.valueOf(diffFile.getChangeType());
-        switch (changeType){
-            case ADD:
-                addFileCount++;
-                break;
-            case DELETE:
-                deleteFileCount++;
-                break;
-            case MODIFY:
-                modifyFileCount++;
-                break;
-            case RENAME:
-                renameFileCount++;
-                break;
-            case COPY:
-                copyFileCount++;
-                break;
-        }
-        addSize += diffFile.getAddSize();
-        subSize += diffFile.getSubSize();
+        return this;
+    }
 
+    public StatisticDiffFiles addDiffFiles(DiffFile... diffFiles){
+        for (DiffFile diffFile :
+                diffFiles) {
+            if(diffFile == null){
+                continue;
+            }
+            DiffEntry.ChangeType changeType = DiffEntry.ChangeType.valueOf(diffFile.getChangeType());
+            switch (changeType){
+                case ADD:
+                    addFileCount++;
+                    break;
+                case DELETE:
+                    deleteFileCount++;
+                    break;
+                case MODIFY:
+                    modifyFileCount++;
+                    break;
+                case RENAME:
+                    renameFileCount++;
+                    break;
+                case COPY:
+                    copyFileCount++;
+                    break;
+            }
+            addSize += diffFile.getAddSize();
+            subSize += diffFile.getSubSize();
+        }
         return this;
     }
 }
