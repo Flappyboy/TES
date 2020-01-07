@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class VersionInfo extends Info {
+public class Version {
     private String versionName;
     private String tag;
     private String branch;
@@ -21,9 +21,8 @@ public class VersionInfo extends Info {
     private String sha;
     private Map<String, String> repoShaMap = new HashMap<>();
 
-    public static VersionInfo createInfo(ReposInfo reposInfo, Repo.RepoToGit repoToGit, String tag) throws GitAPIException {
-        VersionInfo info = new VersionInfo();
-        info.initBuild();
+    public static Version VersionFromTag(ReposInfo reposInfo, Repo.RepoToGit repoToGit, String tag) throws GitAPIException {
+        Version info = new Version();
         info.setTag(tag);
         for (Repo repo: reposInfo.getRepos()) {
             Git git = repoToGit.repoToGit(repo);
@@ -43,47 +42,11 @@ public class VersionInfo extends Info {
         return repoShaMap.keySet();
     }
 
-    public String getSha() {
-        return sha;
-    }
-
-    public VersionInfo setSha(String sha) {
-        this.sha = sha;
-        return this;
-    }
-
-    public Long getReposId() {
-        return reposId;
-    }
-
-    public VersionInfo setReposId(Long reposId) {
-        this.reposId = reposId;
-        return this;
-    }
-
-    public String getRepoName() {
-        return repoName;
-    }
-
-    public VersionInfo setRepoName(String repoName) {
-        this.repoName = repoName;
-        return this;
-    }
-
-    public Map<String, String> getRepoShaMap() {
-        return repoShaMap;
-    }
-
-    public VersionInfo setRepoShaMap(Map<String, String> repoShaMap) {
-        this.repoShaMap = repoShaMap;
-        return this;
-    }
-
     public String getVersionName() {
         return versionName;
     }
 
-    public VersionInfo setVersionName(String versionName) {
+    public Version setVersionName(String versionName) {
         this.versionName = versionName;
         return this;
     }
@@ -92,7 +55,7 @@ public class VersionInfo extends Info {
         return tag;
     }
 
-    public VersionInfo setTag(String tag) {
+    public Version setTag(String tag) {
         this.tag = tag;
         return this;
     }
@@ -101,8 +64,44 @@ public class VersionInfo extends Info {
         return branch;
     }
 
-    public VersionInfo setBranch(String branch) {
+    public Version setBranch(String branch) {
         this.branch = branch;
+        return this;
+    }
+
+    public Long getReposId() {
+        return reposId;
+    }
+
+    public Version setReposId(Long reposId) {
+        this.reposId = reposId;
+        return this;
+    }
+
+    public String getRepoName() {
+        return repoName;
+    }
+
+    public Version setRepoName(String repoName) {
+        this.repoName = repoName;
+        return this;
+    }
+
+    public String getSha() {
+        return sha;
+    }
+
+    public Version setSha(String sha) {
+        this.sha = sha;
+        return this;
+    }
+
+    public Map<String, String> getRepoShaMap() {
+        return repoShaMap;
+    }
+
+    public Version setRepoShaMap(Map<String, String> repoShaMap) {
+        this.repoShaMap = repoShaMap;
         return this;
     }
 }
