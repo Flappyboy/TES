@@ -5,6 +5,7 @@ import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class VersionsInfo extends Info {
     private Long reposId;
     private List<Version> versions = new ArrayList<>();
 
-    public static VersionsInfo createInfoFromTags(ReposInfo reposInfo, Repo.RepoToGit repoToGit, List<String> tags) throws GitAPIException {
+    public static VersionsInfo createInfoFromTags(ReposInfo reposInfo, Repo.RepoToGit repoToGit, List<String> tags) throws GitAPIException, IOException {
         VersionsInfo info = new VersionsInfo();
         info.initBuild();
         for (String tag:
