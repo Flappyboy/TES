@@ -102,6 +102,14 @@ public class GitCommitsInfo extends Info implements WithRepo {
         return result;
     }
 
+    public interface ShasFromGitCommit{
+        Set<String> shasFromGitCommit(GitCommit gitCommit);
+    }
+
+    public static GitCommitsInfo createInfoFromCommit(GitCommitsInfo gitCommitsInfo, String sha, Set<String> excludeShas) {
+        return createInfoFromCommit(gitCommitsInfo,sha, excludeShas, null);
+    }
+
     /**
      * 通过parentSha进行回溯，从一个gitCommitsInfo中创建一个新的gitCommitsInfo，其中的commit都是指定sha的祖先
      * @param gitCommitsInfo
@@ -109,7 +117,7 @@ public class GitCommitsInfo extends Info implements WithRepo {
      * @param excludeShas 需要忽略的shas
      * @return
      */
-    public static GitCommitsInfo createInfoFromCommit(GitCommitsInfo gitCommitsInfo, String sha, Set<String> excludeShas){
+    public static GitCommitsInfo createInfoFromCommit(GitCommitsInfo gitCommitsInfo, String sha, Set<String> excludeShas, ShasFromGitCommit shasFromGitCommit){
         Map<String, GitCommit> allShasGitCommitMap = gitCommitsInfo.allShasGitCommitMap();
         Set<String> allShas = new HashSet<>();
         Queue<String> queueShas = new LinkedList<>();
@@ -121,6 +129,15 @@ public class GitCommitsInfo extends Info implements WithRepo {
             GitCommit pGitCommit = allShasGitCommitMap.get(pSha);
             result.addGitCommits(pGitCommit);
             Set<String> parentShas = pGitCommit.getParentShas();
+            if(shasFromGitCommit != null) {
+                Set<String> otherShas = shasFromGitCommit.shasFromGitCommit(pGitCommit);
+                if(parentShas == null){
+                    parentShas = new HashSet<>();
+                }
+                if(otherShas != null) {
+                    parentShas.addAll(otherShas);
+                }
+            }
             if(parentShas != null){
                 for (String parentSha :
                         parentShas) {
@@ -136,19 +153,23 @@ public class GitCommitsInfo extends Info implements WithRepo {
         return result;
     }
 
+    public static List<GitCommitsInfo> createInfosForVersions(GitCommitsInfo gitCommitsInfo, List<String> sourceShas) {
+        return createInfosForVersions(gitCommitsInfo, sourceShas, null);
+    }
+
     /**
      * 指定不同版本，获取gitCommits
      * @param gitCommitsInfo
      * @param sourceShas
      * @return
      */
-    public static List<GitCommitsInfo> createInfosForVersions(GitCommitsInfo gitCommitsInfo, List<String> sourceShas){
+    public static List<GitCommitsInfo> createInfosForVersions(GitCommitsInfo gitCommitsInfo, List<String> sourceShas, ShasFromGitCommit shasFromGitCommit){
         Set<String> allShas = new HashSet<>();
         List<GitCommitsInfo> result = new ArrayList<>();
         for (String sourceSha:
                 sourceShas) {
             System.out.println("start"+sourceSha);
-            GitCommitsInfo info = createInfoFromCommit(gitCommitsInfo, sourceSha, allShas);
+            GitCommitsInfo info = createInfoFromCommit(gitCommitsInfo, sourceSha, allShas, shasFromGitCommit);
             info.setRevision(sourceSha);
             info.setRevisionSha(sourceSha);
             result.add(info);
