@@ -22,4 +22,8 @@ public class ElementsValue extends Info {
         valueMap.put(elementName, value);
         return this;
     }
+    public Map getValue(){
+        return valueMap;
+    }
+
 }
