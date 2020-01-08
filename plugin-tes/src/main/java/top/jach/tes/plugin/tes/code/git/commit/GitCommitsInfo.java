@@ -127,6 +127,10 @@ public class GitCommitsInfo extends Info implements WithRepo {
         while (queueShas.size()>0){
             String pSha = queueShas.poll();
             GitCommit pGitCommit = allShasGitCommitMap.get(pSha);
+            if(pGitCommit == null){
+                System.out.println("缺失： "+pSha);
+                continue;
+            }
             result.addGitCommits(pGitCommit);
             Set<String> parentShas = pGitCommit.getParentShas();
             if(shasFromGitCommit != null) {
