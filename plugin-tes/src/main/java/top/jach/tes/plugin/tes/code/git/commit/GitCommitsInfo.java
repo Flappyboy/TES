@@ -6,6 +6,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -90,7 +91,11 @@ public class GitCommitsInfo extends Info implements WithRepo {
 
         for (String sha :
                 sourceShas) {
-            log.add(ObjectId.fromString(sha));
+            try {
+                log.add(ObjectId.fromString(sha));
+            }catch (MissingObjectException e){
+                System.out.println("createInfoByLogFromCommit: "+ repoName + " 缺失： "+ sha);
+            }
         }
 
         RevWalk revWalk = new RevWalk(git.getRepository());
