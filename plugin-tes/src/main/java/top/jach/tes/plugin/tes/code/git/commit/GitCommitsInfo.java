@@ -1,6 +1,7 @@
 package top.jach.tes.plugin.tes.code.git.commit;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -18,7 +19,6 @@ import java.io.IOException;
 import java.util.*;
 
 // 包含一个代码仓下的所有commit
-@Data
 public class GitCommitsInfo extends Info implements WithRepo {
     private Long reposId;
     private String repoName;
@@ -33,10 +33,25 @@ public class GitCommitsInfo extends Info implements WithRepo {
 
     private List<GitCommit> gitCommits = new ArrayList<>();
 
+    private Map<String, GitCommit> shaGitCommitMap = new HashMap<>();
+
     public static GitCommitsInfo createInfo(Long reposId, String repoName){
         GitCommitsInfo info = new GitCommitsInfo();
         info.setRepoName(repoName).setReposId(reposId);
         info.initBuild();
+        return info;
+    }
+
+    public static GitCommitsInfo createInfoByInfos(List<GitCommitsInfo> gitCommitsInfos){
+        if(gitCommitsInfos == null || gitCommitsInfos.size() == 0){
+            throw new RuntimeException("GitCommitsInfo createInfoByInfos 输入参数 不可为空或者长度为0");
+        }
+        GitCommitsInfo gitCommitsInfo = gitCommitsInfos.get(0);
+        GitCommitsInfo info = createInfo(gitCommitsInfo.getReposId(), gitCommitsInfo.getRepoName());
+        for (GitCommitsInfo gc :
+                gitCommitsInfos) {
+            info.addGitCommits(gc.getGitCommits());
+        }
         return info;
     }
 
@@ -102,6 +117,33 @@ public class GitCommitsInfo extends Info implements WithRepo {
         return result;
     }
 
+    public static GitCommitsInfo extendInfoByRecursionNewCommit(File repoDir, Long reposId, String repoName, GitCommitsInfo gitCommitsInfo, ShasFromGitCommit shasFromGitCommit) throws IOException, GitAPIException {
+        Set<String> allShas = new HashSet<>();
+        GitCommitsInfo extendGitCommitsInfo = gitCommitsInfo;
+        List<GitCommitsInfo> extendsInfo = new ArrayList<>();
+
+        while (true) {
+            extendsInfo.add(extendGitCommitsInfo);
+            allShas.addAll(extendGitCommitsInfo.allShas());
+
+            Set<String> shas = new HashSet<>();
+            for (GitCommit gc :
+                    extendGitCommitsInfo.getGitCommits()) {
+                Set<String> otherShas = shasFromGitCommit.shasFromGitCommit(gc);
+                for (String sha :
+                        otherShas) {
+                    if (!allShas.contains(sha)) {
+                        shas.add(sha);
+                    }
+                }
+            }
+            if(shas.isEmpty()){
+                break;
+            }
+            extendGitCommitsInfo = createInfoByLogFromCommit(repoDir, reposId, repoName, shas, allShas);
+        }
+        return createInfoByInfos(extendsInfo);
+    }
     public interface ShasFromGitCommit{
         Set<String> shasFromGitCommit(GitCommit gitCommit);
     }
@@ -183,27 +225,31 @@ public class GitCommitsInfo extends Info implements WithRepo {
     }
 
     public Set<String> allShas(){
-        Set<String> shas = new HashSet<>();
+        /*Set<String> shas = new HashSet<>();
         for (GitCommit gitCommit :
                 getGitCommits()) {
             shas.add(gitCommit.getSha());
-        }
-        return shas;
+        }*/
+        return shaGitCommitMap.keySet();
     }
 
     public Map<String, GitCommit> allShasGitCommitMap(){
-        Map<String, GitCommit> allShasGitCommitMap = new HashMap<>();
+        /*Map<String, GitCommit> allShasGitCommitMap = new HashMap<>();
         for (GitCommit gitCommit :
                 getGitCommits()) {
             allShasGitCommitMap.put(gitCommit.getSha(), gitCommit);
-        }
-        return allShasGitCommitMap;
+        }*/
+        return shaGitCommitMap;
     }
 
-    public GitCommitsInfo addGitCommits(GitCommit... gitCommits){
-        this.gitCommits.addAll(Arrays.asList(gitCommits));
+    public GitCommitsInfo addGitCommits(List<GitCommit> gitCommits){
         for (GitCommit gitCommit :
                 gitCommits) {
+            if(StringUtils.isBlank(gitCommit.getSha()) || this.shaGitCommitMap.containsKey(gitCommit.getSha())){
+                continue;
+            }
+            this.shaGitCommitMap.put(gitCommit.getSha(), gitCommit);
+            this.gitCommits.add(gitCommit);
             Integer time = gitCommit.getCommitTime();
             if(this.getStartTime() != null) {
                 if (time < this.getStartTime()) {
@@ -223,12 +269,48 @@ public class GitCommitsInfo extends Info implements WithRepo {
         return this;
     }
 
+    public GitCommitsInfo addGitCommits(GitCommit... gitCommits){
+        return addGitCommits(Arrays.asList(gitCommits));
+    }
+
+    @Override
+    public Long getReposId() {
+        return reposId;
+    }
+
+    @Override
+    public String getRepoName() {
+        return repoName;
+    }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public Long getEndTime() {
+        return endTime;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public String getRevisionSha() {
+        return revisionSha;
+    }
+
+    /**
+     * gitCommits的一个拷贝
+     * @return
+     */
     public List<GitCommit> getGitCommits() {
-        return gitCommits;
+        return new ArrayList<>(gitCommits);
     }
 
     public GitCommitsInfo setGitCommits(List<GitCommit> gitCommits) {
-        this.gitCommits = gitCommits;
+        this.gitCommits.clear();
+        this.shaGitCommitMap.clear();
+        this.addGitCommits(gitCommits);
         return this;
     }
 
@@ -239,6 +321,26 @@ public class GitCommitsInfo extends Info implements WithRepo {
 
     public GitCommitsInfo setRepoName(String repoName) {
         this.repoName = repoName;
+        return this;
+    }
+
+    public GitCommitsInfo setStartTime(Long startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public GitCommitsInfo setEndTime(Long endTime) {
+        this.endTime = endTime;
+        return this;
+    }
+
+    public GitCommitsInfo setRevision(String revision) {
+        this.revision = revision;
+        return this;
+    }
+
+    public GitCommitsInfo setRevisionSha(String revisionSha) {
+        this.revisionSha = revisionSha;
         return this;
     }
 }
