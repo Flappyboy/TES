@@ -108,7 +108,7 @@ public class GitCommitsInfo extends Info implements WithRepo {
         ExecutorService executor = new ThreadPoolExecutor(3, 15, 60L, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
 
         Set<String> shas = new HashSet<>();
-        DiffFormatter df = Utils.diffFormatter(git.getRepository());
+//        DiffFormatter df = Utils.diffFormatter(git.getRepository());
         for (RevCommit commit :
                 commits) {
             if(shas.contains(commit.getName())){
@@ -122,7 +122,9 @@ public class GitCommitsInfo extends Info implements WithRepo {
             executor.execute(() -> {
                 GitCommit gitCommit = null;
                 try {
-                    gitCommit = GitCommit.createByRevCommit(reposId, repoName, commit, git, revWalk, df);
+                    gitCommit = GitCommit.createByRevCommit(reposId, repoName, commit, git);
+                } catch (MissingObjectException e){
+                    System.out.println(String.format("reposId: %d  repoName: %s  create gitcommit by git failed: lose commit %s", reposId, repoName, commit.getName()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (GitAPIException e) {
