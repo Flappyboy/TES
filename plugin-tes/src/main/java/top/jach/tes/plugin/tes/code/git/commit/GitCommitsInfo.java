@@ -93,7 +93,7 @@ public class GitCommitsInfo extends Info implements WithRepo {
                 sourceShas) {
             try {
                 log.add(ObjectId.fromString(sha));
-            }catch (MissingObjectException e){
+            }catch (Exception e){
                 System.out.println("createInfoByLogFromCommit: "+ repoName + " 缺失： "+ sha);
             }
         }
@@ -153,7 +153,7 @@ public class GitCommitsInfo extends Info implements WithRepo {
         Set<String> shasFromGitCommit(GitCommit gitCommit);
     }
 
-    public static GitCommitsInfo createInfoFromCommit(GitCommitsInfo gitCommitsInfo, String sha, Set<String> excludeShas) {
+    public static GitCommitsInfo createInfoFromCommit(GitCommitsInfo gitCommitsInfo, String sha, Set<String> excludeShas) throws Exception {
         return createInfoFromCommit(gitCommitsInfo,sha, excludeShas, null);
     }
 
@@ -164,8 +164,12 @@ public class GitCommitsInfo extends Info implements WithRepo {
      * @param excludeShas 需要忽略的shas
      * @return
      */
-    public static GitCommitsInfo createInfoFromCommit(GitCommitsInfo gitCommitsInfo, String sha, Set<String> excludeShas, ShasFromGitCommit shasFromGitCommit){
+    public static GitCommitsInfo createInfoFromCommit(GitCommitsInfo gitCommitsInfo, String sha, Set<String> excludeShas, ShasFromGitCommit shasFromGitCommit) throws Exception {
         Map<String, GitCommit> allShasGitCommitMap = gitCommitsInfo.allShasGitCommitMap();
+        GitCommit initCommit = allShasGitCommitMap.get(sha);
+        if(initCommit == null){
+            throw new Exception("createInfoFromCommit 初始commit丢失 " +sha);
+        }
         Set<String> allShas = new HashSet<>();
         Queue<String> queueShas = new LinkedList<>();
         GitCommitsInfo result = GitCommitsInfo.createInfo(gitCommitsInfo.getReposId(), gitCommitsInfo.getRepoName());
@@ -204,7 +208,7 @@ public class GitCommitsInfo extends Info implements WithRepo {
         return result;
     }
 
-    public static List<GitCommitsInfo> createInfosForVersions(GitCommitsInfo gitCommitsInfo, List<String> sourceShas) {
+    public static List<GitCommitsInfo> createInfosForVersions(GitCommitsInfo gitCommitsInfo, List<String> sourceShas) throws Exception {
         return createInfosForVersions(gitCommitsInfo, sourceShas, null);
     }
 
@@ -214,7 +218,7 @@ public class GitCommitsInfo extends Info implements WithRepo {
      * @param sourceShas
      * @return
      */
-    public static List<GitCommitsInfo> createInfosForVersions(GitCommitsInfo gitCommitsInfo, List<String> sourceShas, ShasFromGitCommit shasFromGitCommit){
+    public static List<GitCommitsInfo> createInfosForVersions(GitCommitsInfo gitCommitsInfo, List<String> sourceShas, ShasFromGitCommit shasFromGitCommit) throws Exception {
         Set<String> allShas = new HashSet<>();
         List<GitCommitsInfo> result = new ArrayList<>();
         for (String sourceSha:
