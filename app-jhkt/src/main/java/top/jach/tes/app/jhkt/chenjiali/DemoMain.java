@@ -33,7 +33,7 @@ public class DemoMain extends DevApp {
 
         Action action = new HublinkAction();
         TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
-        action = new CyclicAction();
-        TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);
+      /*  action = new CyclicAction();
+        TaskTool.excuteActionAndSaveInfo(action, infoProfileMap);*/
     }
 }

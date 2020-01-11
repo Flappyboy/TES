@@ -23,7 +23,7 @@ public class DataMain extends DevApp {
         // 数据源idWorker: 0189, 0223, 导入数据时需要检查本地IdWorker与数据源机器上的IdWorker不冲突，否则可能会发生Id的冲突
         DataActionUtils.checkIdWorker(189L, 223L);
 
-        String dataFilePath = null;
+        String dataFilePath ="D:\\FILE\\work\\data";
         if (args.length>0){
             dataFilePath = args[0];
         }
