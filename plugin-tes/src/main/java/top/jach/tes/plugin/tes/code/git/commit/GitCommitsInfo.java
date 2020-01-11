@@ -18,6 +18,10 @@ import top.jach.tes.plugin.tes.utils.JGitUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 // 包含一个代码仓下的所有commit
 public class GitCommitsInfo extends Info implements WithRepo {
@@ -101,6 +105,8 @@ public class GitCommitsInfo extends Info implements WithRepo {
         RevWalk revWalk = new RevWalk(git.getRepository());
         Iterable<RevCommit> commits = log.call();
 
+        ExecutorService executor = new ThreadPoolExecutor(3, 15, 60L, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
+
         Set<String> shas = new HashSet<>();
         DiffFormatter df = Utils.diffFormatter(git.getRepository());
         for (RevCommit commit :
@@ -113,10 +119,22 @@ public class GitCommitsInfo extends Info implements WithRepo {
             if(excludeShas != null && excludeShas.contains(commit.getName())){
                 continue;
             }
-            GitCommit gitCommit = GitCommit.createByRevCommit(reposId, repoName, commit, git, revWalk, df);
-            if(gitCommit !=null ){
-                result.addGitCommits(gitCommit);
-            }
+            executor.execute(() -> {
+                GitCommit gitCommit = null;
+                try {
+                    gitCommit = GitCommit.createByRevCommit(reposId, repoName, commit, git, revWalk, df);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (GitAPIException e) {
+                    e.printStackTrace();
+                }
+                if(gitCommit !=null ){
+                    synchronized (result) {
+                        result.addGitCommits(gitCommit);
+                    }
+                }
+            });
+
         }
         revWalk.dispose();
         return result;
