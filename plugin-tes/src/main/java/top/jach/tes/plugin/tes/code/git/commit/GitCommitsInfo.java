@@ -134,7 +134,12 @@ public class GitCommitsInfo extends Info implements WithRepo {
                     }
                 }
             });
-
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         revWalk.dispose();
         return result;
