@@ -11,6 +11,12 @@ public class MergeRequestsInfo extends Info implements WithRepo {
     private String repoName;
     private List<MergeRequest> mergeRequestList = new ArrayList<>();
 
+    public static MergeRequestsInfo createInfo(){
+        MergeRequestsInfo info = new MergeRequestsInfo();
+        info.initBuild();
+        return info;
+    }
+
     public MergeRequestsInfo addMergeRequest(MergeRequest mergeRequest){
         mergeRequestList.add(mergeRequest);
         return this;
