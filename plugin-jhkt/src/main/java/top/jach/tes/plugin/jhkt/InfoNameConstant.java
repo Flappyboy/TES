@@ -18,4 +18,7 @@ public interface InfoNameConstant {
 
     String MicroserviceCallRelation = "MicroserviceCallRelation";
     String MicroserviceExcludeSomeCallRelation = "MicroserviceExcludeSomeCallRelation";
+
+    String VersionsForMaster = "VersionsForMaster";
+    String VersionsForRelease = "VersionsForRelease";
 }
