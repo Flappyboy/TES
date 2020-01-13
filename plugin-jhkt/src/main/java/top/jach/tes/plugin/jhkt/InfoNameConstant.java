@@ -15,6 +15,7 @@ public interface InfoNameConstant {
     String GitCommitsForRepo = "GitCommitsForRepo";
     String GitCommitsForRepoForVersion = "GitCommitsForRepoForVersion";
     String GitCommitsForMicroservice = "GitCommitsForMicroservice";
+    String MergeRequestForRepo = "MergeRequestForRepo";
 
     String MicroserviceCallRelation = "MicroserviceCallRelation";
     String MicroserviceExcludeSomeCallRelation = "MicroserviceExcludeSomeCallRelation";
