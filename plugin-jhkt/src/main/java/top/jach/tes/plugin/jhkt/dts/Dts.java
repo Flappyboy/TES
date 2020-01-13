@@ -13,6 +13,7 @@ public class Dts extends Bug {
         Set<String> shas = repoShasMap.get(repoName);
         if(shas == null){
             shas = new HashSet<>();
+            repoShasMap.put(repoName, shas);
         }
         shas.addAll(Arrays.asList(newShas));
         return this;
