@@ -3,6 +3,7 @@ package top.jach.tes.plugin.tes.code.git.gitlab;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class MergeRequest {
@@ -21,4 +22,5 @@ public class MergeRequest {
     String sourceSha;
     String targetSha;
     String resultSha;
+    Set<String> bugName;
 }
