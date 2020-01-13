@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class MergeRequest {
-    String reposId;
+    Long reposId;
     String repoName;
     String title;
     String description;
