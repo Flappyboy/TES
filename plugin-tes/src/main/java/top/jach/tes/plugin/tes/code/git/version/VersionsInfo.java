@@ -38,7 +38,7 @@ public class VersionsInfo extends Info {
             if(targetTime > endTime){
                 break;
             }
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            calendar.add(Calendar.MONTH, 1);
             Version version = new Version();
             version.setReposId(reposInfo.getId());
             version.setVersionName(format.format(new Date(targetTime)));
