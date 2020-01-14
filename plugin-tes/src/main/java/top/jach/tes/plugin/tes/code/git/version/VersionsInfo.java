@@ -61,7 +61,7 @@ public class VersionsInfo extends Info {
                     }
                     lastGitCommit = gitCommit;
                 }
-                if (result==null || targetTime-(result.getCommitTime()*1000l)>60*60*24*30*1000l){
+                if (result==null || targetTime-(result.getCommitTime()*1000l)>60*60*24*40*1000l){
                     continue;
                 }
                 repoShaMap.put(repo.getName(), result.getSha());
@@ -79,7 +79,7 @@ public class VersionsInfo extends Info {
         for (String tag:
                 tags) {
             Version version = Version.VersionFromTag(reposInfo, repoToGit, tag);
-            version.setTag(tag);
+            version.setVersionName(tag);
             info.addVersion(version);
         }
         return info;
