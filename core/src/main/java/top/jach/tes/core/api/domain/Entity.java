@@ -9,10 +9,13 @@ import top.jach.tes.core.api.factory.IdGenerator;
 @Getter
 public abstract class Entity {
     private Long id;
+    public static final String FIELD_ID = "id";
 
     private Long createdTime;
+    public static final String FIELD_CREATED_TIME = "createdTime";
 
     private Long updatedTime;
+    public static final String FIELD_UPDATED_TIME = "updatedTime";
 
     public void initBuild(){
         this.id = IdGenerator.nextId();

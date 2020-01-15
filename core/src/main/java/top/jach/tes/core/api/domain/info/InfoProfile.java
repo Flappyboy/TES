@@ -49,4 +49,11 @@ public class InfoProfile extends Info {
         }
         return null;
     }
+    public <I extends Info> I toInfoWithDetail(InfoRepositoryFactory infoRepositoryFactory, Class<I> clazz){
+        Info info = toInfoWithDetail(infoRepositoryFactory);
+        if (info == null){
+            return null;
+        }
+        return (I) info;
+    }
 }

@@ -22,6 +22,18 @@ public class VersionsInfo extends Info {
         return info;
     }
 
+    public static VersionsInfo createInfoByVersions(List<Version>... versions){
+        VersionsInfo info = createInfo();
+        for (List<Version> vs :
+                versions) {
+            for (Version v :
+                    vs) {
+                info.addVersion(v);
+            }
+        }
+        return info;
+    }
+
     public static VersionsInfo createInfoByTime(ReposInfo reposInfo, Map<String, List<GitCommit>> repoGitCommitMap,
                                                 Long startTime, Long endTime){
         VersionsInfo info = createInfo();

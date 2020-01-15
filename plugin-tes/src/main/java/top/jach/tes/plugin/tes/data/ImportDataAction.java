@@ -10,6 +10,7 @@ import top.jach.tes.core.api.domain.context.Context;
 import top.jach.tes.core.api.domain.action.DefaultInputInfos;
 import top.jach.tes.core.api.domain.action.DefaultOutputInfos;
 import top.jach.tes.core.api.domain.info.Info;
+import top.jach.tes.core.api.domain.info.InfoProfile;
 import top.jach.tes.core.api.domain.meta.Meta;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.action.SaveInfoAction;
@@ -64,10 +65,8 @@ public class ImportDataAction implements Action {
                     Class infoClass = Class.forName(data.getString("infoClass"));
                     Info info = (Info) data.toJavaObject(infoClass);
                     context.InfoRepositoryFactory().getRepository(info.getInfoClass()).deleteByInfoId(info.getId());
-                    info.setCreatedTime(System.currentTimeMillis());
-                    info.setUpdatedTime(System.currentTimeMillis());
+                    result.addInfo(InfoProfile.createFromInfo(info));
                     InputInfos tmp = new DefaultInputInfos();
-                    result.addInfo(info);
                     tmp.put(String.valueOf(tmp.size()), info);
                     saveInfoAction.execute(tmp, context);
                 } catch (IOException e) {

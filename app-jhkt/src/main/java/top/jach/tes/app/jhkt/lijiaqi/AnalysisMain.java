@@ -2,7 +2,6 @@ package top.jach.tes.app.jhkt.lijiaqi;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -32,9 +31,7 @@ import top.jach.tes.plugin.jhkt.maintain.MainTainsInfo;
 import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 
-import java.beans.Beans;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
