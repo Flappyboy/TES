@@ -14,6 +14,7 @@ import top.jach.tes.core.api.domain.info.InfoProfile;
 import top.jach.tes.core.api.domain.meta.Meta;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.action.SaveInfoAction;
+import top.jach.tes.core.impl.domain.info.InfoOfInfo;
 import top.jach.tes.core.impl.domain.info.value.FileInfo;
 import top.jach.tes.core.impl.domain.info.value.ValueInfo;
 import top.jach.tes.core.impl.domain.meta.InfoField;
@@ -54,6 +55,7 @@ public class ImportDataAction implements Action {
 
         DefaultOutputInfos result = new DefaultOutputInfos();
         File dataDir = DataDir.lastDataDir(importDir);
+        context.Logger().info("开始导入 {} ", dataDir.getAbsolutePath());
         if(dataDir.isDirectory()){
             for (File dataFile:
                     dataDir.listFiles()) {
@@ -76,6 +78,13 @@ public class ImportDataAction implements Action {
                 }
             }
         }
+        context.Logger().info("导入成功 {} ", dataDir.getAbsolutePath());
+        InfoOfInfo<Info> infoOfInfo = InfoOfInfo.createInfoOfInfo(result.getInfoList());
+        infoOfInfo.setName("TES_IMPORT_DATA");
+        InputInfos tmp = new DefaultInputInfos();
+        tmp.put(String.valueOf(tmp.size()), infoOfInfo);
+        saveInfoAction.execute(tmp, context);
+
         return result;
     }
 }

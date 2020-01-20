@@ -8,7 +8,7 @@ import java.util.*;
 @Data
 public class Microservice extends Element {
     String path;
-
+    String repoName;
     Long annotationLines;
     Long codeLines;
     Set<String> pubTopics = new HashSet<>();

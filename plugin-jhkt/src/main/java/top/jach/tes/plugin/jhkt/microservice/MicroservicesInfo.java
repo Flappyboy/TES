@@ -93,6 +93,20 @@ public class MicroservicesInfo extends ElementsInfo<Microservice> implements Wit
         return pairRelations;
     }
 
+    public List<Microservice> microservicesForRepo(String repoName){
+        if(StringUtils.isBlank(repoName)){
+            return getMicroservices();
+        }
+        List<Microservice> list = new ArrayList<>();
+        for (Microservice m :
+                getMicroservices()) {
+            if (repoName.equals(m.getRepoName())){
+                list.add(m);
+            }
+        }
+        return list;
+    }
+
     public void noRelationsByTopic(){
         for (Microservice microservice :
                 this.microservices) {

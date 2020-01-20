@@ -44,6 +44,21 @@ public interface OutputInfos {
         return false;
     }
 
+    default <I extends Info> List<InfoProfile> getProfilesByInfoClassAndName(Class<I> infoClass, String infoName){
+        List<InfoProfile> infoProfiles = new ArrayList<>();
+        for (Info info :
+                getInfoList()) {
+            if (!info.getInfoClass().equals(infoClass)) {
+                continue;
+            }
+            if(infoName != null && !infoName.equals(info.getName())){
+                continue;
+            }
+            infoProfiles.add(InfoProfile.createFromInfo(info));
+        }
+        return infoProfiles;
+    }
+
     default <I extends Info> InfoProfile getFirstProfileByInfoClassAndName(Class<I> infoClass, String infoName){
         for (Info info :
                 getInfoList()) {

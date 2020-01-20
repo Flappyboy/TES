@@ -338,10 +338,18 @@ public class GitCommitsInfo extends Info implements WithRepo {
      * @return
      */
     public List<GitCommit> getGitCommits() {
+        if (gitCommits == null){
+            return null;
+        }
         return new ArrayList<>(gitCommits);
     }
 
     public GitCommitsInfo setGitCommits(List<GitCommit> gitCommits) {
+        if(gitCommits == null){
+            this.gitCommits = null;
+            this.shaGitCommitMap = null;
+            return this;
+        }
         this.gitCommits.clear();
         this.shaGitCommitMap.clear();
         this.addGitCommits(gitCommits);

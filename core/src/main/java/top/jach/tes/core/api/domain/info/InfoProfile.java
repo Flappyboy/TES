@@ -32,7 +32,7 @@ public class InfoProfile extends Info {
     public static InfoProfile createFromInfo(Info info){
         InfoProfile infoProfile = new InfoProfile(info.getId(), info.getInfoClass());
         infoProfile.setId(info.getId()).setCreatedTime(info.getCreatedTime()).setUpdatedTime(info.getUpdatedTime());
-        infoProfile.setDesc(info.getDesc()).setStatus(info.getStatus());
+        infoProfile.setName(info.getName()).setDesc(info.getDesc()).setStatus(info.getStatus());
         return infoProfile;
     }
 
