@@ -3,18 +3,22 @@ package top.jach.tes.plugin.jhkt.microservice;
 import lombok.Data;
 import top.jach.tes.core.impl.domain.element.Element;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class Microservice extends Element {
     String path;
-
+    String repoName;
     Long annotationLines;
     Long codeLines;
     Set<String> pubTopics = new HashSet<>();
     Set<String> subTopics = new HashSet<>();
+    Map<String, Integer> subTopicOneOf = new HashMap<>();
+
+    public Microservice setSubTopicOneOf(Map<String, Integer> subTopicOneOf) {
+        this.subTopicOneOf = subTopicOneOf;
+        return this;
+    }
 
     public Microservice setElementName(String elementName){
         this.elementName = elementName;

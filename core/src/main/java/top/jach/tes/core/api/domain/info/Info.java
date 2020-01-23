@@ -24,10 +24,13 @@ public abstract class Info extends Entity {
      * 用于向用户表明该Info的含义，不具备具体的业务属性，可能会用来作为筛选条件
      */
     private String name;
+    public static final String FIELD_NAME = "name";
 
     private String desc;
+    public static final String FIELD_DESC = "desc";
 
     private String status = InfoStatus.NONE.name();
+    public static final String FIELD_STATUS = "status";
 
     public enum InfoStatus {
         SAVING(),

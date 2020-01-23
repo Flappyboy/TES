@@ -27,7 +27,7 @@ import java.util.Set;
 @Getter
 @Setter
 public class GitCommit extends Element {
-    public static final String _data_struct_version = "2019-12-25-001";
+    public static final String _data_struct_version = "2020-01-08-001";
     private Long reposId;
     private String repoName;
     private String sha;
@@ -37,6 +37,7 @@ public class GitCommit extends Element {
     private Integer commitTime;
     private Integer parentCount;
     private Set<String> parentShas = new HashSet<>();
+    private Set<String> cherriedFromShas = new HashSet<>();
     private List<DiffFile> diffFiles = new ArrayList<>();
     private StatisticDiffFiles statisticDiffFiles;
 

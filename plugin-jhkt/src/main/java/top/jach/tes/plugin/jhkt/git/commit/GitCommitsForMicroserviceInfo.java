@@ -22,6 +22,8 @@ public class GitCommitsForMicroserviceInfo extends GitCommitsInfo implements Wit
 
     private String microserviceName;
 
+    private String version;
+
     private Long commitsCount;
 
     private StatisticDiffFiles statisticDiffFiles;
@@ -42,19 +44,21 @@ public class GitCommitsForMicroserviceInfo extends GitCommitsInfo implements Wit
     }
 
     public static GitCommitsForMicroserviceInfo createInfoFromGitCommitsInfo(MicroservicesInfo microservicesInfo, String microserviceName, GitCommitsInfo gitCommitsInfo) {
-        microservicesInfo.checkRepoEquals(gitCommitsInfo);
+//        microservicesInfo.checkRepoEquals(gitCommitsInfo);
 
         GitCommitsForMicroserviceInfo info = new GitCommitsForMicroserviceInfo();
         info.initBuild();
         info.setMicroservicesId(microservicesInfo.getId());
         info.setMicroserviceName(microserviceName);
-        info.setReposId(microservicesInfo.getReposId());
-        info.setRepoName(microservicesInfo.getRepoName());
+        info.setReposId(gitCommitsInfo.getReposId());
+        info.setRepoName(gitCommitsInfo.getRepoName());
+        info.setVersion(microservicesInfo.getVersion());
 
         Microservice microservice = microservicesInfo.getElementByName(microserviceName);
         if(microservice == null){
             throw new RuntimeException("microserviceName不存在");
         }
+
         String path = StringUtils.strip(microservice.getPath(), "/\\")+"/";
 
         StatisticDiffFiles statisticDiffFiles = StatisticDiffFiles.create(null);
