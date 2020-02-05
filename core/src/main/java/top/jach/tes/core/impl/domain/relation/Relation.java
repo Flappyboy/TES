@@ -8,8 +8,6 @@ import lombok.Setter;
 public abstract class Relation {
     private Double value;
 
-
-
     public Relation setValue(Double value) {
         this.value = value;
         return this;

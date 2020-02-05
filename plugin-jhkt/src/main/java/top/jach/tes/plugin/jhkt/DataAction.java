@@ -20,8 +20,10 @@ import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfoMongoRepository;
+import top.jach.tes.plugin.tes.code.git.tree.TreesInfo;
 import top.jach.tes.plugin.tes.code.git.version.Version;
 import top.jach.tes.plugin.tes.code.git.version.VersionsInfo;
+import top.jach.tes.plugin.tes.code.go.GoPackagesInfo;
 import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 import top.jach.tes.plugin.tes.data.ImportDataAction;
@@ -71,7 +73,7 @@ public class DataAction implements Action {
         for (Version version :
                 versionsInfoForRelease.getVersions()) {
             // 查询当前版本的微服务
-            MicroservicesInfo microservices = queryLastMicroservices(context, version);
+            MicroservicesInfo microservices = queryLastMicroservices(context, reposInfo.getId(), null, version);
             if (microservices == null || microservices.getMicroservices().size()==0) {
                 continue;
             }
@@ -107,7 +109,7 @@ public class DataAction implements Action {
                     saveInfo(context, gitCommitsInfoForRepoVersion);
 
                     // 按微服务划分gitcommits
-                    MicroservicesInfo microservices = queryLastMicroservices(context, version);
+                    MicroservicesInfo microservices = queryLastMicroservices(context, reposInfo.getId(), null, version);
                     List<Microservice> ms = microservices.microservicesForRepo(repo.getName());
                     for (Microservice m :
                             ms) {
@@ -124,7 +126,7 @@ public class DataAction implements Action {
 
         for (Version version :
                 versionsInfoForRelease.getVersions()) {
-            MicroservicesInfo microservices = queryLastMicroservices(context, version);
+            MicroservicesInfo microservices = queryLastMicroservices(context, reposInfo.getId(), null, version);
             if (microservices == null){
                 continue;
             }
@@ -175,16 +177,61 @@ public class DataAction implements Action {
         return null;
     }
 
-    private MicroservicesInfo queryLastMicroservices(Context context, Version version) {
-        MicroservicesInfo microservices = new MicroservicesInfo();
-        microservices.setName(InfoNameConstant.MicroservicesForRepos);
-        microservices.setVersion(version.getVersionName());
-        microservices.setMicroservices(null);
-        microservices = queryLastInfo(context, microservices, MicroservicesInfo.class);
-        return microservices;
+    public static TreesInfo queryLastTreesInfo(Context context, Long reposId, String repoName, Version version) {
+        TreesInfo info = new TreesInfo();
+        info.setReposId(reposId);
+        info.setRepoName(repoName);
+        info.setName(InfoNameConstant.GitTreeInfoForRepo);
+        info.setSha(version.getSha());
+        info.setTrees(null);
+        info = queryLastInfo(context, info, TreesInfo.class);
+        return info;
+    }
+    public static GoPackagesInfo queryLastGoPackagesInfo(Context context, Long reposId, String repoName, Version version) {
+        GoPackagesInfo info = new GoPackagesInfo();
+        info.setReposId(reposId);
+        info.setRepoName(repoName);
+        info.setName(InfoNameConstant.GoAstPackageForRepo);
+        info.setVersion(version.getSha());
+        info.setGoPackages(null);
+        info = queryLastInfo(context, info, GoPackagesInfo.class);
+        return info;
     }
 
-    private GitCommitsInfo queryGitCommitsInfo(Context context, String repoName, Long reposId) {
+    public static MicroservicesInfo queryLastMicroservices(Context context,Long reposId, String repoName, Version version) {
+        MicroservicesInfo info = new MicroservicesInfo();
+        info.setReposId(reposId);
+        info.setRepoName(repoName);
+        info.setName(InfoNameConstant.MicroservicesForRepos);
+        info.setVersion(version.getVersionName());
+        info.setMicroservices(null);
+        info = queryLastInfo(context, info, MicroservicesInfo.class);
+        return info;
+    }
+
+    public static GitCommitsInfo queryLastGitCommitsInfoForVersion(Context context, Long reposId, String repoName, Version version) {
+        GitCommitsInfo info = new GitCommitsInfo();
+        info.setName(InfoNameConstant.GitCommitsForRepoForVersion);
+        info.setReposId(reposId);
+        info.setRepoName(repoName);
+        info.setRevision(version.getVersionName());
+        info.setGitCommits(null);
+        info = queryLastInfo(context, info, GitCommitsInfo.class);
+        return info;
+    }
+
+    public static GitCommitsForMicroserviceInfo queryLastGitCommitsForMicroserviceInfo(Context context, Long reposId, String microserviceName, Version version){
+        GitCommitsForMicroserviceInfo info = new GitCommitsForMicroserviceInfo();
+        info.setName(InfoNameConstant.GitCommitsForMicroservice);
+        info.setReposId(reposId);
+        info.setMicroserviceName(microserviceName);
+        info.setVersion(version.getVersionName());
+        info.setGitCommits(null);
+        info = queryLastInfo(context, info, GitCommitsForMicroserviceInfo.class);
+        return info;
+    }
+
+    public static GitCommitsInfo queryGitCommitsInfo(Context context, String repoName, Long reposId) {
         GitCommitsInfo gitCommitsInfo = new GitCommitsInfo();
         gitCommitsInfo.setName(InfoNameConstant.GitCommitsForRepo);
         gitCommitsInfo.setReposId(reposId).setRepoName(repoName);
@@ -193,14 +240,14 @@ public class DataAction implements Action {
         return gitCommitsInfo;
     }
 
-    private void saveInfo(Context context, List infos) {
+    public static void saveInfo(Context context, List infos) {
         for (Object info :
                 infos) {
             saveInfo(context, (Info) info);
         }
     }
 
-    private void saveInfo(Context context, Info info) {
+    public static void saveInfo(Context context, Info info) {
         new SaveInfoAction().execute(new DefaultInputInfos().putInfo("1", info), context);
     }
 
@@ -217,7 +264,7 @@ public class DataAction implements Action {
         return info;
     }
 
-    private <I extends Info> I queryLastProfileInfo(Context context, Info info, Class<I> infoClass) {
+    public static <I extends Info> I queryLastProfileInfo(Context context, Info info, Class<I> infoClass) {
         List<Info> infos = context.InfoRepositoryFactory().getRepository(infoClass).queryProfileByInfoAndProjectId(
                 info, context.currentProject().getId(), PageQueryDto.LastInfoQueryDto()
         ).getResult();
@@ -227,14 +274,14 @@ public class DataAction implements Action {
         return null;
     }
 
-    private <I extends Info> I queryLastInfo(Context context, String infoName, Class<I> infoClass) {
+    public static <I extends Info> I queryLastInfo(Context context, String infoName, Class<I> infoClass) {
         InfoProfile info = new InfoProfile();
         info.setName(infoName);
         info.setInfoClass(infoClass);
         return queryLastInfo(context, info, infoClass);
     }
 
-    private <I extends Info> I queryLastInfo(Context context, Info info, Class<I> infoClass) {
+    public static <I extends Info> I queryLastInfo(Context context, Info info, Class<I> infoClass) {
         List<Info> infos = context.InfoRepositoryFactory().getRepository(infoClass).queryDetailsByInfoAndProjectId(
                 info, context.currentProject().getId(), PageQueryDto.LastInfoQueryDto()
         );
