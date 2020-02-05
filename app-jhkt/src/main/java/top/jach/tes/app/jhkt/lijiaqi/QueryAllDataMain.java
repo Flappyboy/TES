@@ -10,6 +10,7 @@ import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.dto.PageQueryDto;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
+import top.jach.tes.plugin.jhkt.DataAction;
 import top.jach.tes.plugin.jhkt.InfoNameConstant;
 import top.jach.tes.plugin.jhkt.analysis.MicroserviceAttrsInfo;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
@@ -20,6 +21,8 @@ import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
 import top.jach.tes.plugin.tes.code.git.tree.TreesInfo;
+import top.jach.tes.plugin.tes.code.git.version.Version;
+import top.jach.tes.plugin.tes.code.git.version.VersionsInfo;
 import top.jach.tes.plugin.tes.code.go.GoPackagesInfo;
 import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
@@ -34,6 +37,53 @@ public class QueryAllDataMain extends DevApp {
 
         ReposInfo reposInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.TargetSystem, ReposInfo.class);
 
+        VersionsInfo versionsInfoForRelease = DataAction.queryLastInfo(context, InfoNameConstant.VersionsForRelease, VersionsInfo.class);
+
+        for (Version version:
+                versionsInfoForRelease.getVersions()) {
+            // 查询version版本的微服务
+            MicroservicesInfo microservices = DataAction.queryLastMicroservices(context, reposInfo.getId(), null, version);
+
+            for (Repo repo :
+                    reposInfo.reposFromNames(version.repos())) {
+                // 某个代码仓下某个版本的所有commit信息
+                GitCommitsInfo gitCommitsInfoForRepoVersion = DataAction.queryLastGitCommitsInfoForVersion(context, reposInfo.getId(), repo.getName(), version);
+                if(gitCommitsInfoForRepoVersion==null){
+                    System.out.println("GitCommitsInfoForRepoVersion  "+repo.getName()+"  "+version.getVersionName());
+                }
+
+                TreesInfo treesInfo = DataAction.queryLastTreesInfo(context, reposInfo.getId(), repo.getName(), version);
+                if(treesInfo==null){
+                    System.out.println("TreesInfo  "+repo.getName()+"  "+version.getVersionName());
+                }
+
+                GoPackagesInfo goPackagesInfo = DataAction.queryLastGoPackagesInfo(context, reposInfo.getId(), repo.getName(), version);
+                if(goPackagesInfo==null){
+                    System.out.println("GoPackagesInfo  "+repo.getName()+"  "+version.getVersionName());
+                }
+            }
+
+            for(Microservice microservice: microservices){
+                // 某个微服务在某个版本下所有的commit信息
+                GitCommitsForMicroserviceInfo gitCommitsForMicroserviceInfo = DataAction.queryLastGitCommitsForMicroserviceInfo(context, reposInfo.getId(), microservice.getElementName(), version);
+                if(gitCommitsForMicroserviceInfo==null){
+                    System.out.println("GitCommitsForMicroserviceInfo  "+microservice.getElementName()+"  "+version.getVersionName());
+                }
+            }
+
+        }
+        for (Repo repo :
+                reposInfo.getRepos()) {
+            // 代码仓repo下所有的gitcommit
+            GitCommitsInfo gitCommitsInfo = DataAction.queryGitCommitsInfo(context, repo.getName(), reposInfo.getId());
+            if (gitCommitsInfo == null){
+                System.out.println("GitCommitsInfo  "+repo.getName());
+            }
+        }
+        // 问题单
+        DtssInfo dtssInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.BugDts, DtssInfo.class);
+        System.out.println(dtssInfo.getId());
+/*
         // 原始的微服务
         MicroservicesInfo microservices = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.MicroservicesForRepos, MicroservicesInfo.class);
         // 排除部分历史微服务
@@ -48,8 +98,6 @@ public class QueryAllDataMain extends DevApp {
         pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
         InfoTool.saveInputInfos(microservices, pairRelationsInfo);
 
-        // 问题单
-        DtssInfo dtssInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.BugDts, DtssInfo.class);
         // 问题单和微服务的关系
         PairRelationsInfo bugMicroserviceRelations = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.RelationBugAndMicroservice, PairRelationsInfo.class);
 
@@ -117,6 +165,6 @@ public class QueryAllDataMain extends DevApp {
         System.out.println(bugMicroserviceRelations);
         System.out.println(treesInfoMap);
         System.out.println(goPackagesInfoMap);
-        System.out.println(gitCommitsInfoMap);
-}
+        System.out.println(gitCommitsInfoMap);*/
+    }
 }
