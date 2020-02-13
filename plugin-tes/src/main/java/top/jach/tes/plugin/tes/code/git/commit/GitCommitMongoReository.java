@@ -49,7 +49,11 @@ public class GitCommitMongoReository implements GitCommitRepository {
                 documents.add(document);
             }
             if(documents.size()>0) {
-                collection.insertMany(documents);
+                try {
+                    collection.insertMany(documents);
+                }catch (Exception e){
+                    System.out.println("存储GitCommit失败： reposId:"+reposId+"  repoName:"+repoName);
+                }
             }
         }
     }
