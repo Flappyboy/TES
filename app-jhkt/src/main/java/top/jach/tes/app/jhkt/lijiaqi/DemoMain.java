@@ -20,15 +20,17 @@ public class DemoMain extends DevApp {
     public static void main(String[] args) {
         //微服务和关系
         MicroservicesInfo microservices = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.MicroservicesForRepos, MicroservicesInfo.class);
-
-        microservices = MicroservicesInfo.createInfoByExcludeMicroservice(microservices,  "x_2b", "x_1b", "x_23", "x_1d/x_6eed");
+        microservices = MicroservicesInfo.createInfoByExcludeMicroservice(microservices,
+                "x_2b", "x_1b", "x_23", "x_1d/x_6eed",
+                "x_39","x_1f","x_27/x_25","c_demo/c_demoa","c_demo/c_demob",
+                "x_13/x_ae5", "x_25", "x_21/7103");
         microservices.setName(InfoNameConstant.MicroservicesForReposExcludeSomeHistory);
-        InfoTool.saveInputInfos(microservices);
 
-        /*PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic();
+        PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic();
         pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
-        InfoTool.saveInputInfos(pairRelationsInfo);*/
+        System.out.println(pairRelationsInfo);
+//        InfoTool.saveInputInfos(pairRelationsInfo);
 
-        microservices.noRelationsByTopic();
+//        microservices.noRelationsByTopic();
     }
 }

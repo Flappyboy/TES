@@ -3,6 +3,8 @@ package top.jach.tes.plugin.tes.code.git.version;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
@@ -31,7 +33,9 @@ public class Version {
             for (Ref ref :
                     refs) {
                 if(ref.getName().equals("refs/tags/"+tag)){
-                    info.getRepoShaMap().put(repo.getName(), ref.getObjectId().getName());
+                    RevWalk revWalk = new RevWalk(git.getRepository());
+                    RevCommit revCommit = revWalk.parseCommit(ref.getObjectId());
+                    info.getRepoShaMap().put(repo.getName(), revCommit.getName());
                     break;
                 }
             }

@@ -18,6 +18,9 @@ import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfoMongoRepository;
 import top.jach.tes.plugin.tes.repository.GeneraInfoMongoRepository;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Set;
 
 public abstract class DevApp {
@@ -47,9 +50,10 @@ public abstract class DevApp {
         factory.register(new NToOneMatchingStrategy<Class<? extends Info>, InfoRepository>() {
             @Override
             public InfoRepository NToM(Class<? extends Info> aClass) {
-                MongoClient mongoClient = new MongoClient();
-                MongoCollection mongoCollection = mongoClient.getDatabase("tes_dev").getCollection("general_info");
-                return new GeneraInfoMongoRepository(mongoCollection);
+                return (InfoRepository) Proxy.newProxyInstance(
+                        GeneraInfoMongoRepository.class.getClassLoader(),
+                        GeneraInfoMongoRepository.class.getInterfaces(),
+                        new MongoRepositoryProxy());
             }
             @Override
             public Set<Class<? extends Info>> MToN(InfoRepository infoRepository) {
@@ -58,6 +62,19 @@ public abstract class DevApp {
         });
         return factory;
     }
+
+    static class MongoRepositoryProxy implements InvocationHandler {
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            MongoClient mongoClient = new MongoClient();
+            MongoCollection mongoCollection = mongoClient.getDatabase("tes_dev").getCollection("general_info");
+            Object o = new GeneraInfoMongoRepository(mongoCollection);
+            Object result = method.invoke(o, args);
+            mongoClient.close();
+            return result;
+        }
+    }
+
     public static void addInfoPrpositoryFactoryMatching(InfoRepository infoRepository, Class<? extends Info> clazz){
         defaultInfoRepositoryFactory.register(new NToOneMatchingStrategy<Class<? extends Info>, InfoRepository>() {
             @Override

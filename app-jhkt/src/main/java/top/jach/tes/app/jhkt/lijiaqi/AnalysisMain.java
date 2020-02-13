@@ -2,7 +2,6 @@ package top.jach.tes.app.jhkt.lijiaqi;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -32,9 +31,7 @@ import top.jach.tes.plugin.jhkt.maintain.MainTainsInfo;
 import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 
-import java.beans.Beans;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -43,24 +40,32 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+// 继承DevApp 已加载InfoRepository等上下文环境
 public class AnalysisMain extends DevApp {
     public static void main(String[] args) throws ActionExecuteFailedException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         Context context = Environment.contextFactory.createContext(Environment.defaultProject);
 
+        // 查询整个系统的微服务
         MicroservicesInfo microservices = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.MicroservicesForRepos, MicroservicesInfo.class);
+        // 排除部分微服务
         microservices = MicroservicesInfo.createInfoByExcludeMicroservice(microservices,
                 "x_2b", "x_1b", "x_23", "x_1d/x_6eed",
                 "x_39","x_1f","x_27/x_25","c_demo/c_demoa","c_demo/c_demob",
                 "x_13/x_ae5", "x_25", "x_21/7103");
         microservices.setName(InfoNameConstant.MicroservicesForReposExcludeSomeHistory);
 
+        // 计算并存储微服务间的调用关系
         PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic();
         pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
         InfoTool.saveInputInfos(microservices, pairRelationsInfo);
 
-
+        // 查询问题单数据
         DtssInfo dtssInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.BugDts, DtssInfo.class);
+
+        // 查询问题单和微服务关系的数据
         PairRelationsInfo bugMicroserviceRelations = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.RelationBugAndMicroservice, PairRelationsInfo.class);
+
+        // 查询所有微服务包含的commit
         Map<String, GitCommitsForMicroserviceInfo> gitCommitsForMicroserviceInfoMap = new HashMap<>();
         for (Microservice microservice :
                 microservices.getMicroservices()) {
@@ -77,6 +82,7 @@ public class AnalysisMain extends DevApp {
             }
         }
 
+        // 计算机构异味
         InputInfoProfiles infoProfileMap = InputInfoProfiles.InputInfoProfiles()
                 .addInfoProfile(ArcSmellAction.Elements_INFO, microservices)
                 .addInfoProfile(ArcSmellAction.PAIR_RELATIONS_INFO, pairRelationsInfo)
@@ -86,8 +92,10 @@ public class AnalysisMain extends DevApp {
         ArcSmellsInfo arcSmellsInfo = action.execute(infoProfileMap.toInputInfos(Environment.infoRepositoryFactory), context)
                 .getFirstByInfoClass(ArcSmellsInfo.class);
 
+        // 统计微服务的各项指标
         List<MicroserviceAttrsInfo> microserviceAttrsInfos = microserviceAttrsInfos(microservices, dtssInfo, bugMicroserviceRelations, gitCommitsForMicroserviceInfoMap, arcSmellsInfo);
 
+        // 数据导出
         exportCSV(microserviceAttrsInfos, new File("F:\\data\\tes\\analysis\\csv"));
         exportExcel(microserviceAttrsInfos, new File("F:\\data\\tes\\analysis"));
     }

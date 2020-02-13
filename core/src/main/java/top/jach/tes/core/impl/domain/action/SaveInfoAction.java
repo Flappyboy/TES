@@ -36,7 +36,9 @@ public class SaveInfoAction implements Action {
             if(info.getId()==null){
                 info.initBuild();
             }
-            context.Logger().info("Save: id: {}, name: {}, infoClass: {}", info.getId(), info.getName(), info.getInfoClass());
+            if(!info.getName().startsWith("TES")) {
+                context.Logger().info("Save: id: {}, name: {}, infoClass: {}", info.getId(), info.getName(), info.getInfoClass());
+            }
             infoRepositoryFactory.getRepository(info.getInfoClass()).saveProfile(info, context.currentProject().getId());
             infoRepositoryFactory.getRepository(info.getInfoClass()).saveDetail(info);
         }

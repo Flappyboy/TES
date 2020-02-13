@@ -26,7 +26,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class GitCommit extends Element implements Comparable<GitCommit>{
+public class GitCommit extends Element {
     public static final String _data_struct_version = "2019-12-25-001";
     private Long reposId;
     private String repoName;
@@ -109,10 +109,6 @@ public class GitCommit extends Element implements Comparable<GitCommit>{
         return reposId+"&"+repoName+"&"+sha;
     }
 
-    public List<DiffFile> getDiffFiles(){
-        return this.diffFiles;
-    }
-
     public GitCommit addDiffFiles(DiffFile... diffFiles){
         for (DiffFile diffFile:
                 diffFiles) {
@@ -145,10 +141,5 @@ public class GitCommit extends Element implements Comparable<GitCommit>{
     public GitCommit setAuthor(String author) {
         this.author = author;
         return this;
-    }
-
-    @Override
-    public int compareTo(GitCommit gitCommit) {
-        return this.commitTime-gitCommit.commitTime;
     }
 }

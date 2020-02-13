@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 public class GitCommitsInfoTest {
 
     @Test
-    public void createInfosForVersions() throws IOException, GitAPIException {
+    public void createInfosForVersions() throws Exception {
         ReposInfo reposInfo = ReposInfo.createInfo();
         reposInfo.addRepo(new Repo().setName("tes"));
         GitCommitsInfo gitCommitsInfo = GitCommitsInfo.createInfoForAllRefs(reposInfo.getId(), "tes",
