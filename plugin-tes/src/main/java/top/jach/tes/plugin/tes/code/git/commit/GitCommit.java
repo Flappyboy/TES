@@ -26,8 +26,13 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class GitCommit extends Element {
+<<<<<<<<< Temporary merge branch 1
+public class GitCommit extends Element implements Comparable<GitCommit>{
     public static final String _data_struct_version = "2019-12-25-001";
+=========
+public class GitCommit extends Element {
+    public static final String _data_struct_version = "2020-01-08-001";
+>>>>>>>>> Temporary merge branch 2
     private Long reposId;
     private String repoName;
     private String sha;
@@ -37,6 +42,7 @@ public class GitCommit extends Element {
     private Integer commitTime;
     private Integer parentCount;
     private Set<String> parentShas = new HashSet<>();
+    private Set<String> cherriedFromShas = new HashSet<>();
     private List<DiffFile> diffFiles = new ArrayList<>();
     private StatisticDiffFiles statisticDiffFiles;
 
@@ -109,6 +115,10 @@ public class GitCommit extends Element {
         return reposId+"&"+repoName+"&"+sha;
     }
 
+    public List<DiffFile> getDiffFiles(){
+        return this.diffFiles;
+    }
+
     public GitCommit addDiffFiles(DiffFile... diffFiles){
         for (DiffFile diffFile:
                 diffFiles) {
@@ -141,5 +151,10 @@ public class GitCommit extends Element {
     public GitCommit setAuthor(String author) {
         this.author = author;
         return this;
+    }
+
+    @Override
+    public int compareTo(GitCommit gitCommit) {
+        return this.commitTime-gitCommit.commitTime;
     }
 }
