@@ -1,11 +1,14 @@
 package top.jach.tes.plugin.jhkt.microservice;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import top.jach.tes.core.impl.domain.element.Element;
 
 import java.util.*;
 
-@Data
+@Getter
+@Setter
 public class Microservice extends Element {
     String path;
     String repoName;
