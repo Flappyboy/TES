@@ -182,7 +182,7 @@ public class DataAction implements Action {
         info.setReposId(reposId);
         info.setRepoName(repoName);
         info.setName(InfoNameConstant.GitTreeInfoForRepo);
-        info.setSha(version.getSha());
+        info.setSha(version.getRepoShaMap().get(repoName));
         info.setTrees(null);
         info = queryLastInfo(context, info, TreesInfo.class);
         return info;
@@ -192,7 +192,7 @@ public class DataAction implements Action {
         info.setReposId(reposId);
         info.setRepoName(repoName);
         info.setName(InfoNameConstant.GoAstPackageForRepo);
-        info.setVersion(version.getSha());
+        info.setVersion(version.getRepoShaMap().get(repoName));
         info.setGoPackages(null);
         info = queryLastInfo(context, info, GoPackagesInfo.class);
         return info;
