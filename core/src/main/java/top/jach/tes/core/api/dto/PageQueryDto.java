@@ -1,6 +1,7 @@
 package top.jach.tes.core.api.dto;
 
 import lombok.Data;
+import top.jach.tes.core.api.domain.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,10 @@ public class PageQueryDto<T> {
     private PageQueryDto(Integer pageNum, Integer pageSize) {
         this.pageNum = pageNum;
         this.pageSize = pageSize;
+    }
+
+    public static PageQueryDto LastInfoQueryDto(){
+        return create(1,1).setSortField(Entity.FIELD_CREATED_TIME);
     }
 
     public static PageQueryDto create(Integer pageNum, Integer pageSize){

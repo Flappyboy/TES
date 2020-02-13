@@ -1,15 +1,11 @@
 package top.jach.tes.plugin.jhkt.maintain;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.eclipse.jgit.diff.DiffEntry;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.info.InfoProfile;
-import top.jach.tes.core.impl.domain.element.ElementsInfo;
 import top.jach.tes.core.impl.domain.relation.PairRelation;
-import top.jach.tes.core.impl.domain.relation.PairRelationWithElements;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
-import top.jach.tes.core.impl.domain.relation.Relation;
 import top.jach.tes.plugin.jhkt.dts.Dts;
 import top.jach.tes.plugin.jhkt.dts.DtssInfo;
 import top.jach.tes.plugin.jhkt.git.commit.GitCommitsForMicroserviceInfo;
@@ -26,7 +22,7 @@ public class MainTainsInfo extends Info {
     private Long reposId;
     private Long startTime;
     private Long endTime;
-    private String revision;
+    private String version;
     private InfoProfile elementsInfo;
     private List<MainTain> mainTainList = new ArrayList<>();
 
@@ -188,8 +184,8 @@ public class MainTainsInfo extends Info {
         return this;
     }
 
-    public MainTainsInfo setRevision(String revision) {
-        this.revision = revision;
+    public MainTainsInfo setVersion(String version) {
+        this.version = version;
         return this;
     }
 
