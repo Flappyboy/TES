@@ -1,9 +1,12 @@
 package top.jach.tes.plugin.tes.code.bug;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import top.jach.tes.core.impl.domain.element.Element;
 
-@Data
+@Getter
+@Setter
 public class Bug extends Element {
     private String name;
 
