@@ -26,13 +26,8 @@ import java.util.Set;
 
 @Getter
 @Setter
-<<<<<<<<< Temporary merge branch 1
 public class GitCommit extends Element implements Comparable<GitCommit>{
-    public static final String _data_struct_version = "2019-12-25-001";
-=========
-public class GitCommit extends Element {
     public static final String _data_struct_version = "2020-01-08-001";
->>>>>>>>> Temporary merge branch 2
     private Long reposId;
     private String repoName;
     private String sha;
