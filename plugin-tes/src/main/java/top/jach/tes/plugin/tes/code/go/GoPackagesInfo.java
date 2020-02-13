@@ -1,6 +1,8 @@
 package top.jach.tes.plugin.tes.code.go;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.plugin.tes.code.repo.WithRepo;
 
@@ -8,7 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class GoPackagesInfo extends Info  implements WithRepo {
 
     Long reposId;
