@@ -47,10 +47,11 @@ const errorHandler = error => {
 /**
  * 配置request请求时的默认参数
  */
-
+const baseUrl = 'http://localhost:8080';
 const request = extend({
   errorHandler,
   // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  // credentials: 'include', // 默认请求是否带上cookie
+  prefix: baseUrl,
 });
 export default request;

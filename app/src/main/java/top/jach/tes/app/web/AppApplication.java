@@ -1,6 +1,7 @@
 package top.jach.tes.app.web;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
 import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -34,6 +35,11 @@ public class AppApplication {
         SpringApplication.run(AppApplication.class, args);
     }
 
+    public static MongoCollection generalInfoCollection(){
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+        return mongoClient.getDatabase("tes_dev").getCollection("general_info");
+    }
+
     @Bean
     ContextFactory contextFactory(){
         return new BaseContextFactory(iLoggerFactory, infoRepositoryFactory);
@@ -41,8 +47,7 @@ public class AppApplication {
 
     @Bean
     GeneraInfoMongoRepository generaInfoMongoRepository(){
-        MongoClient mongoClient = new MongoClient("localhost", 27017);
-        return new GeneraInfoMongoRepository(mongoClient.getDatabase("tes").getCollection("general_info"));
+        return new GeneraInfoMongoRepository(generalInfoCollection());
     }
 
     @Bean

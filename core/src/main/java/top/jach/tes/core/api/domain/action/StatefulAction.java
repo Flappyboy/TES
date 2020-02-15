@@ -21,7 +21,7 @@ public interface StatefulAction {
     static Action deserializeActionFromJson(String json){
         JSONObject jsonObject = JSONObject.parseObject(json);
         try {
-            Class clazz = Class.forName(jsonObject.getString("class"));
+            Class clazz = Class.forName(jsonObject.getJSONObject("attr").getString("class"));
             Action action = (Action) clazz.newInstance();
             if(action instanceof StatefulAction){
                 StatefulAction statefulAction = (StatefulAction) action;

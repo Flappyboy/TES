@@ -1,4 +1,8 @@
 export default {
+  'menu.project': '项目',
+  'menu.action': '基本操作',
+  'menu.info': '信息',
+  'menu.task': '任务',
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',

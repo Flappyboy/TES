@@ -118,6 +118,30 @@ export default {
           authority: ['admin', 'user'],
           routes: [
             {
+              path: '/project',
+              name: 'project',
+              icon: 'dashboard',
+              component: './project/list-card',
+            },
+            {
+              path: '/action',
+              name: 'action',
+              icon: 'dashboard',
+              component: './action',
+            },
+            {
+              path: '/info',
+              name: 'info',
+              icon: 'dashboard',
+              component: './info',
+            },
+            {
+              path: '/task',
+              name: 'task',
+              icon: 'dashboard',
+              component: './task',
+            },
+            {
               path: '/dashboard',
               name: 'dashboard',
               icon: 'dashboard',
@@ -330,7 +354,7 @@ export default {
             },
             {
               path: '/',
-              redirect: '/dashboard/analysis',
+              redirect: '/project',
               authority: ['admin', 'user'],
             },
             {

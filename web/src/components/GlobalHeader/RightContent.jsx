@@ -7,6 +7,7 @@ import HeaderSearch from '../HeaderSearch';
 import SelectLang from '../SelectLang';
 import styles from './index.less';
 import NoticeIconView from './NoticeIconView';
+import CurrentProject from "@/components/GlobalHeader/CurrentProject";
 
 const GlobalHeaderRight = props => {
   const { theme, layout } = props;
@@ -18,6 +19,7 @@ const GlobalHeaderRight = props => {
 
   return (
     <div className={className}>
+      <CurrentProject />
       <HeaderSearch
         className={`${styles.action} ${styles.search}`}
         placeholder={formatMessage({
