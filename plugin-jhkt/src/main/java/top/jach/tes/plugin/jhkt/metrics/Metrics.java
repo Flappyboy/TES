@@ -20,7 +20,7 @@ public class Metrics {
     /**
      * 大小
      */
-    private Double communicationCohesive;
+
     //微服务的包的个数
     private int packageCout;
     //微服务的文件总数
@@ -89,6 +89,8 @@ public class Metrics {
     //暂时没用到
     private Double independenceCoupling;
     //暂时没用到
+    private Double communicationCohesive;
+
     private int[][] initMatrix;
 
     /**

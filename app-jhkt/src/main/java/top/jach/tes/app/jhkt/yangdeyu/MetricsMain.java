@@ -67,7 +67,7 @@ public class MetricsMain extends DevApp {
 
     }
 
-    public static void MetricsResult(String version, HashMap<String, GoPackagesInfo> packagesInfoHashMap, List<String> microserviceName, MicroservicesInfo microserviceInfo){
+    public static MetricsInfo MetricsResult(String version, HashMap<String, GoPackagesInfo> packagesInfoHashMap, List<String> microserviceName, MicroservicesInfo microserviceInfo){
         //if(version.equals("x_1635-x_95d.x_4af.x_893_x_1ff_x_e0af_x_e0a3_x_e0b1")){
             MetricsInfo metricsInfo = MetricsInfo.createInfo(version,packagesInfoHashMap,microserviceName,microserviceInfo);
             for(Metrics metrics:metricsInfo.getMetricsList()){
@@ -78,6 +78,7 @@ public class MetricsMain extends DevApp {
             }
             System.out.println("版本号："+version+"中共有"+metricsInfo.getMetricsList().size()+"个微服务");
        // }
+        return metricsInfo;
 
     }
 
