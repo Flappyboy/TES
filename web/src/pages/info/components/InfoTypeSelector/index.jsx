@@ -63,6 +63,14 @@ class InfoTypeSelector extends Component {
       title: 'infoName',
       dataIndex: 'infoName',
     },
+    {
+      title: '操作',
+      render: (text, record) => (
+        <Fragment>
+          <Button onClick={this.chooseInfoType.bind(this, record)}>选择</Button>
+        </Fragment>
+      ),
+    },
   ];
 
   componentDidMount() {
@@ -74,6 +82,14 @@ class InfoTypeSelector extends Component {
       }
     });
   }
+
+  chooseInfoType = (record)=>{
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'infos/chooseInfoType',
+      payload: record,
+    });
+  };
 
   okHandle() {
 

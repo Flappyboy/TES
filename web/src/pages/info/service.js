@@ -29,3 +29,9 @@ export async function queryAllInfoTypes(params) {
     params,
   });
 }
+
+export async function queryInfosByType(params) {
+  return request('/api/info', {
+    params,
+  });
+}

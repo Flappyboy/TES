@@ -1,7 +1,13 @@
 const ProjectModel = {
   namespace: 'project',
   state: {
-    currentProject: {},
+    currentProject: {
+      "id": 1,
+      "createdTime": 1575216488269,
+      "updatedTime": 1575216488269,
+      "name": "tes",
+      "desc": "just test"
+    },
   },
   effects: {
     *chooseProject(payload, { call, put }) {

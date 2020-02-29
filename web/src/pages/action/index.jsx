@@ -138,7 +138,25 @@ class AdvancedForm extends Component {
     return (
       <>
         <PageHeaderWrapper content="高级表单常见于一次性输入和提交大批量数据的场景。">
-          <Card title="仓库管理" className={styles.card} bordered={false}>
+          <Card title="Action" className={styles.card} bordered={false}>
+            <Form layout="vertical" hideRequiredMark>
+              <Row gutter={16}>
+                <Col lg={6} md={12} sm={24}>
+                  <Form.Item label={fieldLabels.name}>
+                    {getFieldDecorator('name', {
+                      rules: [
+                        {
+                          required: true,
+                          message: '请输入仓库名称',
+                        },
+                      ],
+                    })(<Input placeholder="请输入仓库名称" />)}
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+          {/*<Card title="Action" className={styles.card} bordered={false}>
             <Form layout="vertical" hideRequiredMark>
               <Row gutter={16}>
                 <Col lg={6} md={12} sm={24}>
@@ -296,8 +314,8 @@ class AdvancedForm extends Component {
                 </Col>
               </Row>
             </Form>
-          </Card>
-          <Card title="任务管理" className={styles.card} bordered={false}>
+          </Card>*/}
+          {/*<Card title="任务管理" className={styles.card} bordered={false}>
             <Form layout="vertical" hideRequiredMark>
               <Row gutter={16}>
                 <Col lg={6} md={12} sm={24}>
@@ -458,7 +476,7 @@ class AdvancedForm extends Component {
             {getFieldDecorator('members', {
               initialValue: tableData,
             })(<TableForm />)}
-          </Card>
+          </Card>*/}
         </PageHeaderWrapper>
         <RouteContext.Consumer>
           {({ isMobile }) => (
