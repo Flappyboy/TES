@@ -10,6 +10,7 @@ import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.HunkHeader;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -75,5 +76,16 @@ public class DiffFile {
     public DiffFile setSubSize(Integer subSize) {
         this.subSize = subSize;
         return this;
+    }
+    public List<String> getFilePath(){
+        List<String> lpath=new ArrayList<>();
+        if(this.newPath==null||this.oldPath==null){
+            lpath.add(this.newPath==null?oldPath:newPath);
+        }
+        else if(this.oldPath!=null&&this.newPath!=null){
+            lpath.add(this.newPath);
+            lpath.add(this.oldPath);
+        }
+        return lpath;
     }
 }

@@ -45,19 +45,23 @@ public class HublinkAction implements Action {
         );
     }
     //计算每个节点在各个集合中出现次数+排序+输出所有步骤抽取成一个方法
-    public ElementsValue cal(List<String> nodes,List<String> allnodes,HashMap<String,Double> map,String flag){
-        for(int i=0;i<nodes.size();i++){
-            if (map.containsKey(nodes.get(i))) {
-                double temp2 = map.get(nodes.get(i));
-                map.put(nodes.get(i), temp2 + 1.0);
-            } else {
-                map.put(nodes.get(i), 1.0);
+    public ElementsValue cal(HashMap<String,Double> nodes,HashMap<String,Double> allnodes,HashMap<String,Double> map,String flag){
+        Set<String> nset=nodes.keySet();
+        for(String key:nset){
+            if(map.containsKey(key)){
+                double tmp2=map.get(key)+nodes.get(key);
+                map.put(key,tmp2);
+            }
+            else{
+                map.put(key,nodes.get(key));
             }
         }
+
         //不存在该异味的微服务也要加上
-        for(int i=0;i<allnodes.size();i++){
-            if(!map.containsKey(allnodes.get(i))){
-                map.put(allnodes.get(i),0.0);
+        Set<String> allset=allnodes.keySet();
+        for(String allkey:allset){
+            if(!map.containsKey(allnodes.get(allkey))){
+                map.put(allkey,0.0);
             }
         }
         Set set=map.entrySet();
@@ -78,16 +82,17 @@ public class HublinkAction implements Action {
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {
         PairRelationsInfo pairRelationsInfo = inputInfos.getInfo(PAIR_RELATIONS_INFO, PairRelationsInfo.class);
         List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
-        List<String> nodes=new ArrayList<String>();//存储所有节点名
-        List<String> sourceNodes=new ArrayList<String>();//存储开始节点名
-        List<String> endNodes=new ArrayList<String>();//存储结束节点名
+        HashMap<String, Double> nodes=new HashMap<>();//存储所有节点名
+        HashMap<String, Double> sourceNodes=new HashMap<>();//存储开始节点名
+        HashMap<String, Double> endNodes=new HashMap<>();//存储结束节点名
         for(PairRelation pr:relations){
-            sourceNodes.add(pr.getSourceName());
-            endNodes.add(pr.getTargetName());
-            nodes.add(pr.getTargetName());
-            nodes.add(pr.getSourceName());
+            sourceNodes.put(pr.getSourceName(),pr.getValue());
+            endNodes.put(pr.getTargetName(),pr.getValue());
+            nodes.put(pr.getTargetName(),pr.getValue());
+            nodes.put(pr.getSourceName(),pr.getValue());
         }
-        List<String> allnodes=new ArrayList<String>(nodes);//赋值所有节点名
+
+        HashMap allnodes=(HashMap) ((HashMap<String, Double>) nodes).clone();//赋值所有节点名，三个计算都需要用到
         //排序
         HashMap<String, Double> map = new HashMap<>();
         HashMap<String, Double> sourceMap = new HashMap<>();
@@ -96,7 +101,7 @@ public class HublinkAction implements Action {
         ElementsValue elementHublink_s=cal(sourceNodes,allnodes,sourceMap,HUBLINK__OUT);
         ElementsValue elementHublink_e=cal(endNodes,allnodes,endMap,HUBLINK_IN);
         //return DefaultOutputInfos.WithSaveFlag(elementHublink,elementHublink_s,elementHublink_e);
-        //输出
+        //输出,可删除
         Set set=elementHublink.getValue().entrySet();
         Set s_set=elementHublink_s.getValue().entrySet();
         Set e_set=elementHublink_e.getValue().entrySet();
