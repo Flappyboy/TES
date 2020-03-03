@@ -1,14 +1,50 @@
 import { message } from 'antd';
-import { fakeSubmitForm } from './service';
+import { fakeSubmitForm, allActions } from './service';
+import {queryAllInfoTypes} from "@/pages/info/service";
 
 const Model = {
   namespace: 'action',
-  state: {},
+  state: {
+    actions:[],
+    action: {
+      "name": "ImportData",
+      "action": "ImportDataAction",
+      "desc": "导入数据",
+      "meta": [
+        {
+          "name": "file",
+          "displayName": "File",
+          "inputClass": "file",
+        }
+      ],
+    },
+  },
   effects: {
     *submitAdvancedForm({ payload }, { call }) {
       yield call(fakeSubmitForm, payload);
       message.success('提交成功');
     },
+    *fetchActions({ payload }, { call }){
+      console.log('fetchActionssss')
+      const response = yield call(allActions, payload);
+      yield put({
+        type: 'saveActions',
+        payload: {
+          list: response.result,
+          pagination: {
+            pageSize: 5,
+          },
+        },
+      });
+    },
+    *chooseAction({ payload }, { call }){
+
+    }
   },
+  reducers: {
+    saveActions(state, action) {
+      return {...state, data: action.payload};
+    },
+  }
 };
 export default Model;

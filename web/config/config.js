@@ -142,6 +142,12 @@ export default {
               component: './task',
             },
             {
+              path: '/maintain',
+              name: 'maintain',
+              icon: 'dashboard',
+              component: './maintain',
+            },
+            {
               path: '/dashboard',
               name: 'dashboard',
               icon: 'dashboard',

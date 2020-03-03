@@ -20,7 +20,7 @@ export default () => (
           textAlign: 'center',
         }}
       >
-        <Icon type="smile" theme="twoTone" /> Ant Design Pro{' '}
+        <Icon type="smile" theme="twoTone" /> TES{' '}
         <Icon type="heart" theme="twoTone" twoToneColor="#eb2f96" /> You
       </Typography.Title>
     </Card>

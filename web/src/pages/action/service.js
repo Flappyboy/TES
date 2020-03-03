@@ -6,3 +6,10 @@ export async function fakeSubmitForm(params) {
     data: params,
   });
 }
+
+export async function allActions(params) {
+  return request('/api/action', {
+    method: 'GET',
+    data: params,
+  });
+}
