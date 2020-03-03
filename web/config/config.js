@@ -118,6 +118,36 @@ export default {
           authority: ['admin', 'user'],
           routes: [
             {
+              path: '/project',
+              name: 'project',
+              icon: 'dashboard',
+              component: './project/list-card',
+            },
+            {
+              path: '/action',
+              name: 'action',
+              icon: 'dashboard',
+              component: './action',
+            },
+            {
+              path: '/info',
+              name: 'info',
+              icon: 'dashboard',
+              component: './info',
+            },
+            {
+              path: '/task',
+              name: 'task',
+              icon: 'dashboard',
+              component: './task',
+            },
+            {
+              path: '/maintain',
+              name: 'maintain',
+              icon: 'dashboard',
+              component: './maintain',
+            },
+            {
               path: '/dashboard',
               name: 'dashboard',
               icon: 'dashboard',
@@ -330,7 +360,7 @@ export default {
             },
             {
               path: '/',
-              redirect: '/dashboard/analysis',
+              redirect: '/project',
               authority: ['admin', 'user'],
             },
             {
@@ -383,13 +413,16 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  /*
-  proxy: {
-    '/server/api/': {
+  /*proxy: {
+    /!*'/server/api/': {
       target: 'https://preview.pro.ant.design/',
       changeOrigin: true,
       pathRewrite: { '^/server': '' },
+    },*!/
+    '/api/': {
+      target: 'http://localhost:8080/',
+      changeOrigin: true,
+      // pathRewrite: { '^/server': '' },
     },
-  },
-  */
+  },*/
 };

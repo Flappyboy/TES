@@ -10,16 +10,18 @@ import top.jach.tes.plugin.jhkt.InfoNameConstant;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
 import top.jach.tes.plugin.jhkt.arcsmell.cyclic.CyclicAction;
 import top.jach.tes.plugin.jhkt.arcsmell.hublink.HublinkAction;
+import top.jach.tes.plugin.jhkt.metrics.Metrics;
 import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 
 public class DemoMain extends DevApp {
     public static void main(String[] args) {
         //微服务和关系
-        MicroservicesInfo microservices = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.MicroservicesForRepos, MicroservicesInfo.class);
+        /*MicroservicesInfo microservices = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.MicroservicesForRepos, MicroservicesInfo.class);
         microservices = MicroservicesInfo.createInfoByExcludeMicroservice(microservices,
                 "x_2b", "x_1b", "x_23", "x_1d/x_6eed",
                 "x_39","x_1f","x_27/x_25","c_demo/c_demoa","c_demo/c_demob",
@@ -28,7 +30,12 @@ public class DemoMain extends DevApp {
 
         PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic();
         pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
-        System.out.println(pairRelationsInfo);
+        System.out.println(pairRelationsInfo);*/
+        Method[] ms = Metrics.class.getMethods();
+        for (Method m :
+                ms) {
+            System.out.println(m.getName());
+        }
 //        InfoTool.saveInputInfos(pairRelationsInfo);
 
 //        microservices.noRelationsByTopic();
