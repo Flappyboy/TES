@@ -78,9 +78,6 @@ public class MvActionTest {
                             tmp.put(che,col.get(che)+1);
                         }
                     }
-                   /* for(int i=1;i<tlist.size();i++){
-                        tmp.put(tlist.get(i),col.get(tlist.get(i))+1);
-                    }*/
                     //更新tran中原来strs对应的map的values集合
                         Map<String,Integer> check=new HashMap<>(new HashMap<>(tran.get(strs)));
                         for(Map.Entry<String, Integer> ent:tmp.entrySet()){

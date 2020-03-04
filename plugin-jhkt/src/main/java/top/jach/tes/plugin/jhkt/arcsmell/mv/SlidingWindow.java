@@ -35,5 +35,10 @@ public class SlidingWindow {
         return this;
     }
 
+    public Set<DiffFile> getDiffFiles(){
+       return this.diffFiles;
+    }
+
+
 
 }

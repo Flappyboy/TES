@@ -75,7 +75,7 @@ public class CyclicAction implements Action {
         PairRelationsInfo pairRelationsInfo = inputInfos.getInfo(PAIR_RELATIONS_INFO, PairRelationsInfo.class);
         //构建有向图
         List<Element> nodess = Lists.newArrayList(elementsInfo.iterator());
-        List<String> elements=new ArrayList<String>();//存储节点名即可---------用到这个
+        List<String> elements=new ArrayList<String>();//存储节点名即可
         for(Element e:nodess){
             elements.add(e.getElementName());
         }
@@ -93,6 +93,7 @@ public class CyclicAction implements Action {
                     matrix[startIndex][endIndex]=1;
                 }
             }
+
             // 从出发节点到当前节点的轨迹
             List<Integer> trace =new ArrayList<Integer>();
             //存储要打印输出的环回路

@@ -18,6 +18,7 @@ public class MicroserviceAttr {
     Long hublink;
     Long hublinkForIn;
     Long hublinkForOut;
+    Long mv;
     Long bugCount;
     Long commitCount;
     Long commitAddLineCount;
@@ -30,7 +31,6 @@ public class MicroserviceAttr {
         this.microserviceName = microserviceName;
         return this;
     }
-
     public MicroserviceAttr setHublinkForIn(Long hublinkForIn) {
         this.hublinkForIn = hublinkForIn;
         return this;
@@ -66,6 +66,10 @@ public class MicroserviceAttr {
         return this;
     }
 
+    public MicroserviceAttr setMv(Long mv){
+        this.mv=mv;
+        return this;
+    }
     public MicroserviceAttr setBugCount(Long bugCount) {
         this.bugCount = bugCount;
         return this;

@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Dts extends Bug {
 
-    // Key->RepoName, Value->shas
+    // Key->RepoName, Value->shas某个代码仓有哪些提交与这个问题单关联
     private Map<String, Set<String>> repoShasMap = new HashMap<>();
 
     public Dts addShas(String repoName, String... newShas){
