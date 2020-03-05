@@ -40,8 +40,8 @@ public class QueryAllDataMain extends DevApp {
         VersionsInfo versionsInfoForRelease = DataAction.queryLastInfo(context, InfoNameConstant.VersionsForRelease, VersionsInfo.class);
 
         for (Version version:
-                versionsInfoForRelease.getVersions()) {
-            // 查询version版本的微服务
+                versionsInfoForRelease.getVersions()) {//每一轮循环代表一个sheet页
+            // 查询version版本下的所有微服务
             MicroservicesInfo microservices = DataAction.queryLastMicroservices(context, reposInfo.getId(), null, version);
 
             for (Repo repo :
@@ -63,8 +63,8 @@ public class QueryAllDataMain extends DevApp {
                 }
             }
 
-            for(Microservice microservice: microservices){
-                // 某个微服务在某个版本下所有的commit信息
+            for(Microservice microservice: microservices.getMicroservices()){
+                // 查询在某个版本下所有微服务的commit信息
                 GitCommitsForMicroserviceInfo gitCommitsForMicroserviceInfo = DataAction.queryLastGitCommitsForMicroserviceInfo(context, reposInfo.getId(), microservice.getElementName(), version);
                 if(gitCommitsForMicroserviceInfo==null){
                     System.out.println("GitCommitsForMicroserviceInfo  "+microservice.getElementName()+"  "+version.getVersionName());

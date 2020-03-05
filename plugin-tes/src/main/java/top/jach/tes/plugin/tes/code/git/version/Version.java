@@ -22,7 +22,7 @@ public class Version {
     private Long reposId;
     private String repoName;
     private String sha;
-    private Map<String, String> repoShaMap = new HashMap<>();
+    private Map<String, String> repoShaMap = new HashMap<>();//第一个string是repo,第二个string是sha
 
     public static Version VersionFromTag(ReposInfo reposInfo, Repo.RepoToGit repoToGit, String tag) throws GitAPIException, IOException {
         Version info = new Version();

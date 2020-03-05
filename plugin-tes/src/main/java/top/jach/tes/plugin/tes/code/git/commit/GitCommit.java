@@ -147,6 +147,13 @@ public class GitCommit extends Element implements Comparable<GitCommit>{
         this.author = author;
         return this;
     }
+    public static Object getVersion(String field){
+        try {
+            return GitCommit.class.getField(field).get(null);
+        } catch (Exception e) {}
+        return null;
+    }
+
 
     @Override
     public int compareTo(GitCommit gitCommit) {

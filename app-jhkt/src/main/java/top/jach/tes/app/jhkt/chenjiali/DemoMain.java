@@ -21,7 +21,7 @@ public class DemoMain extends DevApp {
         microservices.setName(InfoNameConstant.MicroservicesForReposExcludeSomeHistory);
         InfoTool.saveInputInfos(microservices);
 
-        PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic();
+        PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic(false);
         pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
         InfoTool.saveInputInfos(pairRelationsInfo);
 

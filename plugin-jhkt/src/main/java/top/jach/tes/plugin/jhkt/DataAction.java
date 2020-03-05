@@ -131,7 +131,7 @@ public class DataAction implements Action {
                 continue;
             }
             // 根据Microservice的topic，统计出CallRelation
-            PairRelationsInfo msCallRelations = microservices.callRelationsInfoByTopic();
+            PairRelationsInfo msCallRelations = microservices.callRelationsInfoByTopic(true);
             saveInfo(context, msCallRelations.setName(InfoNameConstant.MicroserviceCallRelation));
             msCallRelations = null;
         }

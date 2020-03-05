@@ -52,7 +52,7 @@ public class AnalysisMain extends DevApp {
                 "x_13/x_ae5", "x_25", "x_21/7103");
         microservices.setName(InfoNameConstant.MicroservicesForReposExcludeSomeHistory);
 
-        PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic();
+        PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic(true);
         pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
         InfoTool.saveInputInfos(microservices, pairRelationsInfo);
 

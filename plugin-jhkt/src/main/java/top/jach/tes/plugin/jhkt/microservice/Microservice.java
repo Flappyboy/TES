@@ -14,9 +14,16 @@ public class Microservice extends Element {
     String repoName;
     Long annotationLines;
     Long codeLines;
-    Set<String> pubTopics = new HashSet<>();
-    Set<String> subTopics = new HashSet<>();
+    //若A服务发布的topics被B服务订阅了，说明A向B传送了数据，认为A依赖B
+    Set<String> pubTopics = new HashSet<>();//某微服务发布的topics
+    Set<String> subTopics = new HashSet<>();//某微服务订阅的topics。
     Map<String, Integer> subTopicOneOf = new HashMap<>();
+
+    public String getAllPath(){
+        String allPath=this.repoName+"/"+this.path;
+        return allPath;
+    }
+
 
     public Microservice setSubTopicOneOf(Map<String, Integer> subTopicOneOf) {
         this.subTopicOneOf = subTopicOneOf;

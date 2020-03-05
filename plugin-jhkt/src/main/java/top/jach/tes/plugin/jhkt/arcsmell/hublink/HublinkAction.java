@@ -15,6 +15,8 @@ import top.jach.tes.core.impl.domain.info.value.StringInfo;
 import top.jach.tes.core.impl.domain.meta.InfoField;
 import top.jach.tes.core.impl.domain.relation.PairRelation;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
+import top.jach.tes.plugin.jhkt.microservice.Microservice;
+import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 
 import java.util.*;
 
@@ -45,23 +47,24 @@ public class HublinkAction implements Action {
         );
     }
     //计算每个节点在各个集合中出现次数+排序+输出所有步骤抽取成一个方法
-    public ElementsValue cal(HashMap<String,Double> nodes,HashMap<String,Double> allnodes,HashMap<String,Double> map,String flag){
-        Set<String> nset=nodes.keySet();
-        for(String key:nset){
-            if(map.containsKey(key)){
-                double tmp2=map.get(key)+nodes.get(key);
-                map.put(key,tmp2);
+    public ElementsValue cal(List<String> nodes,List<Double> nodesValue,List<String> allnodes,HashMap<String,Double> map,String flag){
+       // Set<String> nset=nodes.keySet();
+        //////这个nodes是Map格式的，不允许同样的值存在啊，这个for循环相当于只是把nodes复制给map罢了
+        for(int i=0;i<nodes.size();i++){
+            if(map.containsKey(nodes.get(i))){
+                double tmp2=map.get(nodes.get(i))+nodesValue.get(i);
+                map.put(nodes.get(i),tmp2);
             }
             else{
-                map.put(key,nodes.get(key));
+                map.put(nodes.get(i),nodesValue.get(i));
             }
         }
-
+//////////////就是下面这个for循环把所有的hubink值变成了0
         //不存在该异味的微服务也要加上
-        Set<String> allset=allnodes.keySet();
-        for(String allkey:allset){
-            if(!map.containsKey(allnodes.get(allkey))){
-                map.put(allkey,0.0);
+        //Set<String> allset=allnodes.keySet();
+        for(int j=0;j<allnodes.size();j++){
+            if(!map.containsKey(allnodes.get(j))){
+                map.put(allnodes.get(j),0.0);
             }
         }
         Set set=map.entrySet();
@@ -82,26 +85,45 @@ public class HublinkAction implements Action {
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {
         PairRelationsInfo pairRelationsInfo = inputInfos.getInfo(PAIR_RELATIONS_INFO, PairRelationsInfo.class);
         List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
-        HashMap<String, Double> nodes=new HashMap<>();//存储所有节点名
-        HashMap<String, Double> sourceNodes=new HashMap<>();//存储开始节点名
-        HashMap<String, Double> endNodes=new HashMap<>();//存储结束节点名
-        for(PairRelation pr:relations){
+        List<String> nodes=new ArrayList<>();//存储所有节点名
+        List<String> sourceNodes=new ArrayList<>();//存储开始节点名
+        List<String> endNodes=new ArrayList<>();//存储结束节点名
+        List<Double> nodesValue=new ArrayList<>();
+        List<Double> sourceNodesValue=new ArrayList<>();
+        List<Double> endNodesValue=new ArrayList<>();
+        /*HashMap<String, Double> nodes=new HashMap<>();
+        HashMap<String, Double> sourceNodes=new HashMap<>();
+        HashMap<String, Double> endNodes=new HashMap<>();//*/
+        //map存储的不允许重复，而hublink就是为了计算重复次数，改成两个list同步记录节点名和对应的权重值
+        //从而允许重复
+        for(int i=0;i<relations.size();i++){
+            sourceNodes.add(relations.get(i).getSourceName());
+            sourceNodesValue.add(relations.get(i).getValue());
+            endNodes.add(relations.get(i).getTargetName());
+            endNodesValue.add(relations.get(i).getValue());
+            nodes.add(relations.get(i).getSourceName());
+            nodesValue.add(relations.get(i).getValue());
+            nodes.add(relations.get(i).getTargetName());
+            nodesValue.add(relations.get(i).getValue());
+        }
+        /*for(PairRelation pr:relations){
             sourceNodes.put(pr.getSourceName(),pr.getValue());
             endNodes.put(pr.getTargetName(),pr.getValue());
             nodes.put(pr.getTargetName(),pr.getValue());
             nodes.put(pr.getSourceName(),pr.getValue());
-        }
+        }*/
 
-        HashMap allnodes=(HashMap) ((HashMap<String, Double>) nodes).clone();//赋值所有节点名，三个计算都需要用到
+        List<String> allnodes=new ArrayList<>(new ArrayList<>(nodes));
+        //HashMap allnodes=(HashMap) ((HashMap<String, Double>) nodes).clone();//赋值所有节点名，三个计算都需要用到
         //排序
         HashMap<String, Double> map = new HashMap<>();
         HashMap<String, Double> sourceMap = new HashMap<>();
         HashMap<String, Double> endMap = new HashMap<>();
-        ElementsValue elementHublink=cal(nodes,allnodes,map,HUBLINK_IN_AND_OUT);
-        ElementsValue elementHublink_s=cal(sourceNodes,allnodes,sourceMap,HUBLINK__OUT);
-        ElementsValue elementHublink_e=cal(endNodes,allnodes,endMap,HUBLINK_IN);
+        ElementsValue elementHublink=cal(nodes,nodesValue,allnodes,map,HUBLINK_IN_AND_OUT);
+        ElementsValue elementHublink_s=cal(sourceNodes,sourceNodesValue,allnodes,sourceMap,HUBLINK__OUT);
+        ElementsValue elementHublink_e=cal(endNodes,endNodesValue,allnodes,endMap,HUBLINK_IN);
         //return DefaultOutputInfos.WithSaveFlag(elementHublink,elementHublink_s,elementHublink_e);
-        //输出,可删除
+/*        //输出,可删除
         Set set=elementHublink.getValue().entrySet();
         Set s_set=elementHublink_s.getValue().entrySet();
         Set e_set=elementHublink_e.getValue().entrySet();
@@ -126,7 +148,7 @@ public class HublinkAction implements Action {
             String key=entry.getKey();
             double value=entry.getValue();
             System.out.println(key+"--"+value);
-        }
+        }*/
 
         return DefaultOutputInfos.WithSaveFlag(elementHublink,elementHublink_s,elementHublink_e);
 

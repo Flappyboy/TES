@@ -30,6 +30,13 @@ import top.jach.tes.plugin.jhkt.maintain.MainTain;
 import top.jach.tes.plugin.jhkt.maintain.MainTainsInfo;
 import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
+import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
+import top.jach.tes.plugin.tes.code.git.tree.TreesInfo;
+import top.jach.tes.plugin.tes.code.git.version.Version;
+import top.jach.tes.plugin.tes.code.git.version.VersionsInfo;
+import top.jach.tes.plugin.tes.code.go.GoPackagesInfo;
+import top.jach.tes.plugin.tes.code.repo.Repo;
+import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,6 +52,10 @@ public class AnalysisMain extends DevApp {
     public static void main(String[] args) throws ActionExecuteFailedException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         Context context = Environment.contextFactory.createContext(Environment.defaultProject);
 
+        //下面每一步的查询得到的存储信息的对象（如microservices,dtssInfo,bugMicroserviceRelations等都作为
+        // 构建microserviceAttrsInfo对象列表的microserviceAttrsInfos方法的属性，往方法中传入这些属性即可
+        // 生成microserviceAttrsInfo对象，该对象直接作为excel表格的形式输出，详见Line 100）
+
         // 查询整个系统的微服务
         MicroservicesInfo microservices = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.MicroservicesForRepos, MicroservicesInfo.class);
         // 排除部分微服务
@@ -54,8 +65,8 @@ public class AnalysisMain extends DevApp {
                 "x_13/x_ae5", "x_25", "x_21/7103");
         microservices.setName(InfoNameConstant.MicroservicesForReposExcludeSomeHistory);
 
-        // 计算并存储微服务间的调用关系
-        PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic();
+        // 计算并存储微服务间的调用关系，用于后续架构异味的计算
+        PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic(true);
         pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
         InfoTool.saveInputInfos(microservices, pairRelationsInfo);
 
@@ -92,13 +103,23 @@ public class AnalysisMain extends DevApp {
         ArcSmellsInfo arcSmellsInfo = action.execute(infoProfileMap.toInputInfos(Environment.infoRepositoryFactory), context)
                 .getFirstByInfoClass(ArcSmellsInfo.class);
 
-        // 统计微服务的各项指标
-        List<MicroserviceAttrsInfo> microserviceAttrsInfos = microserviceAttrsInfos(microservices, dtssInfo, bugMicroserviceRelations, gitCommitsForMicroserviceInfoMap, arcSmellsInfo);
+        // 统计微服务的各项指标,上面所有获取的数据对象都传入microserviceAttrsInfos方法中作为参数，生成一个
+        //MicroserviceAttrsInfo列表，这个列表就是最终需要导出为excel列表的数据
 
+        //重点看microserviceAttrsInfos()方法，这个方法里version是按照时间段来分的，每个时间段一张sheet
+        //可在该方法中增加一个version参数，替代方法中的时间段。
+        //现在要做的是用一个for循环，每个循环给一个version名，循环中计算一次该version下的数据，
+        //每次循环都以上述version+一堆数据作为microserviceAttrsInfos方法的参数，调用一次该方法
+        //然后将结果add进下面的microserviceAttrsInfos列表中，每循环一次都做一次，最终version循环完了这个List也就出来了
+        //然后执行数据导出操作
+        List<MicroserviceAttrsInfo> microserviceAttrsInfos = microserviceAttrsInfos(microservices, dtssInfo, bugMicroserviceRelations, gitCommitsForMicroserviceInfoMap, arcSmellsInfo);
+//每一个microserviceAttrsInfos由版本号和MicroserviceAttr对象（存储一整张表的数据）列表组成
         // 数据导出
         exportCSV(microserviceAttrsInfos, new File("F:\\data\\tes\\analysis\\csv"));
         exportExcel(microserviceAttrsInfos, new File("F:\\data\\tes\\analysis"));
     }
+
+
 
     public static void exportCSV(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         if(!dir.exists()){

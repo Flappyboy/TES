@@ -1,6 +1,9 @@
 package top.jach.tes.plugin.jhkt.metrics;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.java.Log;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.info.InfoProfile;
@@ -18,8 +21,8 @@ import java.util.*;
  * @description: 不同版本的不同代码仓有一个MetricsInfo
  */
 @Log
-
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class MetricsInfo extends Info {
     private Long reposId;
     private Long startTime;

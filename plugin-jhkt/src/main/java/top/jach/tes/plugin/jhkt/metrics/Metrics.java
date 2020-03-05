@@ -1,6 +1,7 @@
 package top.jach.tes.plugin.jhkt.metrics;
 
-import lombok.Data;
+import lombok.*;
+import lombok.extern.apachecommons.CommonsLog;
 import lombok.extern.java.Log;
 import top.jach.tes.plugin.tes.code.go.GoFile;
 import top.jach.tes.plugin.tes.code.go.GoPackage;
@@ -14,6 +15,7 @@ import java.util.*;
  */
 @Data
 @Log
+@EqualsAndHashCode(callSuper = false)
 public class Metrics {
     //微服务名称
     private String elementName;
@@ -85,13 +87,16 @@ public class Metrics {
     private int pathNum;
 
 
-
     //暂时没用到
     private Double independenceCoupling;
     //暂时没用到
     private Double communicationCohesive;
 
     private int[][] initMatrix;
+
+    public String getElementName(){
+        return this.elementName;
+    }
 
     /**
      * 单个微服务与多个package对应
@@ -135,8 +140,8 @@ public class Metrics {
 
 
 
-    @Override
-    public String toString(){
+    /*@Override*/
+/*    public String toString(){
 //        printPacksInMicro(packagesInMicroList);
 //        printPacksInPack(packagesInPackageMap);
 //        printPacsInPackWithSameMicro();
@@ -157,7 +162,7 @@ public class Metrics {
                 +"；微服务内的扇入扇出乘积之和为："+fanInMultiOutCouplingInSameMicro+"；微服务包的个数是为："+packageCout+"   "+dewightPackageCout+"   "+ independencePackageCout;
 
 //        return "";
-    }
+    }*/
 
     public int calConnectingBlocks(){
         Map<String,Boolean> isVisited = new HashMap<>();
