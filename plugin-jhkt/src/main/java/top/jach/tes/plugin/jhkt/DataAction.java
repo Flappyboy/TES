@@ -101,9 +101,12 @@ public class DataAction implements Action {
             GitCommitsInfo gitCommitsInfo = queryGitCommitsInfo(context, repo.getName(), reposInfo.getId());
             try {
                 List<GitCommitsInfo> gitCommitsInfoListForVersion = GitCommitsInfo.createInfosForVersions(gitCommitsInfo, versionsInfoForRelease.shasForRepo(repo.getName()));
-                for (int i = 0; i < gitCommitsInfoListForVersion.size(); i++) {
+                /*for (int i = 0; i < gitCommitsInfoListForVersion.size(); i++) {
                     Version version = versionsInfoForRelease.getVersions().get(i);
-                    GitCommitsInfo gitCommitsInfoForRepoVersion = gitCommitsInfoListForVersion.get(i);
+                    GitCommitsInfo gitCommitsInfoForRepoVersion = gitCommitsInfoListForVersion.get(i);*/
+                for (int i = 0; i < gitCommitsInfoListForVersion.size()-1; i++) {
+                    Version version = versionsInfoForRelease.getVersions().get(i);
+                    GitCommitsInfo gitCommitsInfoForRepoVersion = gitCommitsInfoListForVersion.get(i+1);
                     gitCommitsInfoForRepoVersion.setName(InfoNameConstant.GitCommitsForRepoForVersion);
                     gitCommitsInfoForRepoVersion.setRevision(version.getVersionName());
                     saveInfo(context, gitCommitsInfoForRepoVersion);

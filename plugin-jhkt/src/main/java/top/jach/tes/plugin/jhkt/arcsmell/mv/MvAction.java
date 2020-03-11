@@ -1,6 +1,7 @@
 package top.jach.tes.plugin.jhkt.arcsmell.mv;
 
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.action.DefaultOutputInfos;
 import top.jach.tes.core.api.domain.action.InputInfos;
@@ -16,6 +17,7 @@ import top.jach.tes.plugin.tes.code.git.commit.GitCommit;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class MvAction implements Action {
     public static final String MICROSERVICE_INFO = "MicroserviceInfo";
@@ -38,7 +40,7 @@ public class MvAction implements Action {
     }
 
     //寻找多个滑动窗口中重复出现的提交文件及出现次数
-    public Map<String,Map<String,Integer>> find(List<Set<String>> w_paths){
+    public Map<String,Map<String,Integer>> find(List<Set<String>> w_paths, List<String> microservices){
         Map<String,Map<String,Integer>> tran=new HashMap<>();//创建一个二维矩阵
         Map<String,Integer> col=new HashMap<>();
         for(Set<String> set:w_paths){
@@ -48,28 +50,32 @@ public class MvAction implements Action {
         }
         List<String> column=new ArrayList<>(new HashSet<>(col.keySet()));//所有文件路径名集合（非重复）
         for(Map.Entry<String, Integer> entry : col.entrySet()){
-            tran.put(entry.getKey(),col);//二维矩阵每一行都对应一整个map集合
+            tran.put(entry.getKey(),new HashMap<>());//二维矩阵每一行都对应一整个map集合
         }
         //按每个文件路径遍历每一个窗口下的集合
         for(String strs:column){//遍历每个文件路径
+            String m = getMicroservicePathByPathname(strs, microservices);
+            Map<String,Integer> tmp = tran.get(strs);
             for(int j=0;j<w_paths.size();j++){//遍历每个窗口
-                List<String> tlist=new ArrayList<>(new HashSet<>(w_paths.get(j)));//深克隆
+                Set<String> tlist = w_paths.get(j);
                 if(tlist.contains(strs)){
-                    Map<String,Integer> tmp=new HashMap<>(new HashMap<>(col));
                     for(String che:tlist){
-                        if(che.equals(strs)){
+                        if(che.startsWith(m)){
                             continue;
                         }
                         else{
-                            tmp.put(che,col.get(che)+1);
+                            Integer count = tmp.get(che);
+                            if (count == null){
+                                count = 0;
+                            }
+                            tmp.put(che,count+1);
                         }
                     }
                     //更新tran中原来strs对应的map的values集合
-                    Map<String,Integer> check=new HashMap<>(new HashMap<>(tran.get(strs)));
+                    /*Map<String,Integer> check=new HashMap<>(new HashMap<>(tran.get(strs)));
                     for(Map.Entry<String, Integer> ent:tmp.entrySet()){
                         tmp.put(ent.getKey(),check.get(ent.getKey())+ent.getValue());
-                    }
-                    tran.put(strs,new HashMap<>(tmp));//覆盖上一次的修改
+                    }*/
                 }
             }
         }
@@ -80,11 +86,41 @@ public class MvAction implements Action {
         String mname=null;
         for(Microservice microservice:microservices){
             String mPath=microservice.getAllPath();
+//            String mPath=microservice.getPath();
             if(mPath==null){
                 continue;
             }
             if(path.startsWith(mPath)){
                 mname=microservice.getElementName();
+                break;
+            }
+        }
+        return mname;
+    }
+    public String getMicroservicePathByPathnameAndMs(String path,List<Microservice> microservices){
+        String mname=null;
+        for(Microservice microservice:microservices){
+            String mPath=microservice.getAllPath();
+//            String mPath=microservice.getPath();
+            if(mPath==null){
+                continue;
+            }
+            if(path.startsWith(mPath)){
+                mname=mPath;
+                break;
+            }
+        }
+        return mname;
+    }
+    public String getMicroservicePathByPathname(String path,List<String> microservices){
+        String mname=null;
+        for(String mPath:microservices){
+//            String mPath=microservice.getPath();
+            if(mPath==null){
+                continue;
+            }
+            if(path.startsWith(mPath)){
+                mname=mPath;
                 break;
             }
         }
@@ -97,7 +133,7 @@ public class MvAction implements Action {
             Set<String> tmpset=new HashSet<>();
             for(String str:sets){
                 String tmp=getMicroserviceByPathname(str,microservices);
-                if(tmpset.contains(tmp)){
+                if(tmpset.contains(tmp) || StringUtils.isBlank(tmp)){
                     continue;//若当前路径所在微服务在之前的遍历中已经出现过，则不重复添加
                 }
                 else{
@@ -109,58 +145,120 @@ public class MvAction implements Action {
         return micros;
     }
     //检测算法,目前返回的是null,可返回的数据是一个map矩阵，记录每个文件与其他文件在不同窗口一起出现的次数
-    public ElementsValue detect(List<GitCommit> gitCommits,int len,List<Microservice> microservices){
+    public ElementsValue detect(List<GitCommit> gitCommits,int len, int minCommitCount, double minPer,List<Microservice> microservices){
         //List<GitCommit> gitCommits= Lists.newArrayList(gitCommitsInfo.getGitCommits().iterator());
         Collections.sort(gitCommits);//将获取的gitCommits对象集合按照提交时间先后排序（git记录的是秒级的提交时间戳）
         //根据滑动窗口大小设置将gitCommits集合分隔为子集合
         if (gitCommits == null || gitCommits.size() == 0 || len < 1) {
             return null;
         }
-        List<List<GitCommit>> windows = new ArrayList<List<GitCommit>>();//窗口的集合
+        /*List<List<GitCommit>> windows = new ArrayList<>();//窗口的集合
         int size = gitCommits.size(); //传入集合长度
         int count = (size + len - 1) / len;//分隔后的集合个数
         for (int i = 0; i < count; i++) {
             List<GitCommit> subList = gitCommits.subList(i * len, ((i + 1) * len > size ? size : len * (i + 1)));
             windows.add(subList);
-        }
+        }*/
+
         //生成滑动窗口对象列表
-        List<SlidingWindow> s_windows=new ArrayList<>();
-        for(List<GitCommit> lgc:windows){
-            Set<DiffFile> s_diffFile=new HashSet<>();
-            for(GitCommit gc:lgc){
-                for(DiffFile df:gc.getDiffFiles()){
-                    s_diffFile.add(df);
+        Queue<Set<String>> blocks=new LinkedBlockingQueue<>();
+        for(GitCommit gc:gitCommits){
+            Set<String> block=new HashSet<>();
+            for(DiffFile df:gc.getDiffFiles()){
+                for (String p :
+                        df.getFilePath()) {
+                    String m = getMicroserviceByPathname(gc.getRepoName()+"/"+p,microservices);
+                    if (m!=null){
+                        block.add(gc.getRepoName()+"/"+p);
+                    }
                 }
             }
-            s_windows.add(new SlidingWindow(len,s_diffFile));
-        }
-
-        List<Set<String>> w_paths=new ArrayList<>();//所有窗口中路径集合的集合
-        for(int i=0;i<s_windows.size();i++){
-            Set<String> s_path=new HashSet<>();//某一个窗口中所有文件路径的集合，多个string形式存储
-            for(DiffFile df:s_windows.get(i).getDiffFiles()){
-                s_path.addAll(df.getFilePath());
+            if(block.size()>0) {
+                blocks.add(block);
             }
-            w_paths.add(s_path);
+        }
+        Map<String, Integer> fileCount = new HashMap<>();
+        for (Set<String> block :
+                blocks) {
+            for (String file :
+                    block) {
+                Integer c = fileCount.get(file);
+                if (c == null){
+                    c = 0;
+                }
+                fileCount.put(file, c+1);
+            }
+        }
+        List<Set<String>> bs = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            bs.add(blocks.poll());
+        }
+        SlidingWindow slidingWindow = new SlidingWindow(bs);
+        Map<String,Map<String,Integer>> resultFiles = slidingWindow.slideBlocks(blocks, path -> getMicroservicePathByPathnameAndMs(path, microservices));
+        Map<String, Double> mmvs = new HashMap<>();
+        for (Microservice m :
+                microservices) {
+            mmvs.put(m.getElementName(), 0d);
+        }
+//        Map<String, Double> mv_avgs = new HashMap<>();
+        for (Map.Entry<String,Map<String, Integer>> entry:
+                resultFiles.entrySet()){
+            String file = entry.getKey();
+            Double tc = Double.valueOf(fileCount.get(file));
+            if(tc<minCommitCount){
+                continue;
+            }
+            for (Map.Entry<String, Integer> entry2 :
+                    entry.getValue().entrySet()) {
+                String tfile = entry2.getKey();
+                Integer count = entry2.getValue();
+                if(count/tc >= minPer){
+                    // 那么认为file->tfile存在mv
+                    String m = getMicroserviceByPathname(file, microservices);
+                    String tm = getMicroserviceByPathname(tfile, microservices);
+                    if(m.equals(tm) || StringUtils.isBlank(m) || StringUtils.isBlank(tm)){
+                        continue;
+                    }
+                    Double mc = mmvs.get(m);
+                    mmvs.put(m, mc+1);
+                    Double tmc = mmvs.get(tm);
+                    mmvs.put(tm, tmc+1);
+                }
+            }
+        }
+        /*List<Set<String>> w_paths=new ArrayList<>();//所有窗口中路径集合的集合
+        for(int i=0;i<s_windows.size();i++){
+            *//*Set<String> s_path=new HashSet<>();//某一个窗口中所有文件路径的集合，多个string形式存储
+            s_path.addAll(s_windows.get(i).getFiles());
+            w_paths.add(s_path);*//*
+            w_paths.add(s_windows.get(i).getFiles());
         }
 
         //将获取的各个窗口下的路径名集合转换为路径对应微服务的微服务名
         //存在问题，并没有返回正确的文件对应的微服务名
-        List<Set<String>> m=fileToMicroservice(w_paths,microservices);
-        List<Set<String>> microservs=new ArrayList<>(m);
+        *//*List<Set<String>> m=fileToMicroservice(w_paths,microservices);
+        List<Set<String>> microservs=new ArrayList<>(m);*//*
 
         //可返回的数据,一个二维矩阵，记录每个file与其他各个file共同出现在不同窗口次数
-        Map<String,Map<String,Integer>> resultFiles=find(microservs);
+        List<String> microservicepaths= new ArrayList<>();
+        for (Microservice m:
+        microservices) {
+            microservicepaths.add(m.getAllPath());
+        }*/
+//        Map<String,Map<String,Integer>> resultFiles=find(w_paths,microservicepaths);
+
         //统计每个微服务满足mv架构异味的次数
-        Map<String,Integer> allmicro=new HashMap<>();
-        for(Set<String> set:microservs){
+        /*Map<String,Integer> allmicro=new HashMap<>();
+        for(Set<String> set:mmvs){
             for(String str:set){
-                allmicro.put(str,0);
+                allmicro.put(str,0);1
             }
-        }
-        List<String> allserves=new ArrayList<>(new HashSet<>(allmicro.keySet()));//所有微服务名不重复
+        }*/
+        List<String> allserves=new ArrayList<>(new HashSet<>(mmvs.keySet()));//所有微服务名不重复
         ElementsValue elmentMv=ElementsValue.createInfo();
-        for(String strs:allserves){
+        elmentMv.setValueMap(mmvs);
+
+        /*for(String strs:allserves){
             Map<String,Integer> mapItem=resultFiles.get(strs);
             //elment.setName(strs);
             int value=0;
@@ -168,7 +266,7 @@ public class MvAction implements Action {
                 value+=entry.getValue();
             }
             elmentMv.put(strs,(double)value);
-        }
+        }*/
         return elmentMv;
 
     }

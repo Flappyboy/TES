@@ -1,4 +1,4 @@
-package top.jach.tes.app.jhkt.chenjiali;
+package top.jach.tes.app.jhkt.lijiaqi;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -8,13 +8,14 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import top.jach.tes.app.dev.DevApp;
+import top.jach.tes.app.jhkt.chenjiali.CorrelationData;
+import top.jach.tes.app.jhkt.chenjiali.CorrelationDataInfo;
+import top.jach.tes.app.jhkt.chenjiali.Ttest;
 import top.jach.tes.app.mock.Environment;
 import top.jach.tes.app.mock.InfoTool;
 import top.jach.tes.app.mock.InputInfoProfiles;
 import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.context.Context;
-import top.jach.tes.core.api.domain.info.Info;
-import top.jach.tes.core.api.dto.PageQueryDto;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.element.ElementsValue;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
@@ -35,8 +36,6 @@ import top.jach.tes.plugin.jhkt.metrics.MetricsInfo;
 import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommit;
-import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
-import top.jach.tes.plugin.tes.code.git.tree.TreesInfo;
 import top.jach.tes.plugin.tes.code.git.version.Version;
 import top.jach.tes.plugin.tes.code.git.version.VersionsInfo;
 import top.jach.tes.plugin.tes.code.go.GoPackagesInfo;
@@ -49,7 +48,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,8 +65,12 @@ public class AnalysisVersionMain extends DevApp {
         List<CorrelationDataInfo> correlationDataInfos=new ArrayList<>();//创建excel表格分析数据信息的源数据
         List<MetricsInfo> metricsInfos=new ArrayList<>();//创建excel表格可维护性数据信息的源数据
 
+        for (int i = 0; i < versionsInfoForRelease.getVersions().size()-1; i++) {
+            Version version = versionsInfoForRelease.getVersions().get(i);
+        /*}
         for (Version version:
-                versionsInfoForRelease.getVersions()) {//每一轮循环代表一个sheet页
+                versionsInfoForRelease.getVersions()) {//每一轮循环代表一个sheet页*/
+
             //查询version name
             String n_version=version.getVersionName();
 
@@ -133,9 +135,13 @@ public class AnalysisVersionMain extends DevApp {
 
             //计算mv架构异味
             MvAction mvAction=new MvAction();
-            ElementsValue ev=mvAction.detect(gitCommits,6, 11, 0.8,microservices.getMicroservices());
+            ElementsValue ev=mvAction.detect(gitCommits,6, 10, 0.8,microservices.getMicroservices());
+//            ElementsValue ev2=mvAction.detect(gitCommits,11, 10, 0.8,microservices.getMicroservices());
             for(String str:ev.getValueMap().keySet()){
                 ArcSmell acl=arcSmellsInfo.find(str);
+                if(acl==null){
+                    continue;
+                }
                 acl.setMv((ev.getValueMap().get(str)).longValue());
             }
             //根据以上查询数据生成MicroserviceAttrsInfo类的对象
@@ -152,8 +158,8 @@ public class AnalysisVersionMain extends DevApp {
 
         }
         // 数据导出
-        exportCSV(microserviceAttrsInfos, new File("D:\\data\\tes\\analysis\\csv"));
-        exportExcel(microserviceAttrsInfos,correlationDataInfos,metricsInfos, new File("D:\\data\\tes\\analysis"));
+//        exportCSV(microserviceAttrsInfos, new File("D:\\data\\tes\\analysis\\csv"));
+        exportExcel(microserviceAttrsInfos,correlationDataInfos,metricsInfos, new File("F:\\data\\tes\\analysis"));
 
     }
 
@@ -218,6 +224,9 @@ public static Double getPearsonBydim(List<Double> ratingOne, List<Double> rating
 
     private static String getMethodName(String fildeName){
         byte[] items = fildeName.getBytes();
+        if((char) items[0] >= 'A' && (char) items[0]<='Z'){
+            return fildeName;
+        }
         items[0] = (byte) ((char) items[0] - 'a' + 'A');
         return new String(items);
     }
