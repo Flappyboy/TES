@@ -58,7 +58,6 @@ public class AnalysisForVersionMain extends DevApp {
                     System.out.println("GitCommitsForMicroserviceInfo  "+microservice.getElementName()+"  "+version.getVersionName());
                 }
             }
-
         }
         for (Repo repo :
                 reposInfo.getRepos()) {

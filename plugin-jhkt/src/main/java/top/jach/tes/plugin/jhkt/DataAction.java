@@ -18,6 +18,7 @@ import top.jach.tes.plugin.jhkt.git.commit.GitCommitForMicroserviceAction;
 import top.jach.tes.plugin.jhkt.git.commit.GitCommitsForMicroserviceInfo;
 import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
+import top.jach.tes.plugin.jhkt.utils.JhktInfoTools;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfoMongoRepository;
 import top.jach.tes.plugin.tes.code.git.tree.TreesInfo;
@@ -28,6 +29,7 @@ import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 import top.jach.tes.plugin.tes.data.ImportDataAction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +66,17 @@ public class DataAction implements Action {
 /*        VersionsInfo versionsInfoForRelease = outputInfos.getFirstFromProfileByInfoClassAndName(
                 VersionsInfo.class, InfoNameConstant.VersionsForRelease, context.InfoRepositoryFactory());*/
         VersionsInfo versionsInfoForRelease = queryLastInfo(context, InfoNameConstant.VersionsForRelease, VersionsInfo.class);
-
+        List<Version> vs = versionsInfoForRelease.getVersions();
+        List<Version> versions = new ArrayList<>();
+        for (int i = 0; i < vs.size(); i++) {
+            if (i==3||i==4){
+                continue;
+            }else{
+                versions.add(vs.get(i));
+            }
+        }
+        versionsInfoForRelease.setVersions(versions);
+        context.InfoRepositoryFactory().getRepository(VersionsInfo.class).saveDetail(versionsInfoForRelease);
 /*        VersionsInfo versionsInfoForMaster = outputInfos.getFirstFromProfileByInfoClassAndName(
                 VersionsInfo.class, InfoNameConstant.VersionsForMaster, context.InfoRepositoryFactory());*/
         VersionsInfo versionsInfoForMaster = queryLastInfo(context, InfoNameConstant.VersionsForMaster, VersionsInfo.class);
@@ -116,7 +128,8 @@ public class DataAction implements Action {
                     List<Microservice> ms = microservices.microservicesForRepo(repo.getName());
                     for (Microservice m :
                             ms) {
-                        GitCommitsForMicroserviceInfo gitCommitsForMicroserviceInfo = GitCommitsForMicroserviceInfo.createInfoFromGitCommitsInfo(microservices, m.getElementName(), gitCommitsInfoForRepoVersion);
+                        GitCommitsForMicroserviceInfo gitCommitsForMicroserviceInfo = GitCommitsForMicroserviceInfo.
+                                createInfoFromGitCommitsInfo(microservices, m.getElementName(), gitCommitsInfoForRepoVersion);
                         gitCommitsForMicroserviceInfo.setName(InfoNameConstant.GitCommitsForMicroservice);
                         gitCommitsForMicroserviceInfo.setVersion(version.getVersionName());
                         saveInfo(context, gitCommitsForMicroserviceInfo);

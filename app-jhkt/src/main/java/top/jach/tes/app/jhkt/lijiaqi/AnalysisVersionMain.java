@@ -63,14 +63,10 @@ public class AnalysisVersionMain extends DevApp {
         boolean wetherWeight=true;//是否按照权重计算hublink依赖
         List<MicroserviceAttrsInfo> microserviceAttrsInfos=new ArrayList<>();//创建excel表格基本信息的源数据
         List<CorrelationDataInfo> correlationDataInfos=new ArrayList<>();//创建excel表格分析数据信息的源数据
-        List<MetricsInfo> metricsInfos=new ArrayList<>();//创建excel表格可维护性数据信息的源数据
+//        List<MetricsInfo> metricsInfos=new ArrayList<>();//创建excel表格可维护性数据信息的源数据
 
         for (int i = 0; i < versionsInfoForRelease.getVersions().size()-1; i++) {
             Version version = versionsInfoForRelease.getVersions().get(i);
-        /*}
-        for (Version version:
-                versionsInfoForRelease.getVersions()) {//每一轮循环代表一个sheet页*/
-
             //查询version name
             String n_version=version.getVersionName();
 
@@ -135,7 +131,7 @@ public class AnalysisVersionMain extends DevApp {
 
             //计算mv架构异味
             MvAction mvAction=new MvAction();
-            ElementsValue ev=mvAction.detect(gitCommits,6, 10, 0.8,microservices.getMicroservices());
+            ElementsValue ev=mvAction.detect(gitCommits,5, 10, 0.5,microservices.getMicroservices());
 //            ElementsValue ev2=mvAction.detect(gitCommits,11, 10, 0.8,microservices.getMicroservices());
             for(String str:ev.getValueMap().keySet()){
                 ArcSmell acl=arcSmellsInfo.find(str);
@@ -153,13 +149,13 @@ public class AnalysisVersionMain extends DevApp {
             correlationDataInfos.add(coinfo);
 
             //计算可维护性数据
-            MetricsInfo mif=MetricsResult(n_version,packagesMap,microserviceNames,microservices);
-            metricsInfos.add(mif);
+//            MetricsInfo mif=MetricsResult(n_version,packagesMap,microserviceNames,microservices);
+//            metricsInfos.add(mif);
 
         }
         // 数据导出
 //        exportCSV(microserviceAttrsInfos, new File("D:\\data\\tes\\analysis\\csv"));
-        exportExcel(microserviceAttrsInfos,correlationDataInfos,metricsInfos, new File("F:\\data\\tes\\analysis"));
+        exportExcel(microserviceAttrsInfos,correlationDataInfos, new File("F:\\data\\tes\\analysis"));
 
     }
 
@@ -246,11 +242,11 @@ public static Double getPearsonBydim(List<Double> ratingOne, List<Double> rating
 
     }
 
-    public static void exportExcel(List<MicroserviceAttrsInfo> microserviceAttrsInfos,List<CorrelationDataInfo> correlationDataInfos, List<MetricsInfo> metricsInfos,File dir) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+    public static void exportExcel(List<MicroserviceAttrsInfo> microserviceAttrsInfos,List<CorrelationDataInfo> correlationDataInfos,File dir) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
         if(!dir.exists()){
             dir.mkdirs();
         }
-        exportExcelBase(microserviceAttrsInfos,correlationDataInfos,metricsInfos, dir);
+        exportExcelBase(microserviceAttrsInfos,correlationDataInfos, dir);
        // exportExcelForTCommitcountHubLink(microserviceAttrsInfos, dir);
         //exportExcelForTHubLinkCommitcount(microserviceAttrsInfos, dir);
         //exportExcelForTHubLinkPair(microserviceAttrsInfos, dir);
@@ -310,7 +306,7 @@ public static Double getPearsonBydim(List<Double> ratingOne, List<Double> rating
         return result;
     }
 
-    private static void exportExcelBase(List<MicroserviceAttrsInfo> microserviceAttrsInfos,List<CorrelationDataInfo> correlationDataInfos, List<MetricsInfo> metricsInfos,File dir)throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
+    private static void exportExcelBase(List<MicroserviceAttrsInfo> microserviceAttrsInfos,List<CorrelationDataInfo> correlationDataInfos, File dir)throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
         Workbook wb = new XSSFWorkbook();
 int vi=1;
         for (MicroserviceAttrsInfo mai :
@@ -415,7 +411,7 @@ int vi=1;
                 cell.setCellValue(codata.getrValue());
             }
 
-            //可维护性数据赋值
+            /*//可维护性数据赋值
             //找出version版本对应的可维护性数据
             List<Metrics> mtr=new ArrayList<>();
             for(MetricsInfo mif:metricsInfos){
@@ -468,7 +464,7 @@ int vi=1;
                     }
 
                 }
-            }
+            }*/
             vi++;
         }
         File file = new File(dir.getAbsolutePath()+"/"+"analysis.xlsx");

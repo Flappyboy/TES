@@ -6,6 +6,7 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.info.InfoProfile;
+import top.jach.tes.core.impl.domain.element.Element;
 import top.jach.tes.core.impl.domain.element.ElementsInfo;
 import top.jach.tes.core.impl.domain.relation.PairRelation;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
@@ -29,6 +30,15 @@ public class MicroservicesInfo extends ElementsInfo<Microservice> implements Wit
         MicroservicesInfo info = new MicroservicesInfo();
         info.initBuild();
         return info;
+    }
+
+    public List<String> microserviceNames(){
+        List<String> names = new ArrayList<>();
+        for (Microservice m :
+                this) {
+            names.add(m.getElementName());
+        };
+        return names;
     }
 
     public static MicroservicesInfo createInfo(Info... infos){
@@ -104,12 +114,9 @@ public class MicroservicesInfo extends ElementsInfo<Microservice> implements Wit
                             }
                         }
                         PairRelation prl=new PairRelation(microservice.getElementName(),subMicroservice.getElementName());
-                        prl.setValue(value);//可以这样吗？？？
+                        prl.setValue(value);
                         pairRelations.addRelation(prl);
-
-
                 }
-
             }
             else{
                 for (String pubTopic :
@@ -117,11 +124,12 @@ public class MicroservicesInfo extends ElementsInfo<Microservice> implements Wit
                     List<Microservice> subMicroservices = getMicroserviceBySubTopic(pubTopic);
                     for (Microservice subMicroservice :
                             subMicroservices) {
-                        pairRelations.addRelation(new PairRelation(microservice.getElementName(), subMicroservice.getElementName()));
+                        PairRelation prl=new PairRelation(microservice.getElementName(), subMicroservice.getElementName());
+                        prl.setValue(1d);
+                        pairRelations.addRelation(prl);
                     }
                 }
             }
-
         }
         return pairRelations;
     }

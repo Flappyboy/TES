@@ -10,7 +10,7 @@ import top.jach.tes.plugin.jhkt.maintain.MainTain;
 @Setter
 @ToString
 public class MicroserviceAttr {
-    String microserviceName;
+    /*String microserviceName;
     Long codeLines;
     int pubTopicCount;
     int subTopicCount;
@@ -25,19 +25,25 @@ public class MicroserviceAttr {
     Long commitDeleteLineCount;
     Double commitOverlapRatio;
     Double commitFilesetOverlapRatio;
+    Double pairwiseCommitterOverlap;*/
+    Long hublink;
+    Long mv;
+    Long commitCount;
+    Long codeLines;
+    Double commitOverlapRatio;
+    Double commitFilesetOverlapRatio;
     Double pairwiseCommitterOverlap;
-
     public MicroserviceAttr setMicroserviceName(String microserviceName) {
-        this.microserviceName = microserviceName;
+//        this.microserviceName = microserviceName;
         return this;
     }
     public MicroserviceAttr setHublinkForIn(Long hublinkForIn) {
-        this.hublinkForIn = hublinkForIn;
+//        this.hublinkForIn = hublinkForIn;
         return this;
     }
 
     public MicroserviceAttr setHublinkForOut(Long hublinkForOut) {
-        this.hublinkForOut = hublinkForOut;
+//        this.hublinkForOut = hublinkForOut;
         return this;
     }
 
@@ -47,17 +53,17 @@ public class MicroserviceAttr {
     }
 
     public MicroserviceAttr setPubTopicCount(int pubTopicCount) {
-        this.pubTopicCount = pubTopicCount;
+//        this.pubTopicCount = pubTopicCount;
         return this;
     }
 
     public MicroserviceAttr setSubTopicCount(int subTopicCount) {
-        this.subTopicCount = subTopicCount;
+//        this.subTopicCount = subTopicCount;
         return this;
     }
 
     public MicroserviceAttr setCyclic(Long cyclic) {
-        this.cyclic = cyclic;
+//        this.cyclic = cyclic;
         return this;
     }
 
@@ -71,7 +77,7 @@ public class MicroserviceAttr {
         return this;
     }
     public MicroserviceAttr setBugCount(Long bugCount) {
-        this.bugCount = bugCount;
+//        this.bugCount = bugCount;
         return this;
     }
 
@@ -81,12 +87,12 @@ public class MicroserviceAttr {
     }
 
     public MicroserviceAttr setCommitAddLineCount(Long commitAddLineCount) {
-        this.commitAddLineCount = commitAddLineCount;
+//        this.commitAddLineCount = commitAddLineCount;
         return this;
     }
 
     public MicroserviceAttr setCommitDeleteLineCount(Long commitDeleteLineCount) {
-        this.commitDeleteLineCount = commitDeleteLineCount;
+//        this.commitDeleteLineCount = commitDeleteLineCount;
         return this;
     }
 

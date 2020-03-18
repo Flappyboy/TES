@@ -47,7 +47,7 @@ public class HublinkAction implements Action {
         );
     }
     //计算每个节点在各个集合中出现次数+排序+输出所有步骤抽取成一个方法
-    public ElementsValue cal(List<String> nodes,List<Double> nodesValue,List<String> allnodes,HashMap<String,Double> map,String flag){
+    public static ElementsValue cal(List<String> nodes,List<Double> nodesValue,List<String> allnodes,HashMap<String,Double> map,String flag){
        // Set<String> nset=nodes.keySet();
         //////这个nodes是Map格式的，不允许同样的值存在啊，这个for循环相当于只是把nodes复制给map罢了
         for(int i=0;i<nodes.size();i++){
@@ -80,6 +80,26 @@ public class HublinkAction implements Action {
         return element;
     }
 
+    public static ElementsValue calculateHublike(PairRelationsInfo pairRelationsInfo){
+        List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
+        List<String> nodes=new ArrayList<>();//存储所有节点名
+        List<Double> nodesValue=new ArrayList<>();
+        //map存储的不允许重复，而hublink就是为了计算重复次数，改成两个list同步记录节点名和对应的权重值
+        //从而允许重复
+        for(int i=0;i<relations.size();i++){
+            nodes.add(relations.get(i).getSourceName());
+            nodesValue.add(relations.get(i).getValue());
+            nodes.add(relations.get(i).getTargetName());
+            nodesValue.add(relations.get(i).getValue());
+        }
+
+        List<String> allnodes=new ArrayList<>(new ArrayList<>(nodes));
+        //HashMap allnodes=(HashMap) ((HashMap<String, Double>) nodes).clone();//赋值所有节点名，三个计算都需要用到
+        //排序
+        HashMap<String, Double> map = new HashMap<>();
+        return cal(nodes,nodesValue,allnodes,map,HUBLINK_IN_AND_OUT);
+    }
+
 //该方法根据元素和元素之间的关系，以此为参数调用方法，输出架构异味
     @Override
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {
@@ -106,12 +126,6 @@ public class HublinkAction implements Action {
             nodes.add(relations.get(i).getTargetName());
             nodesValue.add(relations.get(i).getValue());
         }
-        /*for(PairRelation pr:relations){
-            sourceNodes.put(pr.getSourceName(),pr.getValue());
-            endNodes.put(pr.getTargetName(),pr.getValue());
-            nodes.put(pr.getTargetName(),pr.getValue());
-            nodes.put(pr.getSourceName(),pr.getValue());
-        }*/
 
         List<String> allnodes=new ArrayList<>(new ArrayList<>(nodes));
         //HashMap allnodes=(HashMap) ((HashMap<String, Double>) nodes).clone();//赋值所有节点名，三个计算都需要用到

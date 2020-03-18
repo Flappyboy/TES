@@ -82,7 +82,7 @@ public class MvAction implements Action {
         return tran;
     }
 //根据文件名找到对应的微服务
-    public String getMicroserviceByPathname(String path,List<Microservice> microservices){
+    public static String getMicroserviceByPathname(String path,List<Microservice> microservices){
         String mname=null;
         for(Microservice microservice:microservices){
             String mPath=microservice.getAllPath();
@@ -97,7 +97,7 @@ public class MvAction implements Action {
         }
         return mname;
     }
-    public String getMicroservicePathByPathnameAndMs(String path,List<Microservice> microservices){
+    public static String getMicroservicePathByPathnameAndMs(String path,List<Microservice> microservices){
         String mname=null;
         for(Microservice microservice:microservices){
             String mPath=microservice.getAllPath();
@@ -112,7 +112,7 @@ public class MvAction implements Action {
         }
         return mname;
     }
-    public String getMicroservicePathByPathname(String path,List<String> microservices){
+    public static String getMicroservicePathByPathname(String path,List<String> microservices){
         String mname=null;
         for(String mPath:microservices){
 //            String mPath=microservice.getPath();
@@ -127,7 +127,7 @@ public class MvAction implements Action {
         return mname;
     }
     //根据filePath找到该文件对应的微服务，处在同一个微服务下的文件合并作为一个元素出现
-    public List<Set<String>> fileToMicroservice(List<Set<String>> paths,List<Microservice> microservices){
+    public static List<Set<String>> fileToMicroservice(List<Set<String>> paths,List<Microservice> microservices){
         List<Set<String>> micros=new ArrayList<>();
         for(Set<String> sets:paths){
             Set<String> tmpset=new HashSet<>();
@@ -144,23 +144,64 @@ public class MvAction implements Action {
         }
         return micros;
     }
-    //检测算法,目前返回的是null,可返回的数据是一个map矩阵，记录每个文件与其他文件在不同窗口一起出现的次数
-    public ElementsValue detect(List<GitCommit> gitCommits,int len, int minCommitCount, double minPer,List<Microservice> microservices){
-        //List<GitCommit> gitCommits= Lists.newArrayList(gitCommitsInfo.getGitCommits().iterator());
-        Collections.sort(gitCommits);//将获取的gitCommits对象集合按照提交时间先后排序（git记录的是秒级的提交时间戳）
-        //根据滑动窗口大小设置将gitCommits集合分隔为子集合
+    public static MvResult detectMvResult(List<GitCommit> gitCommits,int len,List<Microservice> microservices){
         if (gitCommits == null || gitCommits.size() == 0 || len < 1) {
             return null;
         }
-        /*List<List<GitCommit>> windows = new ArrayList<>();//窗口的集合
-        int size = gitCommits.size(); //传入集合长度
-        int count = (size + len - 1) / len;//分隔后的集合个数
-        for (int i = 0; i < count; i++) {
-            List<GitCommit> subList = gitCommits.subList(i * len, ((i + 1) * len > size ? size : len * (i + 1)));
-            windows.add(subList);
-        }*/
+        //将获取的gitCommits对象集合按照提交时间先后排序（git记录的是秒级的提交时间戳）
+        Collections.sort(gitCommits);
+        //生成从提交信息中提取出文件集合
+        Queue<Set<String>> blocks = generateFileSetBlocks(gitCommits, microservices);
+        //获取每个文件提交的次数
+        Map<String, Integer> fileCount = findFileCommitCount(blocks);
+        // 初始化一个len长度的滑动窗口
+        SlidingWindow slidingWindow = generateSlidingWindow(len, blocks);
+        Map<String,Map<String,Integer>> resultFiles = slidingWindow.slideBlocks(blocks, path -> getMicroservicePathByPathnameAndMs(path, microservices));
+        return new MvResult(len, resultFiles, fileCount, microservices);
+    }
+    //检测算法,目前返回的是null,可返回的数据是一个map矩阵，记录每个文件与其他文件在不同窗口一起出现的次数
+    public static ElementsValue detect(List<GitCommit> gitCommits,int len, int minCommitCount, double minPer,List<Microservice> microservices){
+        if (gitCommits == null || gitCommits.size() == 0 || len < 1) {
+            return null;
+        }
+        MvResult  mvResult = detectMvResult(gitCommits, len, microservices);
+        Map<String, MvValue> mmvs = mvResult.calculateMvValues(minCommitCount, minPer);
+        Map<String, Double> ms = new HashMap<>();
+        for (Map.Entry<String,MvValue> entry:
+            mmvs.entrySet()){
+            ms.put(entry.getKey(), Double.valueOf(entry.getValue().getFile()));
+        }
+        ElementsValue elmentMv=ElementsValue.createInfo();
+        elmentMv.setValueMap(ms);
+        return elmentMv;
+    }
 
-        //生成滑动窗口对象列表
+
+    private static SlidingWindow generateSlidingWindow(int len, Queue<Set<String>> blocks) {
+        List<Set<String>> bs = new ArrayList<>();
+        for (int i = 0; i < len; i++) {
+            bs.add(blocks.poll());
+        }
+        return new SlidingWindow(bs);
+    }
+
+    private static Map<String, Integer> findFileCommitCount(Queue<Set<String>> blocks) {
+        Map<String, Integer> fileCount = new HashMap<>();
+        for (Set<String> block :
+                blocks) {
+            for (String file :
+                    block) {
+                Integer c = fileCount.get(file);
+                if (c == null){
+                    c = 0;
+                }
+                fileCount.put(file, c+1);
+            }
+        }
+        return fileCount;
+    }
+
+    private static Queue<Set<String>> generateFileSetBlocks(List<GitCommit> gitCommits, List<Microservice> microservices) {
         Queue<Set<String>> blocks=new LinkedBlockingQueue<>();
         for(GitCommit gc:gitCommits){
             Set<String> block=new HashSet<>();
@@ -177,98 +218,7 @@ public class MvAction implements Action {
                 blocks.add(block);
             }
         }
-        Map<String, Integer> fileCount = new HashMap<>();
-        for (Set<String> block :
-                blocks) {
-            for (String file :
-                    block) {
-                Integer c = fileCount.get(file);
-                if (c == null){
-                    c = 0;
-                }
-                fileCount.put(file, c+1);
-            }
-        }
-        List<Set<String>> bs = new ArrayList<>();
-        for (int i = 0; i < len; i++) {
-            bs.add(blocks.poll());
-        }
-        SlidingWindow slidingWindow = new SlidingWindow(bs);
-        Map<String,Map<String,Integer>> resultFiles = slidingWindow.slideBlocks(blocks, path -> getMicroservicePathByPathnameAndMs(path, microservices));
-        Map<String, Double> mmvs = new HashMap<>();
-        for (Microservice m :
-                microservices) {
-            mmvs.put(m.getElementName(), 0d);
-        }
-//        Map<String, Double> mv_avgs = new HashMap<>();
-        for (Map.Entry<String,Map<String, Integer>> entry:
-                resultFiles.entrySet()){
-            String file = entry.getKey();
-            Double tc = Double.valueOf(fileCount.get(file));
-            if(tc<minCommitCount){
-                continue;
-            }
-            for (Map.Entry<String, Integer> entry2 :
-                    entry.getValue().entrySet()) {
-                String tfile = entry2.getKey();
-                Integer count = entry2.getValue();
-                if(count/tc >= minPer){
-                    // 那么认为file->tfile存在mv
-                    String m = getMicroserviceByPathname(file, microservices);
-                    String tm = getMicroserviceByPathname(tfile, microservices);
-                    if(m.equals(tm) || StringUtils.isBlank(m) || StringUtils.isBlank(tm)){
-                        continue;
-                    }
-                    Double mc = mmvs.get(m);
-                    mmvs.put(m, mc+1);
-                    Double tmc = mmvs.get(tm);
-                    mmvs.put(tm, tmc+1);
-                }
-            }
-        }
-        /*List<Set<String>> w_paths=new ArrayList<>();//所有窗口中路径集合的集合
-        for(int i=0;i<s_windows.size();i++){
-            *//*Set<String> s_path=new HashSet<>();//某一个窗口中所有文件路径的集合，多个string形式存储
-            s_path.addAll(s_windows.get(i).getFiles());
-            w_paths.add(s_path);*//*
-            w_paths.add(s_windows.get(i).getFiles());
-        }
-
-        //将获取的各个窗口下的路径名集合转换为路径对应微服务的微服务名
-        //存在问题，并没有返回正确的文件对应的微服务名
-        *//*List<Set<String>> m=fileToMicroservice(w_paths,microservices);
-        List<Set<String>> microservs=new ArrayList<>(m);*//*
-
-        //可返回的数据,一个二维矩阵，记录每个file与其他各个file共同出现在不同窗口次数
-        List<String> microservicepaths= new ArrayList<>();
-        for (Microservice m:
-        microservices) {
-            microservicepaths.add(m.getAllPath());
-        }*/
-//        Map<String,Map<String,Integer>> resultFiles=find(w_paths,microservicepaths);
-
-        //统计每个微服务满足mv架构异味的次数
-        /*Map<String,Integer> allmicro=new HashMap<>();
-        for(Set<String> set:mmvs){
-            for(String str:set){
-                allmicro.put(str,0);1
-            }
-        }*/
-        List<String> allserves=new ArrayList<>(new HashSet<>(mmvs.keySet()));//所有微服务名不重复
-        ElementsValue elmentMv=ElementsValue.createInfo();
-        elmentMv.setValueMap(mmvs);
-
-        /*for(String strs:allserves){
-            Map<String,Integer> mapItem=resultFiles.get(strs);
-            //elment.setName(strs);
-            int value=0;
-            for(Map.Entry<String,Integer> entry:mapItem.entrySet()){
-                value+=entry.getValue();
-            }
-            elmentMv.put(strs,(double)value);
-        }*/
-        return elmentMv;
-
+        return blocks;
     }
 
     @Override
