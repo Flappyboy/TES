@@ -119,11 +119,15 @@ public class MicroservicesInfo extends ElementsInfo<Microservice> implements Wit
                 }
             }
             else{
+
                 for (String pubTopic :
                         microservice.getPubTopics()) {
                     List<Microservice> subMicroservices = getMicroserviceBySubTopic(pubTopic);
                     for (Microservice subMicroservice :
                             subMicroservices) {
+                        if(microservice.getElementName().equals(subMicroservice.getElementName())){
+                            continue;
+                        }
                         PairRelation prl=new PairRelation(microservice.getElementName(), subMicroservice.getElementName());
                         prl.setValue(1d);
                         pairRelations.addRelation(prl);

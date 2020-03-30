@@ -1,6 +1,9 @@
 package top.jach.tes.app.jhkt.lijiaqi;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -58,6 +61,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction.getMicroserviceByPathname;
 
 // 继承DevApp 已加载InfoRepository等上下文环境
 public class AnalysisVersionMainForJson extends DevApp {
@@ -147,12 +152,11 @@ public class AnalysisVersionMainForJson extends DevApp {
                 MainTain mainTain = maintainMap.get(mn);
                 resultForMs.addMainTain(mainTain);
             }
-            result.put(n_version, resultForMs);
         }
         // 数据导出
 //        exportCSV(microserviceAttrsInfos, new File("D:\\data\\tes\\analysis\\csv"));
 //        exportExcel(microserviceAttrsInfos,correlationDataInfos,metricsInfos, new File("F:\\data\\tes\\analysis"));
-        exportCsv(result, new File("D:\\data\\tes\\analysisforlijiaqi\\csv"));
+        exportCsv(result, new File("F:/data/tes/analysisforlijiaqi/result"));
 
         for (Map.Entry<String, ResultForMs> entry:
                 result.getResults().entrySet()) {
@@ -181,11 +185,15 @@ public class AnalysisVersionMainForJson extends DevApp {
 //                    Integer file;
 //                    Integer doubleFile;
                     sb.append("mv_dependency").append(",")
-                            .append("mv_doubleDependency").append(",")
+//                            .append("mv_doubleDependency").append(",")
                             .append("mv_file").append(",")
-                            .append("mv_doubleFile").append(",");
+//                            .append("mv_doubleFile").append(",")
+                           ;
                     break;
                 case "undirectedCyclic":
+                case "bugCount":
+                case "commitAddLineCount":
+                case "commitDeleteLineCount":
                     break;
                 default:
                     sb.append(fieldName).append(",");
@@ -194,18 +202,28 @@ public class AnalysisVersionMainForJson extends DevApp {
         }
         sb.append('\n');
 
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonResults = new JSONArray();
+        jsonObject.put("result", jsonResults);
         for (Map.Entry<String, ResultForMs> entry:
                 result.getResults().entrySet()) {
             String version = entry.getKey();
             ResultForMs resultForMs = entry.getValue();
             sb.append(version);
             sb.append('\n');
+            JSONObject resultValues = new JSONObject();
+            jsonResults.add(resultValues);
+            resultValues.put("version", entry.getKey());
+            JSONArray jsonArrayMs = new JSONArray();
+            resultValues.put("ms", jsonArrayMs);
             for (String microservice:
                 resultForMs.getMicroservice()) {
                 Double hub = resultForMs.getHublikes().get(microservice);
                 if(hub ==null || hub==0){
                     continue;
                 }
+                JSONObject jsonM = new JSONObject();
+                jsonArrayMs.add(jsonM);
                 for (Field field:
                         fields) {
                     String fieldName = field.getName();
@@ -216,21 +234,28 @@ public class AnalysisVersionMainForJson extends DevApp {
                             Mv mv = resultForMs.getMvs().get(0);
                             MvValue mvValue = mv.getMvValues().get(microservice);
                             sb.append(mvValue.getDependency()).append(',')
-                                .append(mvValue.getDoubleDependency()).append(',')
+//                                .append(mvValue.getDoubleDependency()).append(',')
                                 .append(mvValue.getFile()).append(',')
-                                .append(mvValue.getDoubleFile()).append(',')
+//                                .append(mvValue.getDoubleFile()).append(',')
                             ;
+                            jsonM.put("MVDN", mvValue.getDependency());
+                            jsonM.put("MVFN", mvValue.getFile());
                             break;
                         case "undirectedCyclic":
+                        case "bugCount":
+                        case "commitAddLineCount":
+                        case "commitDeleteLineCount":
                             break;
                         case "microservice":
                             sb.append(microservice).append(',');
+                            jsonM.put("microservice", microservice);
                             break;
                         default:
                             Map map = (Map) m.invoke(resultForMs);
                             Object val = map.get(microservice);
                             if(val!=null) {
                                 sb.append(val);
+                                jsonM.put(fieldName, val);
                             }
                             sb.append(',');
                             break;
@@ -240,8 +265,172 @@ public class AnalysisVersionMainForJson extends DevApp {
             }
         }
         sb.append("\n\n");
-        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata.csv"),sb, "utf8", false);
-    };
+
+        sb.append("Hub-like All\n");
+        Set<String> allMicroservices = result.allMicroservices();
+        Map<String, StringBuilder> hds = new HashMap<>();
+        sb.append("microservice,");
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            sb.append("hdn,hdin,");
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            Map<String, Double> hdns = resultForMs.getHublikes();
+            Map<String, Double> hdins = resultForMs.getHublikeWithWeight();
+            for (String microservice:
+                    allMicroservices) {
+                StringBuilder sbhd = hds.get(microservice);
+                if (sbhd==null){
+                    sbhd = new StringBuilder();
+                    hds.put(microservice, sbhd);
+                }
+                Double hdn = hdns.get(microservice);
+                if(hdn ==null || hdn==0){
+                    sbhd.append(',');
+                }else {
+                    sbhd.append(hdn).append(',');
+                }
+                Double hdin = hdins.get(microservice);
+                if(hdin ==null || hdin==0){
+                    sbhd.append(',');
+                }else {
+                    sbhd.append(hdin).append(',');
+                }
+            };
+        }
+        sb.append('\n');
+        for (String microservice:
+                allMicroservices) {
+            sb.append(microservice).append(',')
+                .append(hds.get(microservice)).append('\n');
+        }
+        sb.append('\n');
+
+        sb.append("CD All\n");
+        Map<String, StringBuilder> cds = new HashMap<>();
+        sb.append("microservice,");
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            sb.append("cdn,");
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            Map<String, Double> cdns = resultForMs.getCyclic();
+            for (String microservice:
+                    allMicroservices) {
+                StringBuilder sbcd = cds.get(microservice);
+                if (sbcd==null){
+                    sbcd = new StringBuilder();
+                    cds.put(microservice, sbcd);
+                }
+                Double cdn = cdns.get(microservice);
+                if(cdn ==null ){
+                    sbcd.append(',');
+                }else {
+                    sbcd.append(cdn).append(',');
+                }
+            };
+        }
+        sb.append('\n');
+        sb.append('\n');
+        for (String microservice:
+                allMicroservices) {
+            sb.append(microservice).append(',')
+                    .append(cds.get(microservice)).append('\n');
+        }
+        sb.append('\n');
+        sb.append("MV All\n");
+        Map<String, StringBuilder> mvs = new HashMap<>();
+        sb.append("microservice,");
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            sb.append("mvdn,mvin,");
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            Map<String, MvValue> mvValues = resultForMs.getMvs().get(0).getMvValues();
+            for (String microservice:
+                    allMicroservices) {
+                StringBuilder sbmv = mvs.get(microservice);
+                if (sbmv==null){
+                    sbmv = new StringBuilder();
+                    mvs.put(microservice, sbmv);
+                }
+                MvValue mv = mvValues.get(microservice);
+                if(mv == null){
+                    sbmv.append(",,");
+                    continue;
+                }
+                Double mvdn = mv.getDependency();
+                Integer mvin = mv.getFile();
+                if(mvdn ==null ){
+                    sbmv.append(',');
+                }else {
+                    sbmv.append(mvdn).append(',');
+                }
+                if(mvin ==null ){
+                    sbmv.append(',');
+                }else {
+                    sbmv.append(mvin).append(',');
+                }
+            };
+        }
+        sb.append('\n');
+        for (String microservice:
+                allMicroservices) {
+            sb.append(microservice).append(',')
+                    .append(mvs.get(microservice)).append('\n');
+        }
+        sb.append('\n');
+
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4.csv"),sb, "utf8", false);
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata.json"),jsonObject.toJSONString(), "utf8", false);
+        sb = null;
+
+        StringBuilder sb1 = new StringBuilder().append("file,targetFile,count,per\n");
+        StringBuilder sb2 = new StringBuilder(sb1);
+        StringBuilder sb3 = new StringBuilder(sb1);
+        int i=0;
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            i++;
+            if(i!=4){
+                continue;
+            }
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            Mv mv = resultForMs.getMvs().get(0);
+            Map<String, MvResult.MvResultForMicroservice> map = mv.getMvResult().getResults();
+            MvResult.MvResultForMicroservice mrm1 = map.get("x_13/x_46f");
+            statisticsMvResult(sb1, mv, mrm1);
+            MvResult.MvResultForMicroservice mrm2 = map.get("x_13/x_663");
+            statisticsMvResult(sb2, mv, mrm2);
+            MvResult.MvResultForMicroservice mrm3 = map.get("x_3f/x_6f2b");
+            statisticsMvResult(sb3, mv, mrm3);
+        }
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4_mv_46f.csv"),sb1, "utf8", false);
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4_mv_663.csv"),sb2, "utf8", false);
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4_mv_6f2b.csv"),sb3, "utf8", false);
+
+    }
+
+    private static void statisticsMvResult(StringBuilder sb1, Mv mv, MvResult.MvResultForMicroservice mrm) {
+        for (Map.Entry<String, Map<String, Integer>> fileEntry :
+                mrm.getFileToFile().entrySet()) {
+            String file = fileEntry.getKey();
+            Integer fcc = mv.getMvResult().getFileCommitCount().get(file);
+            if(fcc<10){
+                continue;
+            }
+            for (Map.Entry<String, Integer> targetFileEntry :
+                    fileEntry.getValue().entrySet()) {
+                String targetFile = targetFileEntry.getKey();
+                Integer count = targetFileEntry.getValue();
+                Double per = Double.valueOf(count)/fcc;
+                if(per>=0.5) {
+                    sb1.append(file).append(',').append(targetFile).append(',').append(count).append(',').append(per).append('\n');
+                }
+            }
+        }
+    }
 
     //皮尔森相关性检验
     public static Double getPearsonBydim(List<Double> ratingOne, List<Double> ratingTwo) {

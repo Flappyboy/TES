@@ -3,6 +3,8 @@ export default {
   'menu.action': '基本操作',
   'menu.info': '信息',
   'menu.task': '任务',
+  'menu.arcsmell': '架构异味检测结果',
+  'menu.maintain': '可维护性计算结果',
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',

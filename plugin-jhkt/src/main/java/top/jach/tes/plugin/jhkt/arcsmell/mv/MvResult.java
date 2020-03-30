@@ -32,7 +32,7 @@ public class MvResult {
         this.microservices = microservices;
     }
 
-    class MvResultForMicroservice{
+    public static class MvResultForMicroservice{
         private Map<String, Map<String, Integer>> fileToFile = new HashMap<>();
         public MvResultForMicroservice() {
         }
@@ -82,7 +82,7 @@ public class MvResult {
                 if(m.equals(tm) || StringUtils.isBlank(m) || StringUtils.isBlank(tm)){
                     continue;
                 }
-                Double tfcc = Double.valueOf(fileCommitCount.get(tfile));
+//                Double tfcc = Double.valueOf(fileCommitCount.get(tfile));
                 if(count/fcc >= minPer){
                     Double mc = mDepens.get(m);
                     mDepens.put(m, mc+1);
@@ -91,14 +91,14 @@ public class MvResult {
 
                     mfiles.get(m).add(file);
 
-                    if(count/tfcc >= minPer){
+                    /*if(count/tfcc >= minPer){
                         mc = mDoubleDepens.get(m);
                         mDoubleDepens.put(m, mc+1);
                         tmc = mDoubleDepens.get(tm);
                         mDoubleDepens.put(tm, tmc+1);
 
                         mDoublefiles.get(m).add(file);
-                    }
+                    }*/
                 }
             }
         }

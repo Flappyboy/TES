@@ -79,6 +79,22 @@ public class HublinkAction implements Action {
         }
         return element;
     }
+    public static ElementsValue calculateHublike2(PairRelationsInfo pairRelationsInfo){
+        List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
+        List<String> nodes=new ArrayList<>();
+        List<Double> nodesValue=new ArrayList<>();
+        Map<String, Double> hublikeMap = new HashMap();
+        for(PairRelation pairRelation: pairRelationsInfo.getRelations()){
+            String source = pairRelation.getSourceName();
+            String target = pairRelation.getTargetName();
+            hublikeMap.put(source,hublikeMap.computeIfAbsent(source, k -> 0d)+pairRelation.getValue());
+            hublikeMap.put(target,hublikeMap.computeIfAbsent(target, k -> 0d)+pairRelation.getValue());
+        }
+
+        List<String> allnodes=new ArrayList<>(new ArrayList<>(nodes));
+        HashMap<String, Double> map = new HashMap<>();
+        return cal(nodes,nodesValue,allnodes,map,HUBLINK_IN_AND_OUT);
+    }
 
     public static ElementsValue calculateHublike(PairRelationsInfo pairRelationsInfo){
         List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());

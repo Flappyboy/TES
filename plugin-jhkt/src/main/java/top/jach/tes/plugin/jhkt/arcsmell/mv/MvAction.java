@@ -19,6 +19,9 @@ import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static org.apache.commons.lang3.math.NumberUtils.max;
+import static org.apache.commons.lang3.math.NumberUtils.min;
+
 public class MvAction implements Action {
     public static final String MICROSERVICE_INFO = "MicroserviceInfo";
     public static final String GIT_COMMITS_INFO = "GitCommitsInfo";
@@ -145,18 +148,45 @@ public class MvAction implements Action {
         return micros;
     }
     public static MvResult detectMvResult(List<GitCommit> gitCommits,int len,List<Microservice> microservices){
-        if (gitCommits == null || gitCommits.size() == 0 || len < 1) {
+        if (gitCommits == null || gitCommits.size() == 0 || len < 0) {
             return null;
         }
         //将获取的gitCommits对象集合按照提交时间先后排序（git记录的是秒级的提交时间戳）
         Collections.sort(gitCommits);
         //生成从提交信息中提取出文件集合
-        Queue<Set<String>> blocks = generateFileSetBlocks(gitCommits, microservices);
+        List<Set<String>> blocks = generateFileSetBlocks(gitCommits, microservices);
         //获取每个文件提交的次数
         Map<String, Integer> fileCount = findFileCommitCount(blocks);
         // 初始化一个len长度的滑动窗口
-        SlidingWindow slidingWindow = generateSlidingWindow(len, blocks);
-        Map<String,Map<String,Integer>> resultFiles = slidingWindow.slideBlocks(blocks, path -> getMicroservicePathByPathnameAndMs(path, microservices));
+//        SlidingWindow slidingWindow = generateSlidingWindow(len, blocks);
+//        Map<String,Map<String,Integer>> resultFiles = slidingWindow.slideBlocks(blocks, path -> getMicroservicePathByPathnameAndMs(path, microservices));
+        Map<String,Map<String,Integer>> resultFiles = new HashMap<>();
+        for (int i = 0; i < blocks.size(); i++) {
+            int start = max(0, i-len), end = min(i+len+1,blocks.size());
+            Set<String> source = blocks.get(i);
+            List<Set<String>> targets = blocks.subList(start, end);
+            for (String file :
+                    source) {
+                String prefix = getMicroservicePathByPathnameAndMs(file, microservices);
+                Set<String> appearFiles = new HashSet<>();
+                for (Set<String> tfiles :
+                        targets) {
+                    for (String tfile :
+                            tfiles) {
+                        if(!tfile.startsWith(prefix)) {
+                            appearFiles.add(tfile);
+                        }
+                    }
+                }
+                Map<String, Integer> countMap = resultFiles.computeIfAbsent(file, k -> new HashMap<>());
+                for (String appearFile :
+                        appearFiles) {
+                    Integer count = countMap.computeIfAbsent(appearFile, k -> 0);
+                    countMap.put(appearFile, count+1);
+                }
+            }
+        }
+
         return new MvResult(len, resultFiles, fileCount, microservices);
     }
     //检测算法,目前返回的是null,可返回的数据是一个map矩阵，记录每个文件与其他文件在不同窗口一起出现的次数
@@ -185,7 +215,7 @@ public class MvAction implements Action {
         return new SlidingWindow(bs);
     }
 
-    private static Map<String, Integer> findFileCommitCount(Queue<Set<String>> blocks) {
+    private static Map<String, Integer> findFileCommitCount(Iterable<Set<String>> blocks) {
         Map<String, Integer> fileCount = new HashMap<>();
         for (Set<String> block :
                 blocks) {
@@ -201,8 +231,8 @@ public class MvAction implements Action {
         return fileCount;
     }
 
-    private static Queue<Set<String>> generateFileSetBlocks(List<GitCommit> gitCommits, List<Microservice> microservices) {
-        Queue<Set<String>> blocks=new LinkedBlockingQueue<>();
+    private static List<Set<String>> generateFileSetBlocks(List<GitCommit> gitCommits, List<Microservice> microservices) {
+        List<Set<String>> blocks=new ArrayList<>();
         for(GitCommit gc:gitCommits){
             Set<String> block=new HashSet<>();
             for(DiffFile df:gc.getDiffFiles()){

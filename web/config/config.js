@@ -148,6 +148,12 @@ export default {
               component: './maintain',
             },
             {
+              path: '/arcsmell',
+              name: 'arcsmell',
+              icon: 'dashboard',
+              component: './arcsmell',
+            },
+            {
               path: '/dashboard',
               name: 'dashboard',
               icon: 'dashboard',

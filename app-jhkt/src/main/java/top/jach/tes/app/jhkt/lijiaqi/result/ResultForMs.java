@@ -20,6 +20,7 @@ public class ResultForMs {
     Map<String, Long> bugCount = new HashMap<>();
     Map<String, Long> commitAddLineCount = new HashMap<>();
     Map<String, Long> commitDeleteLineCount = new HashMap<>();
+    Map<String, Long> commitLineCount = new HashMap<>();
     Map<String, Double> CommitOverlapRatio = new HashMap<>();
     Map<String, Double> CommitFilesetOverlapRatio = new HashMap<>();
     Map<String, Double> PairwiseCommitterOverlap = new HashMap<>();
@@ -30,6 +31,7 @@ public class ResultForMs {
         bugCount.put(mainTain.getElementName(), mainTain.getBugCount());
         commitAddLineCount.put(mainTain.getElementName(), mainTain.getCommitAddLineCount());
         commitDeleteLineCount.put(mainTain.getElementName(), mainTain.getCommitDeleteLineCount());
+        commitLineCount.put(mainTain.getElementName(), mainTain.getCommitAddLineCount()+mainTain.getCommitDeleteLineCount());
         CommitOverlapRatio.put(mainTain.getElementName(), mainTain.getCommitOverlapRatio());
         CommitFilesetOverlapRatio.put(mainTain.getElementName(), mainTain.getCommitFilesetOverlapRatio());
         PairwiseCommitterOverlap.put(mainTain.getElementName(), mainTain.getPairwiseCommitterOverlap());

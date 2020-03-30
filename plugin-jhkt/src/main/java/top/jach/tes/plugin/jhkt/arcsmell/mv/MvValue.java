@@ -8,4 +8,5 @@ public class MvValue {
     Double doubleDependency; // 双方概率都超过阈值
     Integer file;
     Integer doubleFile;
+
 }
