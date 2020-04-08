@@ -20,7 +20,7 @@ export default () => (
           textAlign: 'center',
         }}
       >
-        <Icon type="smile" theme="twoTone" /> TES{' '}
+        <Icon type="smile" theme="twoTone" /> AAS{' '}
         <Icon type="heart" theme="twoTone" twoToneColor="#eb2f96" /> You
       </Typography.Title>
     </Card>

@@ -10,6 +10,8 @@ import {
   Popover,
   Row,
   Select,
+  Radio,
+  Checkbox,
   TimePicker,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
@@ -212,6 +214,43 @@ class AdvancedForm extends Component {
                           <Icon type="upload" /> 上传压缩后的数据文件
                         </Button>
                       </Upload>,
+                    )}
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row style={{marginTop : 10}} gutter={16}>
+                <Col style={{marginTop : 9}}lg={2} md={12} sm={24}>
+                  HD检测参数
+                </Col>
+                <Col lg={5} md={12} sm={24}>
+                  <Form.Item label="阈值">
+                    {getFieldDecorator('radio-group')(
+                      <Radio.Group>
+                        <Radio value={1}>自定义</Radio>
+                        <Radio value={2}>均值+标准差×权重</Radio>
+                      </Radio.Group>,
+                    )}
+                  </Form.Item>
+
+                </Col>
+                <Col lg={5} md={12} sm={24}>
+                  <Form.Item label='权重'>
+                    {getFieldDecorator('th', {
+                      rules: [
+                        {
+                          required: true,
+                          message: '',
+                        },
+                      ],
+                    })(<Input placeholder="" />)}
+                  </Form.Item>
+                </Col>
+                <Col lg={6} md={12} sm={24}>
+                  <Form.Item label="">
+                    {getFieldDecorator('select', {
+                      rules: [{ required: true, message: 'Please select your country!' }],
+                    })(
+                      <Checkbox>是否忽略依赖方向</Checkbox>,
                     )}
                   </Form.Item>
                 </Col>

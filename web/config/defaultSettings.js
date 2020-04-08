@@ -10,7 +10,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: 'TES',
+  title: 'AAS',
   pwa: false,
   iconfontUrl: '',
 };

@@ -6,15 +6,15 @@ export default {
         "id": 1,
         "createdTime": 1575216488269,
         "updatedTime": 1575216488269,
-        "name": "tes",
-        "desc": "just test"
+        "name": "CT",
+        "desc": "A CT System"
       },
       {
         "id": 2,
         "createdTime": 1575216428502,
         "updatedTime": 1575216428502,
-        "name": "tes4",
-        "desc": "just test"
+        "name": "TrainTicket",
+        "desc": "A TrainTicket system"
       },
     ],
     "pageNum": 1,

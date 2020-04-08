@@ -16,6 +16,15 @@ import styles from './style.less';
 import { queryMaintain } from './service';
 
 const { Paragraph } = Typography;
+const style ={
+  color: "red"
+}
+const show = function (value, th) {
+  if(value>th)
+    return <span style={style}>{value}</span>;
+  else
+    return value
+}
 
 const columns = [
   {
@@ -29,30 +38,35 @@ const columns = [
     dataIndex: 'hublikes',
     key: 'hublikes',
     sorter: (a, b) => a.hublikes - b.hublikes,
+    render: value =>  show(value, 7.77),
   },
   {
     title: 'HDIN',
     dataIndex: 'hublikeWithWeight',
     key: 'hublikeWithWeight',
     sorter: (a, b) => a.hublikeWithWeight - b.hublikeWithWeight,
+    render: value =>  show(value, 73.45),
   },
   {
     title: 'CN',
     dataIndex: 'cyclic',
     key: 'cyclic',
     sorter: (a, b) => a.cyclic - b.cyclic,
+    render: value =>  show(value, 0),
   },
   {
     title: 'MVDN',
     dataIndex: 'MVDN',
     key: 'MVDN',
     sorter: (a, b) => a.MVDN - b.MVDN,
+    render: value =>  show(value, 0),
   },
   {
     title: 'MVFN',
     dataIndex: 'MVFN',
     key: 'MVFN',
     sorter: (a, b) => a.MVFN - b.MVFN,
+    render: value =>  show(value, 0),
   },
   /*{
     title: 'Tags',
