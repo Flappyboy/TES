@@ -61,9 +61,9 @@ public class ArcSmellAction implements Action {
 
         inputInfos.put(CyclicAction.Elements_INFO, elementsInfo);
         inputInfos.put(CyclicAction.PAIR_RELATIONS_INFO, pairRelationsInfo);
-        OutputInfos outputInfos = cyclicAction.execute(inputInfos, context);
-        ElementsValue cyclicSmells = outputInfos.getFirstByInfoClass(ElementsValue.class);
-
+//        OutputInfos outputInfos = cyclicAction.execute(inputInfos, context);
+//        ElementsValue cyclicSmells = outputInfos.getFirstByInfoClass(ElementsValue.class);
+//
        /* inputInfos.put(MvAction.MICROSERVICE_INFO, microservicesInfo);
         inputInfos.put(MvAction.GIT_COMMITS_INFO,gitCommitsInfo);
         outputInfos=mvAction.execute(inputInfos,context);
@@ -72,12 +72,12 @@ public class ArcSmellAction implements Action {
 
         inputInfos.put(HublinkAction.Elements_INFO, elementsInfo);
         inputInfos.put(HublinkAction.PAIR_RELATIONS_INFO, pairRelationsInfo);
-        outputInfos = hublinkAction.execute(inputInfos, context);
+        OutputInfos outputInfos = hublinkAction.execute(inputInfos, context);
         ElementsValue hublinkSmells = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK_IN_AND_OUT);
         ElementsValue hublinkSmellsForIn = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK_IN);
         ElementsValue hublinkSmellsForOut = outputInfos.getFirstByInfoClassAndName(ElementsValue.class, HublinkAction.HUBLINK__OUT);
 
-        for (Map.Entry<String, Double> entry:
+        /*for (Map.Entry<String, Double> entry:
                 cyclicSmells.getValueMap().entrySet()) {
             ArcSmell arcSmell = arcSmellsInfo.find(entry.getKey());
             if(arcSmell == null){
@@ -85,7 +85,7 @@ public class ArcSmellAction implements Action {
                 arcSmellsInfo.put(entry.getKey(), arcSmell);
             }
             arcSmell.setCyclic(entry.getValue().longValue());
-        }
+        }*/
        /* for(Map.Entry<String,Double> entry:
                  mvSmells.getValueMap().entrySet()){
             ArcSmell arcSmell=arcSmellsInfo.find(entry.getKey());
@@ -103,6 +103,7 @@ public class ArcSmellAction implements Action {
                 arcSmellsInfo.put(entry.getKey(), arcSmell);
             }
             arcSmell.setHublink(entry.getValue().longValue());
+            arcSmell.setCyclic(0l);
         }
         for (Map.Entry<String, Double> entry:
                 hublinkSmellsForIn.getValueMap().entrySet()) {

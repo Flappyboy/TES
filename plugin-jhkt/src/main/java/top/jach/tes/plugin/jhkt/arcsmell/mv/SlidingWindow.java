@@ -1,44 +1,78 @@
 package top.jach.tes.plugin.jhkt.arcsmell.mv;
 
-import top.jach.tes.plugin.tes.code.git.commit.DiffFile;
-import top.jach.tes.plugin.tes.code.git.commit.GitCommit;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class SlidingWindow {
-   public int window_length;
-   public Set<DiffFile> diffFiles = new HashSet<DiffFile>();
 
-   public SlidingWindow(){
+   private Queue<Set<String>> blocks = new LinkedBlockingQueue<>();
+   private Map<String, Map<String, Integer>> matrix = new HashMap<>();
 
+   public SlidingWindow(List<Set<String>> blocks){
+       for (Set<String> block :
+               blocks) {
+           this.blocks.add(block);
+       }
+   }
+   public Map<String, Map<String, Integer>> slideBlocks(Iterable<Set<String>> blocks, FilePrefix filePrefix){
+       for (Set<String> block:
+            blocks) {
+           slide(block, filePrefix);
+       }
+       while (this.blocks.size()>0){
+           slide(null, filePrefix);
+       }
+       return matrix;
    }
 
-   public SlidingWindow(int window_length,  Set<DiffFile> diffFiles){
-       this.window_length=window_length;
-       this.diffFiles=diffFiles;
+   public void slide(Set<String> newBlock, FilePrefix filePrefix){
+       Set<String> target = blocks.peek();
+       for (String tfile :
+               target) {
+           String prefix = filePrefix.getPrefix(tfile);
+           Map<String, Integer> trelationCount = getRelationCount(tfile);
+           for (Set<String> block:
+                blocks){
+               for (String file :
+                       block) {
+                   if(file.startsWith(prefix)){
+                       continue;
+                   }
+                   // tfile->file
+                   Integer count = trelationCount.get(file);
+                   if (count == null){
+                       count = 0;
+                   }
+                   trelationCount.put(file,count+1);
+
+                   // file->tfile
+                   Map<String, Integer> relationCount = getRelationCount(file);
+                   count = relationCount.get(tfile);
+                   if (count == null){
+                       count = 0;
+                   }
+                   relationCount.put(tfile,count+1);
+               }
+           }
+       }
+
+       blocks.poll();
+       if (newBlock != null) {
+           blocks.add(newBlock);
+       }
    }
 
-   public SlidingWindow setWindowLength(int window_length){
-       this.window_length=window_length;
-       return this;
+   public interface FilePrefix {
+       String getPrefix(String path);
    }
 
-
-    public SlidingWindow setDiffFiles(Set<DiffFile> diffFiles){
-        if(diffFiles == null){
-            return this;
-        }
-        this.diffFiles = diffFiles;
-        return this;
-    }
-
-    public Set<DiffFile> getDiffFiles(){
-       return this.diffFiles;
-    }
-
-
+   private Map<String, Integer> getRelationCount(String file){
+       Map<String, Integer> relationCount = matrix.get(file);
+       if(relationCount == null){
+           relationCount = new HashMap<>();
+           matrix.put(file, relationCount);
+       }
+       return relationCount;
+   }
 
 }

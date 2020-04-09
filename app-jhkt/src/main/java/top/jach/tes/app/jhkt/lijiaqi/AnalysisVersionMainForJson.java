@@ -1,6 +1,9 @@
-package top.jach.tes.app.jhkt.chenjiali;
+package top.jach.tes.app.jhkt.lijiaqi;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -8,13 +11,17 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import top.jach.tes.app.dev.DevApp;
+import top.jach.tes.app.jhkt.chenjiali.CorrelationData;
+import top.jach.tes.app.jhkt.chenjiali.CorrelationDataInfo;
+import top.jach.tes.app.jhkt.chenjiali.Ttest;
+import top.jach.tes.app.jhkt.lijiaqi.result.Mv;
+import top.jach.tes.app.jhkt.lijiaqi.result.Result;
+import top.jach.tes.app.jhkt.lijiaqi.result.ResultForMs;
 import top.jach.tes.app.mock.Environment;
 import top.jach.tes.app.mock.InfoTool;
 import top.jach.tes.app.mock.InputInfoProfiles;
 import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.context.Context;
-import top.jach.tes.core.api.domain.info.Info;
-import top.jach.tes.core.api.dto.PageQueryDto;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.element.ElementsValue;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
@@ -25,7 +32,11 @@ import top.jach.tes.plugin.jhkt.analysis.MicroserviceAttrsInfo;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmell;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellsInfo;
+import top.jach.tes.plugin.jhkt.arcsmell.cyclic.CyclicAction;
+import top.jach.tes.plugin.jhkt.arcsmell.hublink.HublinkAction;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction;
+import top.jach.tes.plugin.jhkt.arcsmell.mv.MvResult;
+import top.jach.tes.plugin.jhkt.arcsmell.mv.MvValue;
 import top.jach.tes.plugin.jhkt.dts.DtssInfo;
 import top.jach.tes.plugin.jhkt.git.commit.GitCommitsForMicroserviceInfo;
 import top.jach.tes.plugin.jhkt.maintain.MainTain;
@@ -35,26 +46,26 @@ import top.jach.tes.plugin.jhkt.metrics.MetricsInfo;
 import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommit;
-import top.jach.tes.plugin.tes.code.git.commit.GitCommitsInfo;
-import top.jach.tes.plugin.tes.code.git.tree.TreesInfo;
 import top.jach.tes.plugin.tes.code.git.version.Version;
 import top.jach.tes.plugin.tes.code.git.version.VersionsInfo;
 import top.jach.tes.plugin.tes.code.go.GoPackagesInfo;
 import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 
+import java.beans.Beans;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction.getMicroserviceByPathname;
+
 // 继承DevApp 已加载InfoRepository等上下文环境
-public class AnalysisVersionMain extends DevApp {
+public class AnalysisVersionMainForJson extends DevApp {
     public static void main(String[] args) throws ActionExecuteFailedException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         Context context = Environment.contextFactory.createContext(Environment.defaultProject);
 
@@ -62,44 +73,33 @@ public class AnalysisVersionMain extends DevApp {
 
         VersionsInfo versionsInfoForRelease = DataAction.queryLastInfo(context, InfoNameConstant.VersionsForRelease, VersionsInfo.class);
 
-        boolean wetherWeight=true;//是否按照权重计算hublink依赖
         List<MicroserviceAttrsInfo> microserviceAttrsInfos=new ArrayList<>();//创建excel表格基本信息的源数据
         List<CorrelationDataInfo> correlationDataInfos=new ArrayList<>();//创建excel表格分析数据信息的源数据
-        List<MetricsInfo> metricsInfos=new ArrayList<>();//创建excel表格可维护性数据信息的源数据
+//        List<MetricsInfo> metricsInfos=new ArrayList<>();//创建excel表格可维护性数据信息的源数据
 
+        Result result = new Result();
+        for (int i = 0; i < versionsInfoForRelease.getVersions().size()-1; i++) {
+            Version version = versionsInfoForRelease.getVersions().get(i);
+        /*}
         for (Version version:
-                versionsInfoForRelease.getVersions()) {//每一轮循环代表一个sheet页
+                versionsInfoForRelease.getVersions()) {//每一轮循环代表一个sheet页*/
+
             //查询version name
             String n_version=version.getVersionName();
 
             // 查询version版本下的所有微服务
             MicroservicesInfo microservices = DataAction.queryLastMicroservices(context, reposInfo.getId(), null, version);
 
-            //存储单个版本中（仓库名，goPackageInfo）
-            HashMap<String, GoPackagesInfo> packagesMap = new HashMap<>();
-
-            for (Repo repo :
-                    reposInfo.reposFromNames(version.repos())) {
-
-                GoPackagesInfo goPackagesInfo = DataAction.queryLastGoPackagesInfo(context, reposInfo.getId(), repo.getName(), version);
-
-//                }
-                if (goPackagesInfo != null) {
-                    packagesMap.put(repo.getName(), goPackagesInfo);
-                }
-
-            }
-
             //存储单个版中所有微服务名称
-            List<String> microserviceNames = new ArrayList<>();
-            for (Microservice microservice : microservices) {
-                microserviceNames.add(microservice.getElementName());
-            }
+            List<String> microserviceNames = microservices.microserviceNames();
 
             // 计算并存储微服务间的调用关系，用于后续架构异味的计算
-            PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic(wetherWeight);
-            pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
-            InfoTool.saveInputInfos(pairRelationsInfo);
+            PairRelationsInfo pairRelationsInfoWithWeight = microservices.callRelationsInfoByTopic(true);
+            pairRelationsInfoWithWeight.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
+            InfoTool.saveInputInfos(pairRelationsInfoWithWeight);
+            PairRelationsInfo pairRelationsInfoWithoutWeight = microservices.callRelationsInfoByTopic(false).deWeight();
+            pairRelationsInfoWithoutWeight.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
+            InfoTool.saveInputInfos(pairRelationsInfoWithoutWeight);
             //InfoTool.saveInputInfos(pairRelationsInfo);
 
             // 查询version版本下问题单数据
@@ -122,43 +122,318 @@ public class AnalysisVersionMain extends DevApp {
             }
             //给gitCommits去重
            List<GitCommit> gitCommits=gct.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getReposId() + "#" + o.getRepoName() + "#" + o.getSha()))),ArrayList::new));;
-            // 计算version版本下的架构异味
-            InputInfoProfiles infoProfileMap = InputInfoProfiles.InputInfoProfiles()
-                    .addInfoProfile(ArcSmellAction.Elements_INFO, microservices)
-                    .addInfoProfile(ArcSmellAction.PAIR_RELATIONS_INFO, pairRelationsInfo)
-                    ;
-            Action action = new ArcSmellAction();
-            ArcSmellsInfo arcSmellsInfo = action.execute(infoProfileMap.toInputInfos(Environment.infoRepositoryFactory), context)
-                    .getFirstByInfoClass(ArcSmellsInfo.class);
-
+           
+            ElementsValue hublike_weight = HublinkAction.calculateHublike(pairRelationsInfoWithWeight);
+            ElementsValue hublike_no_weight = HublinkAction.calculateHublike(pairRelationsInfoWithoutWeight);
+            ElementsValue cyclicResult = CyclicAction.CalculateCyclic(context, microservices, pairRelationsInfoWithWeight);
+//            ElementsValue undirectedCyclicResult = CyclicAction.CalculateUndirectedCyclic(context, microservices, pairRelationsInfo);
             //计算mv架构异味
-            MvAction mvAction=new MvAction();
-            ElementsValue ev=mvAction.detect(gitCommits,6, 11, 0.8,microservices.getMicroservices());
-            for(String str:ev.getValueMap().keySet()){
-                ArcSmell acl=arcSmellsInfo.find(str);
-                acl.setMv((ev.getValueMap().get(str)).longValue());
+//            List<Mv> mvs = Mv.CalculateMvs(new int[]{3,5,7,9},new int[]{5,7,10},new double[]{0.5,0.7,0.8,0.9},gitCommits, microservices.getMicroservices());
+            List<Mv> mvs = Mv.CalculateMvs(new int[]{5},new int[]{10},new double[]{0.5},gitCommits, microservices.getMicroservices());
+
+            ResultForMs resultForMs = new ResultForMs();
+            result.put(version.getVersionName(), resultForMs);
+            resultForMs.setMicroservice(microserviceNames);
+            resultForMs.setCyclic(cyclicResult.getValueMap());
+            resultForMs.setHublikeWithWeight(hublike_weight.getValueMap());
+            resultForMs.setHublikes(hublike_no_weight.getValueMap());
+            resultForMs.setMvs(mvs);
+
+            MainTainsInfo mainTainsInfo = MainTainsInfo.newCreateInfo(DataAction.DefaultReposId,
+                    microservices,
+                    gitCommitsForMicroserviceInfoMap,
+                    dtssInfo,
+                    bugMicroserviceRelations,
+                    version.getVersionName()
+            );
+            Map<String, MainTain> maintainMap = mainTainsInfo.nameMainTainMap();
+            for (String mn :
+                    microserviceNames) {
+                MainTain mainTain = maintainMap.get(mn);
+                resultForMs.addMainTain(mainTain);
             }
-            //根据以上查询数据生成MicroserviceAttrsInfo类的对象
-            MicroserviceAttrsInfo mai = microserviceAttrsInfos(n_version,microservices, dtssInfo, bugMicroserviceRelations, gitCommitsForMicroserviceInfoMap, arcSmellsInfo);
-            microserviceAttrsInfos.add(mai);
-
-            //计算本页的皮尔森与t检验,根据mai计算得到的各属性之间皮尔森系数和t检验p值
-            CorrelationDataInfo coinfo=analysis(mai,n_version);
-            correlationDataInfos.add(coinfo);
-
-            //计算可维护性数据
-            MetricsInfo mif=MetricsResult(n_version,packagesMap,microserviceNames,microservices);
-            metricsInfos.add(mif);
-
         }
         // 数据导出
-        exportCSV(microserviceAttrsInfos, new File("D:\\data\\tes\\analysis\\csv"));
-        exportExcel(microserviceAttrsInfos,correlationDataInfos,metricsInfos, new File("D:\\data\\tes\\analysis"));
+//        exportCSV(microserviceAttrsInfos, new File("D:\\data\\tes\\analysis\\csv"));
+//        exportExcel(microserviceAttrsInfos,correlationDataInfos,metricsInfos, new File("F:\\data\\tes\\analysis"));
+        exportCsv(result, new File("F:/data/tes/analysisforlijiaqi/result"));
+
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            for (String microservice:
+                    resultForMs.getMicroservice()) {
+                resultForMs.getMvs().get(0);
+            }
+        }
+    }
+    public static void exportCsv(Result result, File dir) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
+        FileUtils.cleanDirectory(dir);
+        StringBuilder sb = new StringBuilder();
+        Field[] fields = ResultForMs.class.getDeclaredFields();
+        for (Field field:
+                fields) {
+            String fieldName = field.getName();
+            switch (fieldName){
+                case "mvs":
+//                    Double dependency;
+//                    Double doubleDependency; // 双方概率都超过阈值
+//                    Integer file;
+//                    Integer doubleFile;
+                    sb.append("mv_dependency").append(",")
+//                            .append("mv_doubleDependency").append(",")
+                            .append("mv_file").append(",")
+//                            .append("mv_doubleFile").append(",")
+                           ;
+                    break;
+                case "undirectedCyclic":
+                case "bugCount":
+                case "commitAddLineCount":
+                case "commitDeleteLineCount":
+                    break;
+                default:
+                    sb.append(fieldName).append(",");
+                    break;
+            }
+        }
+        sb.append('\n');
+
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonResults = new JSONArray();
+        jsonObject.put("result", jsonResults);
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            sb.append(version);
+            sb.append('\n');
+            JSONObject resultValues = new JSONObject();
+            jsonResults.add(resultValues);
+            resultValues.put("version", entry.getKey());
+            JSONArray jsonArrayMs = new JSONArray();
+            resultValues.put("ms", jsonArrayMs);
+            for (String microservice:
+                resultForMs.getMicroservice()) {
+                Double hub = resultForMs.getHublikes().get(microservice);
+                if(hub ==null || hub==0){
+                    continue;
+                }
+                JSONObject jsonM = new JSONObject();
+                jsonArrayMs.add(jsonM);
+                for (Field field:
+                        fields) {
+                    String fieldName = field.getName();
+                    Method m = ResultForMs.class.getMethod(getMethodName(fieldName));
+
+                    switch (fieldName){
+                        case "mvs":
+                            Mv mv = resultForMs.getMvs().get(0);
+                            MvValue mvValue = mv.getMvValues().get(microservice);
+                            sb.append(mvValue.getDependency()).append(',')
+//                                .append(mvValue.getDoubleDependency()).append(',')
+                                .append(mvValue.getFile()).append(',')
+//                                .append(mvValue.getDoubleFile()).append(',')
+                            ;
+                            jsonM.put("MVDN", mvValue.getDependency());
+                            jsonM.put("MVFN", mvValue.getFile());
+                            break;
+                        case "undirectedCyclic":
+                        case "bugCount":
+                        case "commitAddLineCount":
+                        case "commitDeleteLineCount":
+                            break;
+                        case "microservice":
+                            sb.append(microservice).append(',');
+                            jsonM.put("microservice", microservice);
+                            break;
+                        default:
+                            Map map = (Map) m.invoke(resultForMs);
+                            Object val = map.get(microservice);
+                            if(val!=null) {
+                                sb.append(val);
+                                jsonM.put(fieldName, val);
+                            }
+                            sb.append(',');
+                            break;
+                    }
+                }
+                sb.append('\n');
+            }
+        }
+        sb.append("\n\n");
+
+        sb.append("Hub-like All\n");
+        Set<String> allMicroservices = result.allMicroservices();
+        Map<String, StringBuilder> hds = new HashMap<>();
+        sb.append("microservice,");
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            sb.append("hdn,hdin,");
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            Map<String, Double> hdns = resultForMs.getHublikes();
+            Map<String, Double> hdins = resultForMs.getHublikeWithWeight();
+            for (String microservice:
+                    allMicroservices) {
+                StringBuilder sbhd = hds.get(microservice);
+                if (sbhd==null){
+                    sbhd = new StringBuilder();
+                    hds.put(microservice, sbhd);
+                }
+                Double hdn = hdns.get(microservice);
+                if(hdn ==null || hdn==0){
+                    sbhd.append(',');
+                }else {
+                    sbhd.append(hdn).append(',');
+                }
+                Double hdin = hdins.get(microservice);
+                if(hdin ==null || hdin==0){
+                    sbhd.append(',');
+                }else {
+                    sbhd.append(hdin).append(',');
+                }
+            };
+        }
+        sb.append('\n');
+        for (String microservice:
+                allMicroservices) {
+            sb.append(microservice).append(',')
+                .append(hds.get(microservice)).append('\n');
+        }
+        sb.append('\n');
+
+        sb.append("CD All\n");
+        Map<String, StringBuilder> cds = new HashMap<>();
+        sb.append("microservice,");
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            sb.append("cdn,");
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            Map<String, Double> cdns = resultForMs.getCyclic();
+            for (String microservice:
+                    allMicroservices) {
+                StringBuilder sbcd = cds.get(microservice);
+                if (sbcd==null){
+                    sbcd = new StringBuilder();
+                    cds.put(microservice, sbcd);
+                }
+                Double cdn = cdns.get(microservice);
+                if(cdn ==null ){
+                    sbcd.append(',');
+                }else {
+                    sbcd.append(cdn).append(',');
+                }
+            };
+        }
+        sb.append('\n');
+        sb.append('\n');
+        for (String microservice:
+                allMicroservices) {
+            sb.append(microservice).append(',')
+                    .append(cds.get(microservice)).append('\n');
+        }
+        sb.append('\n');
+        sb.append("MV All\n");
+        Map<String, StringBuilder> mvs = new HashMap<>();
+        sb.append("microservice,");
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            sb.append("mvdn,mvin,");
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            Map<String, MvValue> mvValues = resultForMs.getMvs().get(0).getMvValues();
+            for (String microservice:
+                    allMicroservices) {
+                StringBuilder sbmv = mvs.get(microservice);
+                if (sbmv==null){
+                    sbmv = new StringBuilder();
+                    mvs.put(microservice, sbmv);
+                }
+                MvValue mv = mvValues.get(microservice);
+                if(mv == null){
+                    sbmv.append(",,");
+                    continue;
+                }
+                Double mvdn = mv.getDependency();
+                Integer mvin = mv.getFile();
+                if(mvdn ==null ){
+                    sbmv.append(',');
+                }else {
+                    sbmv.append(mvdn).append(',');
+                }
+                if(mvin ==null ){
+                    sbmv.append(',');
+                }else {
+                    sbmv.append(mvin).append(',');
+                }
+            };
+        }
+        sb.append('\n');
+        for (String microservice:
+                allMicroservices) {
+            sb.append(microservice).append(',')
+                    .append(mvs.get(microservice)).append('\n');
+        }
+        sb.append('\n');
+
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4.csv"),sb, "utf8", false);
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata.json"),jsonObject.toJSONString(), "utf8", false);
+        sb = null;
+
+        StringBuilder sb1 = new StringBuilder().append("file,targetFile,count,per\n");
+        StringBuilder sb2 = new StringBuilder(sb1);
+        StringBuilder sb3 = new StringBuilder(sb1);
+        int i=0;
+        for (Map.Entry<String, ResultForMs> entry:
+                result.getResults().entrySet()) {
+            i++;
+            if(i!=4){
+                continue;
+            }
+            String version = entry.getKey();
+            ResultForMs resultForMs = entry.getValue();
+            Mv mv = resultForMs.getMvs().get(0);
+            Map<String, MvResult.MvResultForMicroservice> map = mv.getMvResult().getResults();
+            MvResult.MvResultForMicroservice mrm1 = map.get("x_13/x_46f");
+            statisticsMvResult(sb1, mv, mrm1);
+            MvResult.MvResultForMicroservice mrm2 = map.get("x_13/x_663");
+            statisticsMvResult(sb2, mv, mrm2);
+            MvResult.MvResultForMicroservice mrm3 = map.get("x_3f/x_6f2b");
+            statisticsMvResult(sb3, mv, mrm3);
+        }
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4_mv_46f.csv"),sb1, "utf8", false);
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4_mv_663.csv"),sb2, "utf8", false);
+        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4_mv_6f2b.csv"),sb3, "utf8", false);
 
     }
 
-//皮尔森相关性检验
-public static Double getPearsonBydim(List<Double> ratingOne, List<Double> ratingTwo) {
+    private static void statisticsMvResult(StringBuilder sb1, Mv mv, MvResult.MvResultForMicroservice mrm) {
+        for (Map.Entry<String, Map<String, Integer>> fileEntry :
+                mrm.getFileToFile().entrySet()) {
+            String file = fileEntry.getKey();
+            Integer fcc = mv.getMvResult().getFileCommitCount().get(file);
+            if(fcc<10){
+                continue;
+            }
+            for (Map.Entry<String, Integer> targetFileEntry :
+                    fileEntry.getValue().entrySet()) {
+                String targetFile = targetFileEntry.getKey();
+                Integer count = targetFileEntry.getValue();
+                Double per = Double.valueOf(count)/fcc;
+                if(per>=0.5) {
+                    sb1.append(file).append(',').append(targetFile).append(',').append(count).append(',').append(per).append('\n');
+                }
+            }
+        }
+    }
+
+    //皮尔森相关性检验
+    public static Double getPearsonBydim(List<Double> ratingOne, List<Double> ratingTwo) {
     if(ratingOne.size() != ratingTwo.size()) {//两个变量的观测值是成对的，每对观测值之间相互独立。
         return null;
     }
@@ -181,47 +456,14 @@ public static Double getPearsonBydim(List<Double> ratingOne, List<Double> rating
     sim = (fatherSum == 0) ? 1 : sonSum / fatherSum;
     return sim;
 }
-
-    public static void exportCSV(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        if(!dir.exists()){
-            dir.mkdirs();
-        }
-        FileUtils.cleanDirectory(dir);
-        for (MicroserviceAttrsInfo mai :
-                microserviceAttrsInfos) {
-            String version = mai.getVersion();
-            File file = new File(dir.getAbsolutePath()+"/"+version+".csv");
-            StringBuilder sb = new StringBuilder();
-            Field[] fields = MicroserviceAttr.class.getDeclaredFields();
-            for (Field field:
-                    fields) {
-                sb.append(field.getName());
-                sb.append(',');
-            }
-            sb.append('\n');
-            for (MicroserviceAttr ma :
-                    mai.getMicroserviceAttrs()) {
-                for (Field field:
-                        fields) {
-                    Method m = ma.getClass().getMethod("get" + getMethodName(field.getName()));
-                    Object val = m.invoke(ma);
-                    if (val != null) {
-                        sb.append(val);
-                    }
-                    sb.append(',');
-                }
-                sb.append('\n');
-            }
-            FileUtils.write(file, sb.toString(), "utf8");
-        }
-    }
-
     private static String getMethodName(String fildeName){
         byte[] items = fildeName.getBytes();
+        if((char) items[0] >= 'A' && (char) items[0]<='Z'){
+            return "get"+fildeName;
+        }
         items[0] = (byte) ((char) items[0] - 'a' + 'A');
-        return new String(items);
+        return "get"+ new String(items);
     }
-
     public static MetricsInfo MetricsResult(String version, HashMap<String, GoPackagesInfo> packagesInfoHashMap, List<String> microserviceName, MicroservicesInfo microserviceInfo){
         //if(version.equals("x_1635-x_95d.x_4af.x_893_x_1ff_x_e0af_x_e0a3_x_e0b1")){
         MetricsInfo metricsInfo = MetricsInfo.createInfo(version,packagesInfoHashMap,microserviceName,microserviceInfo);
@@ -234,7 +476,6 @@ public static Double getPearsonBydim(List<Double> ratingOne, List<Double> rating
         System.out.println("版本号："+version+"中共有"+metricsInfo.getMetricsList().size()+"个微服务");
         // }
         return metricsInfo;
-
     }
 
     public static void exportExcel(List<MicroserviceAttrsInfo> microserviceAttrsInfos,List<CorrelationDataInfo> correlationDataInfos, List<MetricsInfo> metricsInfos,File dir) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, IOException {
@@ -267,7 +508,6 @@ public static Double getPearsonBydim(List<Double> ratingOne, List<Double> rating
                     double p=(val==null?0.0:Double.valueOf(val.toString()));
                     attrList.add((Double)p);
                 }
-
             }
             attrsMap.put(fields[i].getName(),new ArrayList<>(attrList));//深克隆
         }
@@ -469,7 +709,6 @@ int vi=1;
         file.createNewFile();
         wb.write(new FileOutputStream(file));
     }
-
     public static int getIndexByString(List<String> sarr,String attrs){
         int index=0;
         for(int i=0;i<sarr.size();i++){
@@ -480,134 +719,6 @@ int vi=1;
         }
         return index;
     }
-
-
-    private static void exportExcelForTCommitcountHubLink(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir)
-            throws IOException {
-        Workbook wb_t_hublink_commitcount = new XSSFWorkbook(); //根据hublink划分两个样本
-        for (MicroserviceAttrsInfo mai :
-                microserviceAttrsInfos) {
-            // t 检验 hublink commitcount
-            Sheet sheet_t_arc = wb_t_hublink_commitcount.createSheet(mai.getVersion());
-            List<Pair<Long, Long>> pairs = new ArrayList<>();
-            for (MicroserviceAttr ma :
-                    mai.getMicroserviceAttrs()) {
-                Long hublink = ma.getHublink();
-                Long commitCount = ma.getCommitCount();
-                if(hublink == null || commitCount == null){
-                    continue;
-                }
-                Pair<Long, Long> pair = Pair.of(hublink, commitCount);
-                pairs.add(pair);
-            }
-            Collections.sort(pairs, Comparator.comparingInt(o -> o.getLeft().intValue()));
-            for (int i = 0; i < pairs.size() / 2; i++) {
-                Row r = sheet_t_arc.getRow(i);
-                if(r==null){
-                    r = sheet_t_arc.createRow(i);
-                }
-                r.createCell(0).setCellValue(pairs.get(i).getRight());
-            }
-            for (int i = pairs.size() / 2; i < pairs.size(); i++) {
-                Row r = sheet_t_arc.getRow(i-pairs.size()/2);
-                if(r==null){
-                    r = sheet_t_arc.createRow(i-pairs.size()/2);
-                }
-                r.createCell(1).setCellValue(pairs.get(i).getRight());
-            }
-        }
-        File file_t_hublink_commitcount = new File(dir.getAbsolutePath()+"/"+"analysis_t_hublink_commitcount.xlsx");
-        if(file_t_hublink_commitcount.exists()){
-            FileUtils.forceDelete(file_t_hublink_commitcount);
-        }
-        file_t_hublink_commitcount.createNewFile();
-        wb_t_hublink_commitcount.write(new FileOutputStream(file_t_hublink_commitcount));
-    }
-
-    private static void exportExcelForTHubLinkCommitcount(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir)
-            throws IOException {
-        Workbook wb_t_commitcount_hublink = new XSSFWorkbook(); //根据commitCount划分两个样本
-        for (MicroserviceAttrsInfo mai :
-                microserviceAttrsInfos) {
-            // t 检验  commitcount hublink
-            List<Pair<Long, Long>> pairs = new ArrayList<>();
-            for (MicroserviceAttr ma :
-                    mai.getMicroserviceAttrs()) {
-                Long hublink = ma.getHublink();
-                Long commitCount = ma.getCommitCount();
-                if(hublink == null || commitCount == null){
-                    continue;
-                }
-                Pair<Long, Long> pair = Pair.of(hublink, commitCount);
-                pairs.add(pair);
-            }
-            Sheet sheet_t_commitcount = wb_t_commitcount_hublink.createSheet(mai.getVersion());
-            Collections.sort(pairs, Comparator.comparingInt(o -> o.getRight().intValue()));
-            for (int i = 0; i < pairs.size() / 2; i++) {
-                Row r = sheet_t_commitcount.getRow(i);
-                if(r==null){
-                    r = sheet_t_commitcount.createRow(i);
-                }
-                r.createCell(0).setCellValue(pairs.get(i).getLeft());
-            }
-            for (int i = pairs.size() / 2; i < pairs.size(); i++) {
-                Row r = sheet_t_commitcount.getRow(i-pairs.size()/2);
-                if(r==null){
-                    r = sheet_t_commitcount.createRow(i-pairs.size()/2);
-                }
-                r.createCell(1).setCellValue(pairs.get(i).getLeft());
-            }
-        }
-        File file_t_commitcount_hublink = new File(dir.getAbsolutePath()+"/"+"analysis_t_commitcount_hublink.xlsx");
-        if(file_t_commitcount_hublink.exists()){
-            FileUtils.forceDelete(file_t_commitcount_hublink);
-        }
-        file_t_commitcount_hublink.createNewFile();
-        wb_t_commitcount_hublink.write(new FileOutputStream(file_t_commitcount_hublink));
-    }
-
-    private static void exportExcelForTHubLinkPair(List<MicroserviceAttrsInfo> microserviceAttrsInfos, File dir)
-            throws IOException {
-        Workbook wb = new XSSFWorkbook(); //根据commitCount划分两个样本
-        for (MicroserviceAttrsInfo mai :
-                microserviceAttrsInfos) {
-            // t 检验  hublink PairwiseCommitterOverlap
-            List<Pair<Long, Double>> pairs = new ArrayList<>();
-            for (MicroserviceAttr ma :
-                    mai.getMicroserviceAttrs()) {
-                Long hublink = ma.getHublink();
-                Double pairwise = ma.getPairwiseCommitterOverlap();
-                if(hublink == null || pairwise == null){
-                    continue;
-                }
-                Pair<Long, Double> pair = Pair.of(hublink, pairwise);
-                pairs.add(pair);
-            }
-            Sheet sheet = wb.createSheet(mai.getVersion());
-            Collections.sort(pairs, Comparator.comparingInt(o -> o.getLeft().intValue()));
-            for (int i = 0; i < pairs.size() / 2; i++) {
-                Row r = sheet.getRow(i);
-                if(r==null){
-                    r = sheet.createRow(i);
-                }
-                r.createCell(0).setCellValue(pairs.get(i).getRight());
-            }
-            for (int i = pairs.size() / 2; i < pairs.size(); i++) {
-                Row r = sheet.getRow(i-pairs.size()/2);
-                if(r==null){
-                    r = sheet.createRow(i-pairs.size()/2);
-                }
-                r.createCell(1).setCellValue(pairs.get(i).getRight());
-            }
-        }
-        File file = new File(dir.getAbsolutePath()+"/"+"analysis_t_hublink_pairwiseCommitterOverlap.xlsx");
-        if(file.exists()){
-            FileUtils.forceDelete(file);
-        }
-        file.createNewFile();
-        wb.write(new FileOutputStream(file));
-    }
-
     private static MicroserviceAttrsInfo microserviceAttrsInfos(String versionName,MicroservicesInfo microservices,
                                                                 DtssInfo dtssInfo,
                                                                 PairRelationsInfo bugMicroserviceRelations,

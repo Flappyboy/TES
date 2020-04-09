@@ -1,5 +1,6 @@
 package top.jach.tes.core.impl.domain.relation;
 
+import org.apache.commons.lang3.tuple.Pair;
 import top.jach.tes.core.api.domain.info.Info;
 import top.jach.tes.core.api.domain.info.InfoProfile;
 import top.jach.tes.core.api.factory.InfoRepositoryFactory;
@@ -7,7 +8,9 @@ import top.jach.tes.core.impl.domain.element.Element;
 import top.jach.tes.core.impl.domain.element.ElementsInfo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PairRelationsInfo extends RelationsInfo<PairRelation> {
     private InfoProfile sourceElementsInfo;
@@ -50,5 +53,33 @@ public class PairRelationsInfo extends RelationsInfo<PairRelation> {
             return sourceElementsInfo;
         }
         return targetElementsInfo;
+    }
+
+    // 去重
+    public PairRelationsInfo deWeight(){
+        PairRelationsInfo pairRelationsInfo = createInfo();
+        pairRelationsInfo.setSourceElementsInfo(this.getSourceElementsInfo());
+        pairRelationsInfo.setTargetElementsInfo(this.getTargetElementsInfo());
+        Set<Pair<String, String>> pairs = new HashSet<>();
+        for (PairRelation pr :
+                this) {
+            Pair<String, String> pair = Pair.of(pr.getSourceName(),pr.getTargetName());
+            boolean flag = true;
+            for (Pair<String, String> p :
+                    pairs) {
+                if(p.getRight().equals(pr.getSourceName())&&p.getLeft().equals(pr.getTargetName())){
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag) {
+                pairs.add(pair);
+            }
+        }
+        for (Pair<String, String> p :
+                pairs) {
+            pairRelationsInfo.addRelation((PairRelation) new PairRelation(p.getLeft(), p.getRight()).setValue(1d));
+        }
+        return pairRelationsInfo;
     }
 }

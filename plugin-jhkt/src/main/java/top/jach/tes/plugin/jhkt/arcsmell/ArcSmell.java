@@ -11,4 +11,5 @@ public class ArcSmell {
     Long hublinkForOut;
     Long cyclic;
     Long mv;
+//    Long mvWeight;
 }

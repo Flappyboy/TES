@@ -148,6 +148,18 @@ export default {
               component: './maintain',
             },
             {
+              path: '/arcsmell',
+              name: 'arcsmell',
+              icon: 'dashboard',
+              component: './arcsmell',
+            },
+            {
+              path: '/dataset',
+              name: 'dataset',
+              icon: 'dashboard',
+              component: './dataset',
+            },
+            /*{
               path: '/dashboard',
               name: 'dashboard',
               icon: 'dashboard',
@@ -357,7 +369,7 @@ export default {
                   component: './editor/koni',
                 },
               ],
-            },
+            },*/
             {
               path: '/',
               redirect: '/project',

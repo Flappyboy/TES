@@ -5,7 +5,7 @@ const ProjectModel = {
       "id": 1,
       "createdTime": 1575216488269,
       "updatedTime": 1575216488269,
-      "name": "tes",
+      "name": "CT",
       "desc": "just test"
     },
   },
