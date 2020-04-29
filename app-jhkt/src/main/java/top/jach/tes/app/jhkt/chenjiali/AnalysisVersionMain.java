@@ -26,6 +26,7 @@ import top.jach.tes.plugin.jhkt.arcsmell.ArcSmell;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellsInfo;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction;
+import top.jach.tes.plugin.jhkt.arcsmell.ud.UdAction;
 import top.jach.tes.plugin.jhkt.dts.DtssInfo;
 import top.jach.tes.plugin.jhkt.git.commit.GitCommitsForMicroserviceInfo;
 import top.jach.tes.plugin.jhkt.maintain.MainTain;
@@ -132,11 +133,19 @@ public class AnalysisVersionMain extends DevApp {
                     .getFirstByInfoClass(ArcSmellsInfo.class);
 
             //计算mv架构异味
-            MvAction mvAction=new MvAction();
+         /*   MvAction mvAction=new MvAction();
             ElementsValue ev=mvAction.detect(gitCommits,6, 11, 0.8,microservices.getMicroservices());
             for(String str:ev.getValueMap().keySet()){
                 ArcSmell acl=arcSmellsInfo.find(str);
                 acl.setMv((ev.getValueMap().get(str)).longValue());
+            }
+            */
+            //计算ud架构异味
+            UdAction udAction=new UdAction();
+            ElementsValue ud=udAction.calculateUd(microservices,pairRelationsInfo);//ud值都是0
+            for(String str:ud.getValueMap().keySet()){
+                ArcSmell al=arcSmellsInfo.find(str);
+                al.setUd((ud.getValueMap().get(str)).longValue());
             }
             //根据以上查询数据生成MicroserviceAttrsInfo类的对象
             MicroserviceAttrsInfo mai = microserviceAttrsInfos(n_version,microservices, dtssInfo, bugMicroserviceRelations, gitCommitsForMicroserviceInfoMap, arcSmellsInfo);
