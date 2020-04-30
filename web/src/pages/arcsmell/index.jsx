@@ -32,6 +32,11 @@ const columns = [
     dataIndex: 'microservice',
     key: 'microservice',
     render: text => <a>{text}</a>,
+    onCell: record=>{
+      return {
+        fontSize: 20,
+      }
+  }
   },
   {
     title: 'HDN',
@@ -39,6 +44,11 @@ const columns = [
     key: 'hublikes',
     sorter: (a, b) => a.hublikes - b.hublikes,
     render: value =>  show(value, 7.77),
+    onCell: record=>{
+      return {
+        fontSize: 20,
+      }
+    }
   },
   {
     title: 'HDIN',
