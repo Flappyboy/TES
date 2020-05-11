@@ -1,4 +1,4 @@
-package top.jach.tes.app.jhkt.lijiaqi.result;
+package top.jach.tes.plugin.jhkt.arcsmell.result;
 
 import lombok.Data;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction;
@@ -8,7 +8,6 @@ import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.tes.code.git.commit.GitCommit;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -40,7 +40,8 @@ public class TaskEntity {
     public Task toTask(){
         Task task = new Task(projectEntity.toProject());
         task.setInputInfos(InfoProfileEntity.entitiesToInfoProfiles(inputInfos))
-                .setStatus(status).setAction(StatefulAction.deserializeActionFromJson(action))
+                .setStatus(status)
+                .setAction(StatefulAction.deserializeActionFromJson(action))
                 .setId(id).setUpdatedTime(updatedTime).setCreatedTime(createdTime);
         return task;
     }

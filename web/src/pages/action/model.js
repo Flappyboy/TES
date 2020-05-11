@@ -24,7 +24,7 @@ const Model = {
       yield call(fakeSubmitForm, payload);
       message.success('提交成功');
     },
-    *fetchActions({ payload }, { call }){
+    *fetchActions({ payload }, { call, put }){
       console.log('fetchActionssss')
       const response = yield call(allActions, payload);
       yield put({
@@ -43,7 +43,7 @@ const Model = {
   },
   reducers: {
     saveActions(state, action) {
-      return {...state, data: action.payload};
+      return {...state, actions: action.payload};
     },
   }
 };

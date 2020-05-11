@@ -13,6 +13,7 @@ import {
   Radio,
   Checkbox,
   TimePicker,
+  message
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import React, { Component } from 'react';
@@ -71,10 +72,7 @@ const normFile = e => {
 };
 const fs = {
   name: 'file',
-  action: '/api/upload',
-  headers: {
-    authorization: 'authorization-text',
-  },
+  action: 'http://localhost:8080/api/upload',
   onChange(info) {
     if (info.file.status !== 'uploading') {
       console.log(info.file, info.fileList);
@@ -149,6 +147,14 @@ class AdvancedForm extends Component {
       </span>
     );
   };
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+      }
+    });
+  };
 
   validate = () => {
     const {
@@ -192,7 +198,7 @@ class AdvancedForm extends Component {
               &nbsp; &nbsp; 导入数据并检测架构异味
             </>
           } className={styles.card} bordered={false}>
-            <Form layout="inline" hideRequiredMark>
+            <Form layout="inline" hideRequiredMark onSubmit={this.handleSubmit}>
               <Row gutter={16}>
                 <Col lg={10} md={12} sm={24}>
                   {/*<Upload
@@ -207,7 +213,7 @@ class AdvancedForm extends Component {
                   <Form.Item label="数据文件">
                     {getFieldDecorator('upload', {
                       valuePropName: 'fileList',
-                      getValueFromEvent: this.normFile,
+                      getValueFromEvent: normFile,
                     })(
                       <Upload style={{marginLeft: 62}}{...fs}>
                         <Button>
@@ -298,9 +304,12 @@ class AdvancedForm extends Component {
               </Row>
           <Row style={{marginTop : 20}}>
             <Col lg={3} md={12} sm={24}>
-              <Button type="primary" onClick={this.validate} loading={submitting}>
-                执行
-              </Button>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={submitting}>
+                  执行
+                </Button>
+              </Form.Item>
+
             </Col>
           </Row>
             </Form>

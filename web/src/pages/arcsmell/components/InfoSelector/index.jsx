@@ -36,11 +36,11 @@ const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['关闭', '运行中', '已上线', '异常'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ action, loading }) => ({
-  actions: action.actions,
-  loading: loading.effects['action/fetchActions'],
+@connect(({ arcsmell, loading }) => ({
+  infos: arcsmell.infos,
+  loading: loading.effects['arcsmell/fetchInfos'],
 }))
-class ActionSelector extends Component {
+class InfoSelector extends Component {
   state = {
     modalVisible: this.props.modalVisible,
     handleAdd: this.props.handleAdd,
@@ -55,12 +55,16 @@ class ActionSelector extends Component {
 
   columns = [
     {
-      title: 'name',
-      dataIndex: 'name',
+      title: '执行开始时间',
+      dataIndex: 'time',
     },
     {
-      title: 'desc',
+      title: '描述',
       dataIndex: 'desc',
+    },
+    {
+      title: '版本信息',
+      dataIndex: 'versions',
     },
     {
       title: '操作',
@@ -75,7 +79,7 @@ class ActionSelector extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'action/fetchActions',
+      type: 'arcsmell/fetchInfos',
       payload: {
         projectId: 1,
       }
@@ -425,7 +429,7 @@ class ActionSelector extends Component {
 
   render() {
     const {
-      actions,
+      infos,
       loading,
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
@@ -466,7 +470,7 @@ class ActionSelector extends Component {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={actions}
+              data={infos}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
@@ -486,4 +490,4 @@ class ActionSelector extends Component {
   }
 }
 
-export default Form.create()(ActionSelector);
+export default Form.create()(InfoSelector);

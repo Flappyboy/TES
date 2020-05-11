@@ -1,35 +1,17 @@
 package top.jach.tes.app.jhkt.lijiaqi;
 
-import top.jach.tes.app.jhkt.chenjiali.CorrelationDataInfo;
-import top.jach.tes.app.jhkt.lijiaqi.result.Result;
 import top.jach.tes.app.mock.Environment;
-import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.app.mock.InfoTool;
-import top.jach.tes.app.mock.InputInfoProfiles;
-import top.jach.tes.app.mock.TaskTool;
 import top.jach.tes.core.api.domain.context.Context;
 import top.jach.tes.core.impl.domain.relation.PairRelation;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
 import top.jach.tes.app.dev.DevApp;
 import top.jach.tes.plugin.jhkt.DataAction;
 import top.jach.tes.plugin.jhkt.InfoNameConstant;
-import top.jach.tes.plugin.jhkt.analysis.MicroserviceAttrsInfo;
-import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
-import top.jach.tes.plugin.jhkt.arcsmell.cyclic.CyclicAction;
-import top.jach.tes.plugin.jhkt.arcsmell.hublink.HublinkAction;
-import top.jach.tes.plugin.jhkt.metrics.Metrics;
-import top.jach.tes.plugin.jhkt.microservice.Microservice;
 import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 import top.jach.tes.plugin.tes.code.git.version.Version;
 import top.jach.tes.plugin.tes.code.git.version.VersionsInfo;
-import top.jach.tes.plugin.tes.code.go.GoPackagesInfo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 public class DemoMain extends DevApp {
     public static void main(String[] args) {

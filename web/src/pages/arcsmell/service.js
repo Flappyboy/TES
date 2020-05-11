@@ -23,3 +23,8 @@ export async function queryArcSmell(params) {
     params,
   });
 }
+export async function allArcSmellInfos(params) {
+  return request('/api/arcsmells',{
+    params,
+  });
+}

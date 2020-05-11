@@ -3,8 +3,6 @@ package top.jach.tes.app.jhkt.lijiaqi;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,13 +12,11 @@ import top.jach.tes.app.dev.DevApp;
 import top.jach.tes.app.jhkt.chenjiali.CorrelationData;
 import top.jach.tes.app.jhkt.chenjiali.CorrelationDataInfo;
 import top.jach.tes.app.jhkt.chenjiali.Ttest;
-import top.jach.tes.app.jhkt.lijiaqi.result.Mv;
-import top.jach.tes.app.jhkt.lijiaqi.result.Result;
-import top.jach.tes.app.jhkt.lijiaqi.result.ResultForMs;
+import top.jach.tes.plugin.jhkt.arcsmell.result.Mv;
+import top.jach.tes.plugin.jhkt.arcsmell.result.Result;
+import top.jach.tes.plugin.jhkt.arcsmell.result.ResultForMs;
 import top.jach.tes.app.mock.Environment;
 import top.jach.tes.app.mock.InfoTool;
-import top.jach.tes.app.mock.InputInfoProfiles;
-import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.context.Context;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
 import top.jach.tes.core.impl.domain.element.ElementsValue;
@@ -30,11 +26,9 @@ import top.jach.tes.plugin.jhkt.InfoNameConstant;
 import top.jach.tes.plugin.jhkt.analysis.MicroserviceAttr;
 import top.jach.tes.plugin.jhkt.analysis.MicroserviceAttrsInfo;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmell;
-import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellsInfo;
 import top.jach.tes.plugin.jhkt.arcsmell.cyclic.CyclicAction;
 import top.jach.tes.plugin.jhkt.arcsmell.hublink.HublinkAction;
-import top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvResult;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvValue;
 import top.jach.tes.plugin.jhkt.dts.DtssInfo;
@@ -49,10 +43,8 @@ import top.jach.tes.plugin.tes.code.git.commit.GitCommit;
 import top.jach.tes.plugin.tes.code.git.version.Version;
 import top.jach.tes.plugin.tes.code.git.version.VersionsInfo;
 import top.jach.tes.plugin.tes.code.go.GoPackagesInfo;
-import top.jach.tes.plugin.tes.code.repo.Repo;
 import top.jach.tes.plugin.tes.code.repo.ReposInfo;
 
-import java.beans.Beans;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -61,8 +53,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction.getMicroserviceByPathname;
 
 // 继承DevApp 已加载InfoRepository等上下文环境
 public class AnalysisVersionMainForJson extends DevApp {

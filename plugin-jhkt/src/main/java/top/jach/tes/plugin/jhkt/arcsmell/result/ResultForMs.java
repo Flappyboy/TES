@@ -1,4 +1,4 @@
-package top.jach.tes.app.jhkt.lijiaqi.result;
+package top.jach.tes.plugin.jhkt.arcsmell.result;
 
 import lombok.Data;
 import top.jach.tes.plugin.jhkt.maintain.MainTain;

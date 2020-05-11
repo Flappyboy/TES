@@ -24,7 +24,9 @@ class CardListForProject extends Component {
 
   chooseProject(project) {
     const { dispatch } = this.props;
-    console.log(this.props)
+    console.log(this.props);
+    console.log("project:");
+    console.log(project);
     dispatch({
       type: 'projects/chooseProject',
       payload: project,

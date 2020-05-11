@@ -1,5 +1,12 @@
 import request from '@/utils/request';
 
+
+async function queryProject(params) {
+  return request('/api/project',{
+    pageNum: 1,
+    pageSize: 1,
+  });
+}
 const ProjectModel = {
   namespace: 'project',
   state: {
@@ -10,7 +17,7 @@ const ProjectModel = {
       "name": "CT",
       "desc": "just test"
     },
-    currentProject: null,
+    currentProject: {"id":null},
   },
   effects: {
     *chooseProject(payload, { call, put }) {
@@ -20,19 +27,19 @@ const ProjectModel = {
         payload: payload,
       });
     },
-    *init(call, put){
-      const response = yield call(request('/api/project',{
-        pageNum: 1,
-        pageSize: 1,
-      }));
+    *init(payload, {call, put}){
+      const response = yield call(queryProject);
+      console.log("init");
+      console.log(response);
       yield put({
-        type: 'chooseProject',
+        type: 'changeProject',
         payload: response.result[0],
       });
     }
   },
   reducers: {
     changeProject(state, action) {
+      console.log("changeProject", action);
       const project = action.payload;
       if (project.id && state.currentProject.id!==project.id){
         console.log("choose"+project.id);

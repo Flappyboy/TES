@@ -10,7 +10,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: 'AAS',
+  title: 'MASD',
   pwa: false,
   iconfontUrl: '',
 };

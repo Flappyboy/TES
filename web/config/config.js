@@ -141,24 +141,24 @@ export default {
               icon: 'dashboard',
               component: './task',
             },
-            {
+            /*{
               path: '/maintain',
               name: 'maintain',
               icon: 'dashboard',
               component: './maintain',
-            },
+            },*/
             {
               path: '/arcsmell',
               name: 'arcsmell',
               icon: 'dashboard',
               component: './arcsmell',
             },
-            {
+            /*{
               path: '/dataset',
               name: 'dataset',
               icon: 'dashboard',
               component: './dataset',
-            },
+            },*/
             /*{
               path: '/dashboard',
               name: 'dashboard',

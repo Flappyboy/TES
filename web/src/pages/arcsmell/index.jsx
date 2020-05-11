@@ -14,6 +14,7 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';*/
 import styles from './style.less';
 import { queryMaintain } from './service';
+import InfoSelectorModal from "@/pages/arcsmell/components/InfoSelectorModal";
 
 const { Paragraph } = Typography;
 const style ={
@@ -115,6 +116,10 @@ const columns = [
   loading: loading.models.arcsmell,
 }))
 class ArcSmell extends Component {
+  state = {
+    modalVisible: false,
+    updateModalVisible: false,
+  };
   componentDidMount() {
 
     const { dispatch } = this.props;
@@ -146,10 +151,19 @@ class ArcSmell extends Component {
       }]
     })
   }
+  handleModalVisible = flag => {
+    this.setState({
+      modalVisible: !!flag,
+    });
+  };
   render() {
     const {
       arcsmell: { list },
     } = this.props;
+    const parentMethods = {
+      handleModalVisible: this.handleModalVisible,
+    };
+    const { modalVisible, updateModalVisible } = this.state;
     return (
       <PageHeaderWrapper>
         {/*<div id="maintain-chart" style={{width: '80%',height:400}}></div>*/}
@@ -176,6 +190,7 @@ class ArcSmell extends Component {
           }
         </Tabs>
           </Card>
+        <InfoSelectorModal {...parentMethods} modalVisible={modalVisible} />
       </PageHeaderWrapper>
     );
   }

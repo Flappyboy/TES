@@ -6,6 +6,12 @@ import { connect } from 'dva';
 
 class CurrentProject extends React.Component {
 
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'project/init',
+    });
+  }
   toChoose(){
     router.push(`/project`);
   }

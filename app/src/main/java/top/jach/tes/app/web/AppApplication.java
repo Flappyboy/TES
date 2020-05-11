@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.impl.domain.context.BaseContextFactory;
 import top.jach.tes.core.impl.domain.context.log.simple.SimpleLoggerFactory;
 import top.jach.tes.core.api.domain.info.Info;
@@ -16,8 +17,11 @@ import top.jach.tes.core.api.factory.InfoRepositoryFactory;
 import top.jach.tes.core.impl.matching.DefaultNToOneMatchingStrategy;
 import top.jach.tes.core.impl.matching.NToOneMatchingStrategy;
 import top.jach.tes.core.api.repository.InfoRepository;
+import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction2;
 import top.jach.tes.plugin.tes.repository.GeneraInfoMongoRepository;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @SpringBootApplication
@@ -31,7 +35,11 @@ public class AppApplication {
     @Autowired
     InfoRepositoryFactory infoRepositoryFactory;
 
+    public static Map<String, Action> actionMap = new HashMap<>();
+
     public static void main(String[] args) {
+        Action action1 = new ArcSmellAction2();
+        actionMap.put(action1.getName(), action1);
         SpringApplication.run(AppApplication.class, args);
     }
 

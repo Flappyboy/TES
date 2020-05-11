@@ -8,7 +8,7 @@ public interface StatefulAction {
     void deserialization(String action);
 
     static String serializeActionToJson(Action action){
-        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject = JSONObject.parseObject(JSONObject.toJSONString(action));
         if(action!=null) {
             jsonObject.put("class", action.getClass().getName());
             if (action instanceof StatefulAction) {

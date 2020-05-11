@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import top.jach.tes.app.web.AppApplication;
 import top.jach.tes.app.web.entity.ProjectEntity;
 import top.jach.tes.app.web.entity.TaskEntity;
 import top.jach.tes.app.web.repository.TaskEntityRepository;
@@ -47,6 +48,7 @@ public class TaskController {
         Task task = taskEntity.toTask();
         task.initBuild();
         task = taskRepository.save(task);
+//        task.setAction(AppApplication.actionMap.get(taskEntity.getAction()));
         task.execute(contextFactory.createContext(task.getProject()));
         return ResponseEntity.ok().build();
     }
