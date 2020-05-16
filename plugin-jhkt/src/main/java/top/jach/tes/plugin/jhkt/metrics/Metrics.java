@@ -38,6 +38,7 @@ public class Metrics {
      * 内聚
      */
     //服务接口使用内聚性
+    private double IUCohesion2;
     private double IUCohesion;
     //微服务订阅的接口数据类型相似度（近似，算法可能有问题）
     private double subTopicSimilarity;
@@ -82,7 +83,7 @@ public class Metrics {
     //上述两者之和，即微服务和功能直接相关的数据结构数量
     private int allDataStructureCount;
     //微服务的连通路径
-    private int pathNum;
+    private long pathNum;
 
 
 
@@ -148,13 +149,20 @@ public class Metrics {
 //        printpublishMicroMap();
 //        printPubtopicOneOfMap();
 
-        return  "微服务名称为"+elementName+" ;微服务的路径是 "+pathNum +"; 包的独立等级为"+packageIndependenceLevel+"; 文件总个数为"+fileCount+"; 文件的独立等级为"+fileIndependenceLevel
-                +"; 传播成本为"+propagationCost+"; pubTopics的个数为"+pubTopicsCount+"; subTopics的个数为"+subTopicsCount+"; topics的总数为"+(pubTopicsCount+subTopicsCount)+
-                "；连通块的个数为"+connectingBlocks+"; 服务接口调用内聚性为："+IUCohesion+"; subDataStructureCount数量为："+subDataStructureCount
-                +"；pubDataStructureCount的数量为："+pubDataStructureCount+"; 能够处理的数据结构的总量为："+allDataStructureCount+";发布接口的结构相似度为："+pubTopicSimilarity
-                +"；订阅接口的结构相似度为："+subTopicSimilarity+"；微服务间的扇入耦合为"+fanInCoupling+"；微服务间的扇出耦合为："+fanOutCoupling+"；微服务间的扇入和扇出耦合之和为"+fanInAndOutCoupling
-                +"；微服务间相互依赖耦合为"+interdependenceCoupling+"；微服务间的扇入和扇出耦合之积为："+fanInMultiOutCoupling+"；微服务内的扇入/扇出耦合为"+fanInOrOutCouplingInSameMicro
-                +"；微服务内的扇入扇出乘积之和为："+fanInMultiOutCouplingInSameMicro+"；微服务包的个数是为："+packageCout+"   "+dewightPackageCout+"   "+ independencePackageCout;
+          return elementName+" "+packageCout+" "+fileCount+" "+subTopicsCount+" "+pubTopicsCount+" "+dewightPackageCout+" "
+                  +independencePackageCout+" "+IUCohesion+" "+subTopicSimilarity+" "+pubTopicSimilarity+" "+connectingBlocks+" "
+                  +fanInCoupling+" "+fanOutCoupling+" "+fanInAndOutCoupling+" "+fanInMultiOutCoupling+" "+interdependenceCoupling+" "
+                  +fanInOrOutCouplingInSameMicro+" "+fanInMultiOutCouplingInSameMicro+" "+packageIndependenceLevel+" "
+                  +fileIndependenceLevel+" "+propagationCost+" "+subDataStructureCount+" "+pubDataStructureCount+" "+
+                  allDataStructureCount+" "+pathNum;
+//        return  "微服务名称为"+elementName+" ;微服务的路径是 "+pathNum +"; 包的独立等级为"+packageIndependenceLevel+"; 文件总个数为"+fileCount+"; 文件的独立等级为"+fileIndependenceLevel
+//                +"; 传播成本为"+propagationCost+"; pubTopics的个数为"+pubTopicsCount+"; subTopics的个数为"+subTopicsCount+"; topics的总数为"+(pubTopicsCount+subTopicsCount)+
+//                "；连通块的个数为"+connectingBlocks+"; 服务接口调用内聚性为："+IUCohesion+"; subDataStructureCount数量为："+subDataStructureCount
+//                +"；pubDataStructureCount的数量为："+pubDataStructureCount+"; 能够处理的数据结构的总量为："+allDataStructureCount+";发布接口的结构相似度为："+pubTopicSimilarity
+//                +"；订阅接口的结构相似度为："+subTopicSimilarity+"；微服务间的扇入耦合为"+fanInCoupling+"；微服务间的扇出耦合为："+fanOutCoupling+"；微服务间的扇入和扇出耦合之和为"+fanInAndOutCoupling
+//                +"；微服务间相互依赖耦合为"+interdependenceCoupling+"；微服务间的扇入和扇出耦合之积为："+fanInMultiOutCoupling+"；微服务内的扇入/扇出耦合为"+fanInOrOutCouplingInSameMicro
+//                +"；微服务内的扇入扇出乘积之和为："+fanInMultiOutCouplingInSameMicro+"；微服务包的个数是为："+packageCout+"   "+dewightPackageCout+"   "+ independencePackageCout;
+// return  "微服务名称为"+elementName+"；微服务内的扇入/扇出耦合为"+fanInOrOutCouplingInSameMicro;
 
 //        return "";
     }
@@ -270,12 +278,13 @@ public class Metrics {
             if(packagesInMicroList.size()<100){
                 moreFlag=true;
                 calPathNumDFS(packagesDependenceInSameMicro,zeroInDegree,zeroOutDegreePackageName,isVisited,new ArrayList<>());
+
             }
         }
         if(!moreFlag){
             pathNum=3*getPackagesDependenceInSameMicro().size()*getPackagesDependenceInSameMicro().size()*getPackagesDependenceInSameMicro().size();
         }
-//        System.out.println("路径数为"+pathNum);
+        //System.out.println(elementName+"   路径数为"+pathNum);
     }
 
     public void calPackageDependenceLevel(){

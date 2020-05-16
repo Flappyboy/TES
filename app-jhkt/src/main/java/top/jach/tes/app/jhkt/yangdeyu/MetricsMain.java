@@ -30,9 +30,7 @@ public class MetricsMain extends DevApp {
 
     public static void main(String[] args) {
         Context context = Environment.contextFactory.createContext(Environment.defaultProject);
-
         ReposInfo reposInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.TargetSystem, ReposInfo.class);
-
         VersionsInfo versionsInfoForRelease = DataAction.queryLastInfo(context, InfoNameConstant.VersionsForRelease, VersionsInfo.class);
 
         for (Version version :
@@ -69,17 +67,52 @@ public class MetricsMain extends DevApp {
 
     public static MetricsInfo MetricsResult(String version, HashMap<String, GoPackagesInfo> packagesInfoHashMap, List<String> microserviceName, MicroservicesInfo microserviceInfo){
         //if(version.equals("x_1635-x_95d.x_4af.x_893_x_1ff_x_e0af_x_e0a3_x_e0b1")){
-            MetricsInfo metricsInfo = MetricsInfo.createInfo(version,packagesInfoHashMap,microserviceName,microserviceInfo);
-            for(Metrics metrics:metricsInfo.getMetricsList()){
+        MetricsInfo metricsInfo = MetricsInfo.createInfo(version,packagesInfoHashMap,microserviceName,microserviceInfo);
+//            for(Metrics metrics:metricsInfo.getMetricsList()){
 //                    if(metrics.getElementName().equals("x_13/x_46f")){
 
-                        System.out.println(metrics);
+//                        System.out.println(metrics);
 //                    }
-            }
-            System.out.println("版本号："+version+"中共有"+metricsInfo.getMetricsList().size()+"个微服务");
-       // }
+//            }
+//            System.out.println("版本号："+version+"中共有"+metricsInfo.getMetricsList().size()+"个微服务");
+        // }
+        System.out.println(System.currentTimeMillis()+"查看多版本可维护性指标信息");
         return metricsInfo;
 
     }
 
+    public static List<MetricsInfo> getMultiVersionMetricsInfo(){
+        List<MetricsInfo> res=new ArrayList<>();
+        Context context = Environment.contextFactory.createContext(Environment.defaultProject);
+        ReposInfo reposInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.TargetSystem, ReposInfo.class);
+        VersionsInfo versionsInfoForRelease = DataAction.queryLastInfo(context, InfoNameConstant.VersionsForRelease, VersionsInfo.class);
+
+        for (Version version :
+                versionsInfoForRelease.getVersions()) {
+            // 查询version版本的微服务
+            MicroservicesInfo microservices = DataAction.queryLastMicroservices(context, reposInfo.getId(), null, version);
+
+            //存储单个版本中（仓库名，goPackageInfo）
+            HashMap<String, GoPackagesInfo> packagesMap = new HashMap<>();
+
+            for (Repo repo :
+                    reposInfo.reposFromNames(version.repos())) {
+                GoPackagesInfo goPackagesInfo = DataAction.queryLastGoPackagesInfo(context, reposInfo.getId(), repo.getName(), version);
+//                }
+                if (goPackagesInfo != null) {
+                    packagesMap.put(repo.getName(), goPackagesInfo);
+                }
+
+            }
+
+            //存储单个版中所有微服务名称
+            List<String> microserviceNames = new ArrayList<>();
+            for (Microservice microservice : microservices) {
+                microserviceNames.add(microservice.getElementName());
+            }
+
+            res.add(MetricsResult(version.getVersionName(),packagesMap,microserviceNames,microservices));
+        }
+        return res;
+    }
 }

@@ -268,6 +268,7 @@ public class MetricsInfo extends Info {
             metrics.setIUCohesion(1.0*totalClientSubtopics/(pubtopicsNum*pubtopicsMap.size()));
 
 
+
             Map<String,Integer> subTopicsOneOf=metrics.getSubTopicsOneOf();
             int dataStructureCount=0;
             for(Map.Entry<String,Integer> topicOneOf:subTopicsOneOf.entrySet()){
@@ -782,7 +783,7 @@ public class MetricsInfo extends Info {
                 //1 表示包与包有依赖关系
                 initMatrix[rowNum][colNum]=1;
                 //由于设定为 非有向图，因此需要镜像
-                initMatrix[colNum][rowNum]=1;
+                //initMatrix[colNum][rowNum]=1;
             }
         }
         return initMatrix;
