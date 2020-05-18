@@ -1,7 +1,7 @@
 import { queryFakeList, queryProject } from './service';
 
 const Model = {
-  namespace: 'maintain',
+  namespace: 'metrics',
   state: {
     list: [],
   },
@@ -23,12 +23,12 @@ const Model = {
         payload: Array.isArray(response) ? response : [],
       });
     },
-    *chooseProject({payload}, {put}){
+    *chooseProject({ payload }, { put }) {
       yield put({
         type: 'project/changeProject',
         payload: payload,
       });
-    }
+    },
   },
   reducers: {
     queryList(state, action) {

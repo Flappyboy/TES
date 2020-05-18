@@ -1,5 +1,5 @@
-@import '~antd/es/style/themes/default.less';
-@import './utils/utils.less';
+@import '../../../../node_modules/antd/es/style/themes/default.less';
+@import 'utils/utils.less';
 
 .cardList {
   margin-bottom: -24px;
@@ -76,6 +76,43 @@
     margin-right: 8px;
     vertical-align: middle;
   }
+}
+.tableListForm {
+  :global {
+    .ant-form-item {
+      display: flex;
+      margin-right: 0;
+      margin-bottom: 24px;
+
+      > .ant-form-item-label {
+        width: auto;
+        padding-right: 8px;
+        line-height: 32px;
+      }
+
+      .ant-form-item-control {
+        line-height: 32px;
+      }
+    }
+
+    .ant-form-item-control-wrapper {
+      flex: 1;
+    }
+  }
+}
+.metricsList {
+  padding: 0 24px 8px 24px;
+  .username {
+    color: @text-color;
+  }
+  .event {
+    font-weight: normal;
+  }
+}
+.submitButtons {
+  display: block;
+  margin-bottom: 24px;
+  white-space: nowrap;
 }
 
 @media screen and (max-width: @screen-lg) {

@@ -20,6 +20,12 @@ public class DataSetEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String name;
+
+    private String description;
+
+    private String checkdata;
+
     private Long createdTime;
 
     private Long updatedTime;

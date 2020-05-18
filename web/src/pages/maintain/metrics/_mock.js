@@ -104,11 +104,24 @@ function getMaintain(req, res) {
   const count = params.count * 1 || 20;
   const result = fakeList(count);
   return res.json({
-    test: "test",
+    test: 'test',
+    x: ['版本1', '版本2', '版本3'],
+    y: [75, 78, 79],
+    datasource: [
+      { key: '1', name: '版本1', value: '75' },
+      { key: '2', name: '版本2', value: '78' },
+      { key: '3', name: '版本3', value: '79' },
+      { key: '1', name: '版本1', value: '75' },
+      { key: '2', name: '版本2', value: '78' },
+      { key: '3', name: '版本3', value: '79' },
+      { key: '1', name: '版本1', value: '75' },
+      { key: '2', name: '版本2', value: '78' },
+      { key: '3', name: '版本3', value: '79' },
+      { key: '3', name: '版本3', value: '79' },
+    ],
   });
 }
 export default {
-  'GET  /api/fake_list': getFakeList,
-  'GET  /api/maintain': getMaintain,
+  'GET  /api/maintain/fake_list': getFakeList,
+  'GET  /api/maintain/metrics': getMaintain,
 };
-

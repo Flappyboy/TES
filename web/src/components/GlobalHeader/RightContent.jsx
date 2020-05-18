@@ -19,7 +19,7 @@ const GlobalHeaderRight = props => {
 
   return (
     <div className={className}>
-      <CurrentProject />
+      {/*<CurrentProject />*/}
       <HeaderSearch
         className={`${styles.action} ${styles.search}`}
         placeholder={formatMessage({

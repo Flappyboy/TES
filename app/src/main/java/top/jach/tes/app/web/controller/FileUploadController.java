@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.jach.tes.app.web.utils.DownloadFileUtil;
 import top.jach.tes.app.web.utils.FileUtil;
+import top.jach.tes.plugin.tes.utils.FileCompress;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,17 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
+
+
+import de.innosystec.unrar.Archive;
+import de.innosystec.unrar.rarfile.FileHeader;
 
 @CrossOrigin
 //@RestController

@@ -8,9 +8,9 @@ class CurrentProject extends React.Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'project/init',
-    });
+    // dispatch({
+    //   type: 'project/init',
+    // });
   }
   toChoose(){
     router.push(`/project`);

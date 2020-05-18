@@ -6,6 +6,7 @@ import org.slf4j.ILoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.impl.domain.context.BaseContextFactory;
@@ -20,6 +21,7 @@ import top.jach.tes.core.api.repository.InfoRepository;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction2;
 import top.jach.tes.plugin.tes.repository.GeneraInfoMongoRepository;
 
+import javax.servlet.MultipartConfigElement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +78,15 @@ public class AppApplication {
 
 //        strategy.link();
         return factory;
+    }
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        MultipartConfigFactory factory = new MultipartConfigFactory();
+        //  单个数据大小
+        factory.setMaxFileSize(Datasize.); // KB,MB
+        /// 总上传数据大小
+        factory.setMaxRequestSize("102400KB");
+        return factory.createMultipartConfig();
     }
 
     @Bean

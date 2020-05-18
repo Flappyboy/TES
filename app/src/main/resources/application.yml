@@ -13,7 +13,11 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL57Dialect
   datasource:
-    url: jdbc:mysql://localhost:3306/tes?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/tes?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
