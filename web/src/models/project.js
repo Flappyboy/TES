@@ -3,8 +3,7 @@ import request from '@/utils/request';
 
 async function queryProject(params) {
   return request('/api/project',{
-    pageNum: 1,
-    pageSize: 1,
+    params,
   });
 }
 const ProjectModel = {
@@ -28,7 +27,7 @@ const ProjectModel = {
       });
     },
     *init(payload, {call, put}){
-      const response = yield call(queryProject);
+      const response = yield call(queryProject,{pageSize:1, pageNum:0});
       console.log("init");
       console.log(response);
       yield put({

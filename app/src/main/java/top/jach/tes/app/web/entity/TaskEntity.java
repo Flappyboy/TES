@@ -34,7 +34,7 @@ public class TaskEntity {
     private String status;
 
     // 所属Task
-    @ManyToOne
+    @ManyToOne(cascade={CascadeType.REMOVE})
     private ProjectEntity projectEntity;
 
     public Task toTask(){

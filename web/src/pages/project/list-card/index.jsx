@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import styles from './style.less';
+import CreateForm from "@/pages/project/list-card/components/CreateForm";
 
 const { Paragraph } = Typography;
 
@@ -11,14 +12,60 @@ const { Paragraph } = Typography;
   loading: loading.models.projects,
 }))
 class CardListForProject extends Component {
+  state = {
+    modalVisible: false,
+    updateModalVisible: false,
+  };
+  handleModalVisible = flag => {
+    this.setState({
+      modalVisible: !!flag,
+    });
+  };
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
       type: 'projects/fetchList',
       payload: {
         pageNum: 0,
-        pageSize: 10,
+        pageSize: 100,
       },
+    });
+  }
+
+  handleAdd(value){
+    console.log(value);
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'projects/add',
+      payload: value,
+      callback: (response)=>{
+        dispatch({
+          type: 'projects/fetchList',
+          payload: {
+            pageNum: 0,
+            pageSize: 10,
+          },
+        });
+        this.chooseProject(response)
+      }
+    });
+    this.handleModalVisible(false)
+  }
+
+  handleDel(id){
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'projects/del',
+      payload: {projectId: id},
+      callback: ()=>{
+        dispatch({
+          type: 'projects/fetchList',
+          payload: {
+            pageNum: 0,
+            pageSize: 10,
+          },
+        });
+      }
     });
   }
 
@@ -38,6 +85,7 @@ class CardListForProject extends Component {
       projects: { list },
       loading,
     } = this.props;
+
     console.log(list);
     const content = (
       <div className={styles.pageHeaderContent}>
@@ -88,7 +136,7 @@ class CardListForProject extends Component {
                     <Card
                       hoverable
                       className={styles.card}
-                      actions={[<a key="option1" onClick={this.chooseProject.bind(this, item)}>选择</a>, <a key="option2">编辑</a>]}
+                      actions={[<a key="option1" onClick={this.chooseProject.bind(this, item)}>选择</a>, <a key="option2" onClick={this.handleDel.bind(this, item.id)}>删除</a>]}
                     >
                       <Card.Meta
                         avatar={<img alt="" className={styles.cardAvatar} src={item.avatar} />}
@@ -111,7 +159,7 @@ class CardListForProject extends Component {
 
               return (
                 <List.Item>
-                  <Button type="dashed" className={styles.newButton}>
+                  <Button type="dashed" className={styles.newButton} onClick={()=>{this.handleModalVisible(true)}}>
                     <Icon type="plus" /> 新增项目
                   </Button>
                 </List.Item>
@@ -119,6 +167,7 @@ class CardListForProject extends Component {
             }}
           />
         </div>
+        <CreateForm modalVisible={this.state.modalVisible} handleAdd={this.handleAdd.bind(this)} handleModalVisible={this.handleModalVisible}></CreateForm>
       </PageHeaderWrapper>
     );
   }

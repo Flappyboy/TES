@@ -39,7 +39,11 @@ public class ProjectController {
 
     @DeleteMapping
     public ResponseEntity delete(Long projectId) {
-        projectRepository.delete(projectId);
+        try {
+            projectRepository.delete(projectId);
+        }catch (Exception e){
+
+        }
         return ResponseEntity.ok().build();
     }
 }

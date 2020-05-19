@@ -1,5 +1,7 @@
 package top.jach.tes.app.web.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import top.jach.tes.core.api.domain.info.Info;
@@ -13,6 +15,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Embeddable
 public class InfoProfileEntity {
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     @Column(name = "`name`")

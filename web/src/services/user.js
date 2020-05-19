@@ -5,7 +5,7 @@ export async function query() {
 export async function queryCurrent() {
   return new Promise(resolve => {
     resolve({
-      name: 'TES',
+      name: 'U',
       avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
       userid: '00000001',
       email: 'antdesign@alipay.com',

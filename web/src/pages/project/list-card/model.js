@@ -1,4 +1,4 @@
-import { queryFakeList, queryProject } from './service';
+import { queryFakeList, queryProject, addProject,delProject } from './service';
 
 const Model = {
   namespace: 'projects',
@@ -22,6 +22,14 @@ const Model = {
         type: 'queryList',
         payload: Array.isArray(response) ? response : [],
       });
+    },
+    *add({ payload, callback }, { call, put }) {
+      const response = yield call(addProject, payload);
+      callback(response)
+    },
+    *del({ payload, callback }, { call, put }) {
+      const response = yield call(delProject, payload);
+      callback(response)
     },
     *chooseProject({payload}, {put}){
       yield put({

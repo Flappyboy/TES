@@ -12,3 +12,18 @@ export async function queryProject(params) {
     // mode:"no-cors",
   });
 }
+export async function addProject(params) {
+  return request('/api/project',{
+    method: 'POST',
+    params,
+    // mode:"no-cors",
+  });
+}
+export async function delProject(params) {
+  return request('/api/project',{
+    method: 'DELETE',
+    params,
+    // mode:"no-cors",
+  });
+}
+
