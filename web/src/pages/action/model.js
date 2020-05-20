@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { fakeSubmitForm, allActions } from './service';
+import { fakeSubmitForm, allActions,im } from './service';
 import {queryAllInfoTypes} from "@/pages/info/service";
 
 const Model = {
@@ -24,8 +24,12 @@ const Model = {
       yield call(fakeSubmitForm, payload);
       message.success('提交成功');
     },
+    *execute({ payload }, { call }){
+      const response = yield call(im, payload);
+      console.log(response)
+    },
     *fetchActions({ payload }, { call, put }){
-      console.log('fetchActionssss')
+      console.log('fetchActionssss');
       const response = yield call(allActions, payload);
       yield put({
         type: 'saveActions',

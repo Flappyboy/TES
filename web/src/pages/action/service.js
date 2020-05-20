@@ -13,3 +13,10 @@ export async function allActions(params) {
     data: params,
   });
 }
+
+export async function im(params) {
+  return request('/api/task/execute/im', {
+    method: 'GET',
+    params,
+  });
+}

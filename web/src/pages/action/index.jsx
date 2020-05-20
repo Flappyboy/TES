@@ -92,6 +92,7 @@ class AdvancedForm extends Component {
   state = {
     modalVisible: false,
     updateModalVisible: false,
+    radio: 2,
   };
   getErrorInfo = () => {
     const {
@@ -149,10 +150,27 @@ class AdvancedForm extends Component {
   };
   handleSubmit = e => {
     e.preventDefault();
+    const {
+      dispatch,
+    } = this.props;
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        const value = {
+          mvcount: values.c,
+          mvdistance: values.d,
+          mvratio: values.r,
+          hd: values.radio,
+          hdth: values.hdth?values.hdth:-1,
+          hddirect: values.direct,
+          datapath: values.upload[0].response.path,
+        };
+        dispatch({
+          type: 'action/execute',
+          payload: value,
+        });
       }
+
     });
   };
 
@@ -176,6 +194,12 @@ class AdvancedForm extends Component {
       modalVisible: !!flag,
     });
   };
+  radioChange= value =>{
+    console.log(value.target.value)
+    this.setState({
+      radio: value.target.value,
+    })
+  };
 
   render() {
     const {
@@ -185,6 +209,30 @@ class AdvancedForm extends Component {
     const parentMethods = {
       handleModalVisible: this.handleModalVisible,
     };
+    let hdth = null;
+    if (this.state.radio == 2) {
+      hdth = <Form.Item label='权重'>
+        {getFieldDecorator('hdth', {
+          rules: [
+            {
+              required: false,
+              message: '',
+            },
+          ],
+        })(<Input placeholder="" defaultValue={"1"} />)}
+      </Form.Item>;
+    } else {
+      hdth = <Form.Item label='阈值'>
+        {getFieldDecorator('hdth', {
+          rules: [
+            {
+              required: false,
+              message: '',
+            },
+          ],
+        })(<Input placeholder=""/>)}
+      </Form.Item>;
+    }
     const { modalVisible, updateModalVisible } = this.state;
     return (
       <>
@@ -230,31 +278,28 @@ class AdvancedForm extends Component {
                 </Col>
                 <Col lg={5} md={12} sm={24}>
                   <Form.Item label="阈值">
-                    {getFieldDecorator('radio-group')(
-                      <Radio.Group>
-                        <Radio value={1}>自定义</Radio>
-                        <Radio value={2}>均值+标准差×权重</Radio>
+                    {getFieldDecorator('radio',{
+                      rules: [
+                        {
+                          required: true,
+                          message: '',
+                        },
+                      ],})(
+                      <Radio.Group onChange={this.radioChange.bind(this)} defaultValue="2">
+                        <Radio value="1">自定义</Radio>
+                        <Radio  value="2">均值+标准差×权重</Radio>
                       </Radio.Group>,
                     )}
                   </Form.Item>
 
                 </Col>
                 <Col lg={5} md={12} sm={24}>
-                  <Form.Item label='权重'>
-                    {getFieldDecorator('th', {
-                      rules: [
-                        {
-                          required: true,
-                          message: '',
-                        },
-                      ],
-                    })(<Input placeholder="" />)}
-                  </Form.Item>
+                  {hdth}
                 </Col>
                 <Col lg={6} md={12} sm={24}>
                   <Form.Item label="">
-                    {getFieldDecorator('select', {
-                      rules: [{ required: true, message: 'Please select your country!' }],
+                    {getFieldDecorator('direct', {
+                      rules: [{ required: false}],
                     })(
                       <Checkbox>是否忽略依赖方向</Checkbox>,
                     )}

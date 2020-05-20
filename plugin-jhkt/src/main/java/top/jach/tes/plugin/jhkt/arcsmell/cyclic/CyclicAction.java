@@ -186,6 +186,111 @@ public class CyclicAction implements Action {
         }
         return null;
     }
+    public static ElementsValue CalculateCyclic(ElementsInfo elementsInfo, PairRelationsInfo pairRelationsInfo) {
+        //构建有向图
+        List<Element> nodess = Lists.newArrayList(elementsInfo.iterator());
+        List<String> elements = new ArrayList<String>();//存储节点名即可
+        for (Element e : nodess) {
+            elements.add(e.getElementName());
+        }
+        List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
+        int[][] matrix = new int[100][100];//有向图的邻接矩阵
+        if (elements.size() > 100) {
+//            context.Logger().info("elements 超长");
+        } else {
+            //初始化矩阵
+            for (PairRelation pr : relations) {
+                int startIndex = elements.indexOf(pr.getSourceName());
+                int endIndex = elements.indexOf(pr.getTargetName());
+                if (startIndex >= 0 && endIndex >= 0) {
+                    matrix[startIndex][endIndex] = 1;
+                }
+            }
+
+            // 从出发节点到当前节点的轨迹
+            List<Integer> trace = new ArrayList<>();
+            //存储要打印输出的环回路
+            List<String> result = new ArrayList<>();
+            //存储要计数并输出的节点名
+            List<HashSet<String>> quch = new ArrayList<>();//泛型。最终输出里面那层String加上-
+            List<String> output_res = new ArrayList<>();
+            //存储要去重的环回路
+            List<List<String>> huans = new ArrayList<>();
+
+            Set<Integer> flags = new HashSet<>();
+            if (matrix.length > 0) {
+                for (int i = 0; i < elements.size(); i++) {
+                    if(flags.contains(i)){
+                        continue;
+                    }
+                    findCycle(i, trace, flags, result, elements, matrix);
+                }
+            }
+            //result中会存在依赖节点数相同但路径不同的环，比如2-3-2和3-2-3,节点元素都是2和3,其实同一个依赖环路
+//            context.Logger().info("-------Results of cyclic-dependence AS detecting---------");
+            if (result.size() == 0) {
+                result.add("no cycle dependence");
+            }
+            //遍历result里存储的每一个元素（也就是一个环），将元素按-切分成子字符串,并存入output_res中
+            for (int i = 0; i < result.size(); i++) {
+                List<String> tmp = Arrays.asList(result.get(i).split("-"));//String[]转为List<String>
+                if (!huans.contains(tmp)) {//过滤掉存在含有的节点元素均相同的环路
+                    huans.add(tmp);//主要是为了运用contains方法
+                    HashSet<String> quch_res = new HashSet<>();
+                    for (String str : tmp) {
+                        quch_res.add(str);//[2,3,2]变成[2,3]
+                    }
+                    if (!quch.contains(quch_res)) {
+                        quch.add(quch_res);
+                        for (String outp : tmp) {//若这个环是未曾出现过的，则将这个环的节点元素加入到输出里面去
+                            output_res.add(outp);
+                        }
+                    } else {
+                        result.remove(i);
+                    }
+                } else {
+                    result.remove(i);
+                }
+            }
+            //打印输出环回路
+            for (HashSet set : quch) {
+                if (set.size() >= 2) {//去除自身依赖自身的情况
+                    Iterator<String> iterator = set.iterator();
+                    while (iterator.hasNext()) {
+                        System.out.print(iterator.next() + "-");
+                    }
+                    System.out.println("cycle");
+                }
+            }
+            //得到节点出现次数的排序，并打印输出节点名与出现在环中的次数
+            HashMap<String, Integer> map = new HashMap<>();
+            for (int i = 0; i < output_res.size(); i++) {
+                if (map.containsKey(output_res.get(i))) {
+                    int temp = map.get(output_res.get(i));
+                    map.put(output_res.get(i), temp + 1);
+                } else {
+                    map.put(output_res.get(i), 1);
+                }
+            }
+            Set set = map.entrySet();
+            List<Map.Entry<String, Integer>> list = new ArrayList<Map.Entry<String, Integer>>(set);
+            Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+            //输出节点名---出现次数键值对
+            /*for(Map.Entry<String, Integer> entry : list){
+                String key=entry.getKey();
+                int value=entry.getValue();
+                System.out.println("Node"+key+"--appears--"+value+"--times");
+            }*/
+            ElementsValue elementCyclic = ElementsValue.createInfo();
+            for (Map.Entry<String, Integer> entry : list) {
+                String key = entry.getKey();
+                int value = entry.getValue();
+                elementCyclic.put(key, (double) value);
+            }
+            return elementCyclic;
+        }
+        return null;
+    }
 
     public static ElementsValue CalculateUndirectedCyclic(Context context, ElementsInfo elementsInfo, PairRelationsInfo pairRelationsInfo) {
         return null;
