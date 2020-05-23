@@ -23,8 +23,9 @@ const InfoSelectorModal = props => {
       width={1000}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
+
     >
-    <InfoSelector />
+    <InfoSelector handleModalVisible={handleModalVisible}/>
     </Modal>
   );
 };

@@ -18,13 +18,18 @@ export async function queryMaintain(params) {
     params,
   });
 }
-export async function queryArcSmell(params) {
-  return request('/api/arcsmell',{
+export async function allArcSmellInfos(projectId) {
+  const params = {
+    projectId: projectId,
+  };
+  console.log("projectId")
+  console.log(projectId)
+  return request('/api/info/arcSmellInfo',{
     params,
   });
 }
-export async function allArcSmellInfos(params) {
-  return request('/api/arcsmells',{
-    params,
+
+export async function queryArcSmell(id) {
+  return request('/api/info/arcSmellInfo/'+id,{
   });
 }

@@ -13,7 +13,8 @@ import {
   Radio,
   Checkbox,
   TimePicker,
-  message
+  message,
+  Spin
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import React, { Component } from 'react';
@@ -164,6 +165,7 @@ class AdvancedForm extends Component {
           hdth: values.hdth?values.hdth:-1,
           hddirect: values.direct,
           datapath: values.upload[0].response.path,
+          desc: values.desc,
         };
         dispatch({
           type: 'action/execute',
@@ -205,6 +207,7 @@ class AdvancedForm extends Component {
     const {
       form: { getFieldDecorator },
       submitting,
+      loading,
     } = this.props;
     const parentMethods = {
       handleModalVisible: this.handleModalVisible,
@@ -222,8 +225,9 @@ class AdvancedForm extends Component {
         })(<Input placeholder="" defaultValue={"1"} />)}
       </Form.Item>;
     } else {
-      hdth = <Form.Item label='阈值'>
-        {getFieldDecorator('hdth', {
+      hdth = <>
+        <Form.Item label='HDN阈值'>
+        {getFieldDecorator('hdnth', {
           rules: [
             {
               required: false,
@@ -231,11 +235,23 @@ class AdvancedForm extends Component {
             },
           ],
         })(<Input placeholder=""/>)}
-      </Form.Item>;
+      </Form.Item>
+        <Form.Item label='HDIN阈值'>
+          {getFieldDecorator('hdinth', {
+            rules: [
+              {
+                required: false,
+                message: '',
+              },
+            ],
+          })(<Input placeholder=""/>)}
+        </Form.Item>
+      </>;
     }
     const { modalVisible, updateModalVisible } = this.state;
     return (
       <>
+        <Spin spinning={this.props.action.loading} tip="Loading..." size="large">
         <PageHeaderWrapper content="执行操作">
           <Card title={
             <>
@@ -249,6 +265,20 @@ class AdvancedForm extends Component {
             <Form layout="inline" hideRequiredMark onSubmit={this.handleSubmit}>
               <Row gutter={16}>
                 <Col lg={10} md={12} sm={24}>
+                  <Form.Item label='描述'>
+                    {getFieldDecorator('desc', {
+                      rules: [
+                        {
+                          required: false,
+                          message: '',
+                        },
+                      ],
+                    })(<Input style={{marginLeft: 90, marginBottom: 15}} placeholder="" />)}
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col lg={10} md={12} sm={24}>
                   {/*<Upload
                     name='file'
                   action='https://www.mocky.io/v2/5cc8019d300000980a055e76'
@@ -260,6 +290,12 @@ class AdvancedForm extends Component {
                   </Upload>*/}
                   <Form.Item label="数据文件">
                     {getFieldDecorator('upload', {
+                      rules: [
+                        {
+                          required: true,
+                          message: '',
+                        },
+                      ],
                       valuePropName: 'fileList',
                       getValueFromEvent: normFile,
                     })(
@@ -299,9 +335,10 @@ class AdvancedForm extends Component {
                 <Col lg={6} md={12} sm={24}>
                   <Form.Item label="">
                     {getFieldDecorator('direct', {
-                      rules: [{ required: false}],
+                      rules: [{ required: true}],
+                      initialValue: true
                     })(
-                      <Checkbox>是否忽略依赖方向</Checkbox>,
+                      <Checkbox defaultChecked={true}>是否忽略依赖方向</Checkbox>,
                     )}
                   </Form.Item>
                 </Col>
@@ -361,6 +398,7 @@ class AdvancedForm extends Component {
           </Card>
           <ActionSelectorModal {...parentMethods} modalVisible={modalVisible} />
         </PageHeaderWrapper>
+        </Spin>
         <RouteContext.Consumer>
           {({ isMobile }) => (
             <FooterToolbar isMobile={isMobile}>

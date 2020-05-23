@@ -34,7 +34,16 @@ const getValue = obj =>
 
 const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['关闭', '运行中', '已上线', '异常'];
-
+function formatDate(date) {
+  var date = new Date(parseInt(date));
+  var YY = date.getFullYear() + '-';
+  var MM = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+  var DD = (date.getDate() < 10 ? '0' + (date.getDate()) : date.getDate());
+  var hh = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+  var mm = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+  var ss = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+  return YY + MM + DD +" "+hh + mm + ss;
+}
 /* eslint react/no-multi-comp:0 */
 @connect(({ arcsmell, loading }) => ({
   infos: arcsmell.infos,
@@ -56,7 +65,17 @@ class InfoSelector extends Component {
   columns = [
     {
       title: '执行开始时间',
-      dataIndex: 'time',
+      dataIndex: 'createdTime',
+      defaultSortOrder: 'descend',
+      key: 'createdTime',
+      sorter: (a, b) => a.createdTime - b.createdTime,
+      render: (text, record) => {
+        console.log(text)
+        return (
+        <Fragment>
+          {formatDate(text)}
+        </Fragment>
+      )},
     },
     {
       title: '描述',
@@ -88,10 +107,12 @@ class InfoSelector extends Component {
 
   chooseInfoType = (record)=>{
     const { dispatch } = this.props;
+    console.log(record)
     dispatch({
-      type: 'actions/chooseAction',
+      type: 'arcsmell/fetchArcSmell',
       payload: record,
     });
+    this.state.handleModalVisible(false)
   };
 
   okHandle() {
@@ -206,14 +227,14 @@ class InfoSelector extends Component {
   };
 
   handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listAndtableList/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-    message.success('添加成功');
+    // const { dispatch } = this.props;
+    // dispatch({
+    //   type: 'listAndtableList/add',
+    //   payload: {
+    //     desc: fields.desc,
+    //   },
+    // });
+    // message.success('添加成功');
     this.handleModalVisible();
   };
 

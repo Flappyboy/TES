@@ -4,27 +4,29 @@ import {allArcSmellInfos} from "@/pages/arcsmell/service";
 const Model = {
   namespace: 'arcsmell',
   state: {
-    list: [],
+    info: {resultMap:{}},
     infos:[],
   },
   effects: {
-    *fetchList({ payload }, { call, put }) {
-      const response = yield call(queryArcSmell, payload);
+    *fetchArcSmell({ payload }, { call, put }) {
+      const response = yield call(queryArcSmell, payload.id);
       /*console.log("response:");
       console.log(response);*/
-      const list = response.result;
       yield put({
-        type: 'queryList',
-        payload: Array.isArray(list) ? list : [],
+        type: 'saveInfo',
+        payload: response,
       });
     },
-    *fetchInfos({ payload }, { call,put }){
+    *fetchInfos({ payload }, { call,put, select}){
       console.log('fetchInfos')
-      const response = yield call(allArcSmellInfos, payload);
+      const projectId = yield select(
+        state => state.project.currentProject.id
+      );
+      const response = yield call(allArcSmellInfos, projectId);
       yield put({
         type: 'saveAllArcsmellInfos',
         payload: {
-          list: response.result,
+          list: response,
           pagination: {
             pageSize: 5,
           },
@@ -46,8 +48,8 @@ const Model = {
     }
   },
   reducers: {
-    queryList(state, action) {
-      return { ...state, list: action.payload };
+    saveInfo(state, action) {
+      return { ...state, info: action.payload };
     },
     saveAllArcsmellInfos(state, action) {
       return { ...state, infos: action.payload };

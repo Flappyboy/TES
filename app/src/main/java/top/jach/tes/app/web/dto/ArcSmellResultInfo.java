@@ -75,7 +75,7 @@ public class ArcSmellResultInfo extends Info {
             hdinth = total/hdns.size() + StandardDiviation(hdins.toArray(new Double[hdins.size()])) * hdth;
         }
 
-        results.setHdinTh(hdnth);
+        results.setHdnTh(hdnth);
         results.setHdinTh(hdinth);
 
         resultMap.put(versionName, results);

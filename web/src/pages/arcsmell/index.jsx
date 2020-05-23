@@ -26,90 +26,9 @@ const show = function (value, th) {
   else
     return value
 }
+let hdnth = 0
+let hdinth = 0
 
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'microservice',
-    key: 'microservice',
-    render: text => <a>{text}</a>,
-    onCell: record=>{
-      return {
-        fontSize: 20,
-      }
-  }
-  },
-  {
-    title: 'HDN',
-    dataIndex: 'hublikes',
-    key: 'hublikes',
-    sorter: (a, b) => a.hublikes - b.hublikes,
-    render: value =>  show(value, 7.77),
-    onCell: record=>{
-      return {
-        fontSize: 20,
-      }
-    }
-  },
-  {
-    title: 'HDIN',
-    dataIndex: 'hublikeWithWeight',
-    key: 'hublikeWithWeight',
-    sorter: (a, b) => a.hublikeWithWeight - b.hublikeWithWeight,
-    render: value =>  show(value, 73.45),
-  },
-  {
-    title: 'CN',
-    dataIndex: 'cyclic',
-    key: 'cyclic',
-    sorter: (a, b) => a.cyclic - b.cyclic,
-    render: value =>  show(value, 0),
-  },
-  {
-    title: 'MVDN',
-    dataIndex: 'MVDN',
-    key: 'MVDN',
-    sorter: (a, b) => a.MVDN - b.MVDN,
-    render: value =>  show(value, 0),
-  },
-  {
-    title: 'MVFN',
-    dataIndex: 'MVFN',
-    key: 'MVFN',
-    sorter: (a, b) => a.MVFN - b.MVFN,
-    render: value =>  show(value, 0),
-  },
-  /*{
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: tags => (
-      <span>
-        {tags.map(tag => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </span>
-    ),
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    render: (text, record) => (
-      <span>
-        <a style={{ marginRight: 16 }}>Invite {record.name}</a>
-        <a>Delete</a>
-      </span>
-    ),
-  },*/
-];
 
 @connect(({ arcsmell, loading }) => ({
   arcsmell,
@@ -124,7 +43,7 @@ class ArcSmell extends Component {
 
     const { dispatch } = this.props;
     dispatch({
-      type: 'arcsmell/fetchList',
+      type: 'arcsmell/fetchInfos',
     });
     // this.show();
   }
@@ -157,8 +76,9 @@ class ArcSmell extends Component {
     });
   };
   render() {
+
     const {
-      arcsmell: { list },
+      arcsmell: { info},
     } = this.props;
     const parentMethods = {
       handleModalVisible: this.handleModalVisible,
@@ -182,9 +102,62 @@ class ArcSmell extends Component {
               // onChange={callback}
         >
           {
-            list.map((item, index) => {
+            Object.keys(info.resultMap).map((item, index) => {
+              const columns = [
+                {
+                  title: 'Name',
+                  dataIndex: 'microserviceName',
+                  key: 'microserviceName',
+                  render: text => <a>{text}</a>,
+                  onCell: record=>{
+                    return {
+                      fontSize: 20,
+                    }
+                  }
+                },
+                {
+                  title: 'HDN',
+                  dataIndex: 'hdn',
+                  key: 'hdn',
+                  sorter: (a, b) => a.hdn - b.hdn,
+                  render: value =>  show(value, info.resultMap[item].hdnTh),
+                  onCell: record=>{
+                    return {
+                      fontSize: 20,
+                    }
+                  }
+                },
+                {
+                  title: 'HDIN',
+                  dataIndex: 'hdin',
+                  key: 'hdin',
+                  sorter: (a, b) => a.hdin - b.hdin,
+                  render: value =>  show(value, info.resultMap[item].hdinTh),
+                },
+                {
+                  title: 'CN',
+                  dataIndex: 'cn',
+                  key: 'cn',
+                  sorter: (a, b) => a.cn - b.cn,
+                  render: value =>  show(value, 0),
+                },
+                {
+                  title: 'MVDN',
+                  dataIndex: 'mvdn',
+                  key: 'mvdn',
+                  sorter: (a, b) => a.mvdn - b.mvdn,
+                  render: value =>  show(value, 0),
+                },
+                {
+                  title: 'MVFN',
+                  dataIndex: 'mvfn',
+                  key: 'mvfn',
+                  sorter: (a, b) => a.mvfn - b.mvfn,
+                  render: value =>  show(value, 0),
+                },
+              ];
               return <TabPane tab={"V"+(index+1)} key={index+1}>
-                <Table columns={columns} dataSource={item.ms} />
+                <Table columns={columns} dataSource={Object.values(info.resultMap[item].resultMap)} />
               </TabPane>
             })
           }

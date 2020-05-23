@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import { fakeSubmitForm, allActions,im } from './service';
 import {queryAllInfoTypes} from "@/pages/info/service";
+import router from 'umi/router';
 
 const Model = {
   namespace: 'action',
@@ -18,15 +19,26 @@ const Model = {
         }
       ],
     },
+    loading: false,
   },
   effects: {
-    *submitAdvancedForm({ payload }, { call }) {
-      yield call(fakeSubmitForm, payload);
-      message.success('提交成功');
-    },
-    *execute({ payload }, { call }){
+    *execute({ payload }, { call, select,put }){
+      yield put({
+        type: 'loading',
+        payload: {loading:true},
+      });
+      console.log("execute")
+      payload.projectId = yield select(
+        state => state.project.currentProject.id
+      );
       const response = yield call(im, payload);
       console.log(response)
+      let r = yield put({
+        type: 'loading',
+        payload: {loading:false},
+      });
+      console.log(r)
+      router.push(`/arcsmell`);
     },
     *fetchActions({ payload }, { call, put }){
       console.log('fetchActionssss');
@@ -49,6 +61,9 @@ const Model = {
     saveActions(state, action) {
       return {...state, actions: action.payload};
     },
+    loading(state, payload){
+      return {...state, loading: payload.loading};
+    }
   }
 };
 export default Model;

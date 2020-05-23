@@ -76,10 +76,11 @@ public class TaskController {
     @RequestMapping(value = "/execute/im", method = RequestMethod.GET)
     public ResponseEntity im(@RequestParam long projectId, @RequestParam int mvcount, @RequestParam int mvdistance, @RequestParam double mvratio,
                              @RequestParam int hd,
-                             @RequestParam(required = false) double hdth,
-                             @RequestParam(required = false) double hdnth,
-                             @RequestParam(required = false) double hdinth,
+                             @RequestParam(required = false, defaultValue = "-1") double hdth,
+                             @RequestParam(required = false, defaultValue = "-1") double hdnth,
+                             @RequestParam(required = false, defaultValue = "-1") double hdinth,
                              @RequestParam boolean hddirect,
+                             @RequestParam String desc,
                              @RequestParam String datapath) throws IOException {
         datapath = URLDecoder.decode(datapath, "utf8");
 //        System.out.println(String.format("mvcount %d, mvdistance %d, mvratio %f,, mvth %d,, hdth %df,, hddirect %b,, datapath %s,",mvcount, mvdistance, mvratio, hd, hdth, hddirect, datapath));
@@ -149,6 +150,7 @@ public class TaskController {
             resultForMs.setHublikeWithWeight(hublike_weight.getValueMap());
             resultForMs.setHublikes(hublike_no_weight.getValueMap());
             resultForMs.setMvs(mvs);*/
+        arcSmellResultInfo.setDesc(desc);
         infoRepositoryFactory.getRepository(ArcSmellResultInfo.class).saveProfile(arcSmellResultInfo, projectId);
         infoRepositoryFactory.getRepository(ArcSmellResultInfo.class).saveDetail(arcSmellResultInfo);
 
