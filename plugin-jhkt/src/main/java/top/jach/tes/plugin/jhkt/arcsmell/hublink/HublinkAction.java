@@ -49,7 +49,7 @@ public class HublinkAction implements Action {
     //计算每个节点在各个集合中出现次数+排序+输出所有步骤抽取成一个方法
     public static ElementsValue cal(List<String> nodes,List<Double> nodesValue,List<String> allnodes,HashMap<String,Double> map,String flag){
        // Set<String> nset=nodes.keySet();
-        //////这个nodes是Map格式的，不允许同样的值存在啊，这个for循环相当于只是把nodes复制给map罢了
+        //////这个nodes是Map格式的，不允许同样的值存在，这个for循环相当于只是把nodes复制给map罢了
         for(int i=0;i<nodes.size();i++){
             if(map.containsKey(nodes.get(i))){
                 double tmp2=map.get(nodes.get(i))+nodesValue.get(i);
@@ -59,15 +59,15 @@ public class HublinkAction implements Action {
                 map.put(nodes.get(i),nodesValue.get(i));
             }
         }
-//////////////就是下面这个for循环把所有的hubink值变成了0
+         //就是下面这个for循环把所有的hubink值变成了0
         //不存在该异味的微服务也要加上
-        //Set<String> allset=allnodes.keySet();
         for(int j=0;j<allnodes.size();j++){
             if(!map.containsKey(allnodes.get(j))){
                 map.put(allnodes.get(j),0.0);
             }
         }
         Set set=map.entrySet();
+        //为了使map能按照value值排序
         List<Map.Entry<String,Double>> list=new ArrayList<Map.Entry<String,Double>>(set);
         Collections.sort(list, (o1, o2) -> o2.getValue().compareTo(o1.getValue()));
         ElementsValue element=ElementsValue.createInfo();
@@ -110,11 +110,45 @@ public class HublinkAction implements Action {
         }
 
         List<String> allnodes=new ArrayList<>(new ArrayList<>(nodes));
-        //HashMap allnodes=(HashMap) ((HashMap<String, Double>) nodes).clone();//赋值所有节点名，三个计算都需要用到
-        //排序
         HashMap<String, Double> map = new HashMap<>();
         return cal(nodes,nodesValue,allnodes,map,HUBLINK_IN_AND_OUT);
     }
+    //static 方法不能跨包调用，要在别的包调用这个方法，就不能声明成static方法
+    public ElementsValue calculateHublikeOut(PairRelationsInfo pairRelationsInfo){
+        List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
+        List<String> nodes=new ArrayList<>();//存储所有节点名
+        List<String> sourceNodes=new ArrayList<>();//存储开始节点名
+        List<Double> nodesValue=new ArrayList<>();//存储节点对应权重
+        for(int i=0;i<relations.size();i++){
+            nodes.add(relations.get(i).getSourceName());
+            nodes.add(relations.get(i).getTargetName());
+            sourceNodes.add(relations.get(i).getSourceName());
+            nodesValue.add(relations.get(i).getValue());
+        }
+
+       // List<String> allnodes=new ArrayList<>(new ArrayList<>(nodes));
+        HashMap<String, Double> map = new HashMap<>();
+        return cal(sourceNodes,nodesValue,nodes,map,HUBLINK__OUT);
+    }
+
+    public ElementsValue calculateHublikeIn(PairRelationsInfo pairRelationsInfo){
+        List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
+        List<String> nodes=new ArrayList<>();//存储所有节点名
+        List<String> endNodes=new ArrayList<>();//存储结束节点名
+        List<Double> nodesValue=new ArrayList<>();//存储节点对应权重
+
+        for(int i=0;i<relations.size();i++){
+            nodes.add(relations.get(i).getSourceName());
+            nodes.add(relations.get(i).getTargetName());
+            endNodes.add(relations.get(i).getSourceName());
+            nodesValue.add(relations.get(i).getValue());
+        }
+
+        // List<String> allnodes=new ArrayList<>(new ArrayList<>(nodes));
+        HashMap<String, Double> map = new HashMap<>();
+        return cal(endNodes,nodesValue,nodes,map,HUBLINK_IN);
+    }
+
 
 //该方法根据元素和元素之间的关系，以此为参数调用方法，输出架构异味
     @Override
