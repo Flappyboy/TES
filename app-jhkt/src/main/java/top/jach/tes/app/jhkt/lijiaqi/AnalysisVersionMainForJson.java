@@ -23,6 +23,7 @@ import top.jach.tes.app.mock.InputInfoProfiles;
 import top.jach.tes.core.api.domain.action.Action;
 import top.jach.tes.core.api.domain.context.Context;
 import top.jach.tes.core.api.exception.ActionExecuteFailedException;
+import top.jach.tes.core.impl.domain.element.Element;
 import top.jach.tes.core.impl.domain.element.ElementsValue;
 import top.jach.tes.core.impl.domain.relation.PairRelationsInfo;
 import top.jach.tes.plugin.jhkt.DataAction;
@@ -32,11 +33,14 @@ import top.jach.tes.plugin.jhkt.analysis.MicroserviceAttrsInfo;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmell;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellsInfo;
+import top.jach.tes.plugin.jhkt.arcsmell.Sloppy.SloppyAction;
 import top.jach.tes.plugin.jhkt.arcsmell.cyclic.CyclicAction;
 import top.jach.tes.plugin.jhkt.arcsmell.hublink.HublinkAction;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvResult;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvValue;
+import top.jach.tes.plugin.jhkt.arcsmell.ud.UdAction;
+import top.jach.tes.plugin.jhkt.arcsmell.ui.UiAction;
 import top.jach.tes.plugin.jhkt.dts.DtssInfo;
 import top.jach.tes.plugin.jhkt.git.commit.GitCommitsForMicroserviceInfo;
 import top.jach.tes.plugin.jhkt.maintain.MainTain;
@@ -126,6 +130,9 @@ public class AnalysisVersionMainForJson extends DevApp {
             ElementsValue hublike_weight = HublinkAction.calculateHublike(pairRelationsInfoWithWeight);
             ElementsValue hublike_no_weight = HublinkAction.calculateHublike(pairRelationsInfoWithoutWeight);
             ElementsValue cyclicResult = CyclicAction.CalculateCyclic(context, microservices, pairRelationsInfoWithWeight);
+            ElementsValue udResult= UdAction.calculateUd(microservices,pairRelationsInfoWithWeight);
+            ElementsValue uiResult= UiAction.calculateUi(gitCommits,5,microservices,pairRelationsInfoWithoutWeight,5.0,4.0,8.0);
+            ElementsValue sdResult= SloppyAction.calculateSD(microservices,pairRelationsInfoWithoutWeight,2.0);
 //            ElementsValue undirectedCyclicResult = CyclicAction.CalculateUndirectedCyclic(context, microservices, pairRelationsInfo);
             //计算mv架构异味
 //            List<Mv> mvs = Mv.CalculateMvs(new int[]{3,5,7,9},new int[]{5,7,10},new double[]{0.5,0.7,0.8,0.9},gitCommits, microservices.getMicroservices());
@@ -138,6 +145,9 @@ public class AnalysisVersionMainForJson extends DevApp {
             resultForMs.setHublikeWithWeight(hublike_weight.getValueMap());
             resultForMs.setHublikes(hublike_no_weight.getValueMap());
             resultForMs.setMvs(mvs);
+            resultForMs.setUnstableDependency(udResult.getValueMap());
+            resultForMs.setUnstableInterface(uiResult.getValueMap());
+            resultForMs.setSloppys(sdResult.getValueMap());
 
             MainTainsInfo mainTainsInfo = MainTainsInfo.newCreateInfo(DataAction.DefaultReposId,
                     microservices,
@@ -156,7 +166,7 @@ public class AnalysisVersionMainForJson extends DevApp {
         // 数据导出
 //        exportCSV(microserviceAttrsInfos, new File("D:\\data\\tes\\analysis\\csv"));
 //        exportExcel(microserviceAttrsInfos,correlationDataInfos,metricsInfos, new File("F:\\data\\tes\\analysis"));
-        exportCsv(result, new File("F:/data/tes/analysisforlijiaqi/result"));
+        exportCsv(result, new File("D:/data/tes/analysis/csv"));
 
         for (Map.Entry<String, ResultForMs> entry:
                 result.getResults().entrySet()) {
@@ -381,7 +391,7 @@ public class AnalysisVersionMainForJson extends DevApp {
         }
         sb.append('\n');
 
-        FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata_3_4.csv"),sb, "utf8", false);
+        FileUtils.write(new File(dir.getAbsolutePath()+"/analysisdata_5_3.csv"),sb, "utf8", false);
         FileUtils.write(new File(dir.getAbsolutePath()+"/lijiaqidata.json"),jsonObject.toJSONString(), "utf8", false);
         sb = null;
 
@@ -399,6 +409,8 @@ public class AnalysisVersionMainForJson extends DevApp {
             ResultForMs resultForMs = entry.getValue();
             Mv mv = resultForMs.getMvs().get(0);
             Map<String, MvResult.MvResultForMicroservice> map = mv.getMvResult().getResults();
+            //x_13/x_46f等三个是对应某个版本下的三个微服务，每个csv文件对应该微服务中存在mv架构异味的文件，
+            // 以及这些文件对应的存在共同变更的文件，及共同变更的次数
             MvResult.MvResultForMicroservice mrm1 = map.get("x_13/x_46f");
             statisticsMvResult(sb1, mv, mrm1);
             MvResult.MvResultForMicroservice mrm2 = map.get("x_13/x_663");

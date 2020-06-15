@@ -22,7 +22,7 @@ public interface Action<I extends InputInfos> {
      * 描述该功能所需的输入
      * @return
      */
-    Meta getInputMeta();
+    Meta getInputMeta();//meta用于描述Action输入的数据
 
     OutputInfos execute(I inputInfos, Context context) throws ActionExecuteFailedException;
 }

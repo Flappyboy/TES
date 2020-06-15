@@ -114,9 +114,9 @@ public class HublinkAction implements Action {
         return cal(nodes,nodesValue,allnodes,map,HUBLINK_IN_AND_OUT);
     }
     //static 方法不能跨包调用，要在别的包调用这个方法，就不能声明成static方法
-    public ElementsValue calculateHublikeOut(PairRelationsInfo pairRelationsInfo){
+    public static ElementsValue calculateHublikeOut(PairRelationsInfo pairRelationsInfo){
         List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
-        List<String> nodes=new ArrayList<>();//存储所有节点名
+        List<String> nodes=new ArrayList<>();//存储所有节点名//////////所有节点可以用Set<String>来存储
         List<String> sourceNodes=new ArrayList<>();//存储开始节点名
         List<Double> nodesValue=new ArrayList<>();//存储节点对应权重
         for(int i=0;i<relations.size();i++){
@@ -131,7 +131,7 @@ public class HublinkAction implements Action {
         return cal(sourceNodes,nodesValue,nodes,map,HUBLINK__OUT);
     }
 
-    public ElementsValue calculateHublikeIn(PairRelationsInfo pairRelationsInfo){
+    public static ElementsValue calculateHublikeIn(PairRelationsInfo pairRelationsInfo){
         List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
         List<String> nodes=new ArrayList<>();//存储所有节点名
         List<String> endNodes=new ArrayList<>();//存储结束节点名
@@ -140,7 +140,7 @@ public class HublinkAction implements Action {
         for(int i=0;i<relations.size();i++){
             nodes.add(relations.get(i).getSourceName());
             nodes.add(relations.get(i).getTargetName());
-            endNodes.add(relations.get(i).getSourceName());
+            endNodes.add(relations.get(i).getTargetName());
             nodesValue.add(relations.get(i).getValue());
         }
 

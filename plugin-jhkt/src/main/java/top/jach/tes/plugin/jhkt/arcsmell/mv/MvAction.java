@@ -100,6 +100,7 @@ public class MvAction implements Action {
         }
         return mname;
     }
+    //根据
     public static String getMicroservicePathByPathnameAndMs(String path,List<Microservice> microservices){
         String mname=null;
         for(Microservice microservice:microservices){
@@ -110,6 +111,22 @@ public class MvAction implements Action {
             }
             if(path.startsWith(mPath)){
                 mname=mPath;
+                break;
+            }
+        }
+        return mname;
+    }
+
+    public static String getMicroserviceNameByFilePath(String path,List<Microservice> microservices){
+        String mname=null;
+        for(Microservice microservice:microservices){
+            String mPath=microservice.getAllPath();
+//            String mPath=microservice.getPath();
+            if(mPath==null){
+                continue;
+            }
+            if(path.startsWith(mPath)){
+                mname=microservice.getElementName();
                 break;
             }
         }
@@ -147,12 +164,68 @@ public class MvAction implements Action {
         }
         return micros;
     }
+    //返回微服务对应的共同变更的微服务集合及共同变更的次数的map
+    public static MvResult detectMvResultForUi(List<GitCommit> gitCommits,int len,List<Microservice> microservices){
+        if (gitCommits == null || gitCommits.size() == 0 || len < 0) {
+            return null;
+        }
+        //将获取的gitCommits对象集合按照提交时间先后排序（git记录的是秒级的提交时间戳）
+        Collections.sort(gitCommits);
+
+        /*对于每个提交，若其中5个文件都属于同一个微服务，则认为该微服务提交了一次，而非5次*/
+
+        //生成从提交信息中提取出文件集合，其内的set集合记录每一个gitcommits包含的提交文件名集合
+        List<Set<String>> blocks = generateFileSetBlocks(gitCommits, microservices);
+        //获取每个文件提交的次数
+        Map<String, Integer> fileCount = findFileCommitCount(blocks);
+        /*最终要得到的结果，string代表文件名，Map代表与该文件存在共同变更的文件名和共同变更次数这里可以通过getMicroservicePathByPathnameAndMs
+        方法直接得到任意文件对应的微服务路径那么resultFiles最终存的是微服务之间的共同变更统计记录*/
+        Map<String,Map<String,Integer>> resultFiles = new HashMap<>();
+        //每一次循环对应某一次提交的文件集合set
+        for (int i = 0; i < blocks.size(); i++) {
+            int start = max(0, i-len), end = min(i+len+1,blocks.size());
+            Set<String> source = blocks.get(i);//某一次提交的文件集合
+            List<Set<String>> targets = blocks.subList(start, end);//提交窗口，对应第start到end次提交的文件集合
+            for (String file :
+                    source) {//遍历某一次提交的文件集合内的文件
+                //当前文件名所在的微服务的路径
+                String prefix = getMicroservicePathByPathnameAndMs(file, microservices);
+                String miname=getMicroserviceNameByFilePath(file,microservices);
+                Set<String> appearFiles = new HashSet<>();//当前某文件对应的和它共同变更的文件集合
+                for (Set<String> tfiles :
+                        targets) {//遍历提交窗口内每一次提交
+                    for (String tfile :
+                            tfiles) {//遍历每次提交包含的文件
+                        if(!tfile.startsWith(prefix)) {
+                            //appearFiles.add(tfile);改为appearFiles内存入文件对应的微服务路径
+                            //是否要判断一下
+                            appearFiles.add(getMicroserviceNameByFilePath(tfile,microservices));
+                        }
+                    }
+                }
+                //根据file作为key获取resultFiles的value，若file对应的value为空，则new一个map存入resultFiles并返回给countMap
+                //相当于是在给resultFiles不断根据传入的prefix值（对应key），给key赋值，并创建该key对应的value值，for循环再给value赋值
+                Map<String, Integer> countMap = resultFiles.computeIfAbsent(miname, k -> new HashMap<>());
+                for (String appearFile :
+                        appearFiles) {
+                    //对于countMap中key为appearFile的value来说，若其对应的value为空，则给value赋0
+                    Integer count = countMap.computeIfAbsent(appearFile, k -> 0);
+                    countMap.put(appearFile, count+1);//当前只是某一次提交的某一个文件对应的共同变更值，file肯定会有重复
+                }
+            }
+        }
+
+        return new MvResult(len, resultFiles, fileCount, microservices);
+    }
     public static MvResult detectMvResult(List<GitCommit> gitCommits,int len,List<Microservice> microservices){
         if (gitCommits == null || gitCommits.size() == 0 || len < 0) {
             return null;
         }
         //将获取的gitCommits对象集合按照提交时间先后排序（git记录的是秒级的提交时间戳）
         Collections.sort(gitCommits);
+
+        /*对于每个提交，若其中5个文件都属于同一个微服务，则认为该微服务提交了一次，而非5次*/
+
         //生成从提交信息中提取出文件集合
         List<Set<String>> blocks = generateFileSetBlocks(gitCommits, microservices);
         //获取每个文件提交的次数
@@ -160,6 +233,10 @@ public class MvAction implements Action {
         // 初始化一个len长度的滑动窗口
 //        SlidingWindow slidingWindow = generateSlidingWindow(len, blocks);
 //        Map<String,Map<String,Integer>> resultFiles = slidingWindow.slideBlocks(blocks, path -> getMicroservicePathByPathnameAndMs(path, microservices));
+
+        /*最终要得到的结果，string代表文件名，Map代表与该文件存在共同变更的文件名和共同变更次数
+        //这里可以通过getMicroservicePathByPathnameAndMs方法直接得到任意文件对应的微服务路径
+        //（微服务名可以唯一标识一个微服务，微服务路径也可以）那么resultFiles最终存的是微服务之间的共同变更统计记录*/
         Map<String,Map<String,Integer>> resultFiles = new HashMap<>();
         for (int i = 0; i < blocks.size(); i++) {
             int start = max(0, i-len), end = min(i+len+1,blocks.size());
@@ -167,6 +244,7 @@ public class MvAction implements Action {
             List<Set<String>> targets = blocks.subList(start, end);
             for (String file :
                     source) {
+                //微服务的路径
                 String prefix = getMicroservicePathByPathnameAndMs(file, microservices);
                 Set<String> appearFiles = new HashSet<>();
                 for (Set<String> tfiles :
