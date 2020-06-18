@@ -22,7 +22,7 @@ import java.util.*;
 import static com.alibaba.fastjson.parser.Feature.DisableFieldSmartMatch;
 import static com.alibaba.fastjson.parser.Feature.IgnoreNotMatch;
 import static com.alibaba.fastjson.serializer.SerializerFeature.DisableCircularReferenceDetect;
-
+//数据转化成mongo数据库可接受的格式，存到数据库中去
 public class GeneraInfoMongoRepository implements InfoRepository<Info, Map<GeneraInfoMongoRepository.BsonType, Bson>> {
     public static final String PROJECT_ID = "_projectId";
     private MongoCollection mongoCollection;

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+//versionInfo是可以替代version
 public class Version {
     private String versionName;
     private String tag;

@@ -4,7 +4,7 @@ import top.jach.tes.core.api.domain.info.Info;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//可以删除了，用不上
 public class VersionInfo extends Info {
     public static final String INFO_NAME = "VersionInfo";
     private Long reposId;

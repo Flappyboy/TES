@@ -10,7 +10,7 @@ import java.util.List;
 public class GoFile {
     private String name;
 
-    private List<GoPackage> goPackages = new ArrayList<>();
+    private List<GoPackage> goPackages = new ArrayList<>();//当前的文件依赖了某些包
 
     public GoFile setName(String name) {
         this.name = name;

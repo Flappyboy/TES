@@ -84,12 +84,6 @@ public class AnalysisVersionMainForJson extends DevApp {
         Result result = new Result();
         for (int i = 0; i < versionsInfoForRelease.getVersions().size()-1; i++) {
             Version version = versionsInfoForRelease.getVersions().get(i);
-        /*}
-        for (Version version:
-                versionsInfoForRelease.getVersions()) {//每一轮循环代表一个sheet页*/
-
-            //查询version name
-            String n_version=version.getVersionName();
 
             // 查询version版本下的所有微服务
             MicroservicesInfo microservices = DataAction.queryLastMicroservices(context, reposInfo.getId(), null, version);
@@ -104,7 +98,6 @@ public class AnalysisVersionMainForJson extends DevApp {
             PairRelationsInfo pairRelationsInfoWithoutWeight = microservices.callRelationsInfoByTopic(false).deWeight();
             pairRelationsInfoWithoutWeight.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
             InfoTool.saveInputInfos(pairRelationsInfoWithoutWeight);
-            //InfoTool.saveInputInfos(pairRelationsInfo);
 
             // 查询version版本下问题单数据
             DtssInfo dtssInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.BugDts, DtssInfo.class);
