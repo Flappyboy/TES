@@ -119,7 +119,7 @@ public class AnalysisVersionMainForJson extends DevApp {
             }
             //给gitCommits去重
            List<GitCommit> gitCommits=gct.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getReposId() + "#" + o.getRepoName() + "#" + o.getSha()))),ArrayList::new));;
-           
+            Collections.sort(gitCommits);
             ElementsValue hublike_weight = HublinkAction.calculateHublike(pairRelationsInfoWithWeight);
             ElementsValue hublike_no_weight = HublinkAction.calculateHublike(pairRelationsInfoWithoutWeight);
             ElementsValue cyclicResult = CyclicAction.CalculateCyclic(context, microservices, pairRelationsInfoWithWeight);

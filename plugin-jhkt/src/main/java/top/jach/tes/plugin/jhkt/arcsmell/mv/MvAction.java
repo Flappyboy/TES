@@ -164,13 +164,13 @@ public class MvAction implements Action {
         }
         return micros;
     }
-    //返回微服务对应的共同变更的微服务集合及共同变更的次数的map
+    //返回微服务对应的共同变更的微服务集合及共同变更的次数的map,返回的微服务之间共同变更次数集合是没错的
     public static MvResult detectMvResultForUi(List<GitCommit> gitCommits,int len,List<Microservice> microservices){
         if (gitCommits == null || gitCommits.size() == 0 || len < 0) {
             return null;
         }
         //将获取的gitCommits对象集合按照提交时间先后排序（git记录的是秒级的提交时间戳）
-        Collections.sort(gitCommits);
+        //Collections.sort(gitCommits);//在最初数据获取时已经排好序了，故此处不排序
 
         /*对于每个提交，若其中5个文件都属于同一个微服务，则认为该微服务提交了一次，而非5次*/
 

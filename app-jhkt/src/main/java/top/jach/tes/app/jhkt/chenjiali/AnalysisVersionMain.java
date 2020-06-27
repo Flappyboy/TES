@@ -127,7 +127,9 @@ public class AnalysisVersionMain extends DevApp {
                 gct.addAll(gitCommitsForMicroserviceInfo.getGitCommits());
             }
             //给gitCommits去重
-           List<GitCommit> gitCommits=gct.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getReposId() + "#" + o.getRepoName() + "#" + o.getSha()))),ArrayList::new));;
+           List<GitCommit> gitCommits=gct.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getReposId() + "#" + o.getRepoName() + "#" + o.getSha()))),ArrayList::new));
+            Collections.sort(gitCommits);//把UiAction里调用的某个方法里的排序提到外面来做，方便并发处理
+
             // 计算version版本下的架构异味
             InputInfoProfiles infoProfileMap = InputInfoProfiles.InputInfoProfiles()
                     .addInfoProfile(ArcSmellAction.Elements_INFO, microservices)

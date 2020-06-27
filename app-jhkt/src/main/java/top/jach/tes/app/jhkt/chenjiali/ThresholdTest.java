@@ -37,9 +37,66 @@ import java.util.stream.Collectors;
 //这边只负责供给各种不同的源数据，用线程池来并发计算AS，并拿到各个AS计算得到的结果
 public class ThresholdTest extends DevApp {
     public static void main(String[] args){
-        System.out.println(testUiThreshold().size());
-        List<ThresholdResult> data=isExpected(testUiThreshold());//符合预期的源数据+运行结果集合
+        //System.out.println(testUiThreshold().size());
+        /*List<ThresholdResult> data=testUiThreshold();
+        System.out.println(data.size());
+        for(int i=0;i<=10;i++){
+            ThresholdResult tr=data.get(i);
+            System.out.println("四个阈值:");
+            System.out.println(tr.getThrhds().toString());
+            System.out.println("运行结果ElementsValue:");
+            System.out.println(new ArrayList<Double>(tr.getElementsValue().getValueMap().values()).toString());
 
+        }*/
+
+        test();//多个版本运行出来的uiAction计算结果要么是[]空的，要么是[11.0]只有一个数字的，
+        // excel里是可以对应上哪个微服务是有值的，哪个微服务是没值的
+
+
+    }
+    public static void test(){
+        //存放各个线程运行结果
+        //List<ThresholdResult> resuts=new ArrayList<>();
+        //新建线程池
+       // ExecutorService executor=new ThreadPoolExecutor(5, 15, 60L, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
+        Context context = Environment.contextFactory.createContext(Environment.defaultProject);
+
+        ReposInfo reposInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.TargetSystem, ReposInfo.class);
+
+        VersionsInfo versionsInfoForRelease = DataAction.queryLastInfo(context, InfoNameConstant.VersionsForRelease, VersionsInfo.class);
+
+        for (int i = 0; i < versionsInfoForRelease.getVersions().size()-1; i++) {
+            Version version = versionsInfoForRelease.getVersions().get(i);
+            // 查询version版本下的所有微服务
+            MicroservicesInfo microservices = DataAction.queryLastMicroservices(context, reposInfo.getId(), null, version);
+
+            //存储单个版中所有微服务名称
+            List<String> microserviceNames = microservices.microserviceNames();
+            //获取pairrelationsInfo
+            PairRelationsInfo pairRelationsInfoWithoutWeight = microservices.callRelationsInfoByTopic(false).deWeight();
+            pairRelationsInfoWithoutWeight.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
+            InfoTool.saveInputInfos(pairRelationsInfoWithoutWeight);
+
+            //查询version版本下所有微服务的commit信息
+            Map<String, GitCommitsForMicroserviceInfo> gitCommitsForMicroserviceInfoMap = new HashMap<>();
+            List<GitCommit> gct = new ArrayList<>();
+            for (Microservice microservice : microservices) {//由于MicroserviceInfo类实现了Iterator方法，因此可以这样遍历
+                GitCommitsForMicroserviceInfo gitCommitsForMicroserviceInfo = DataAction.queryLastGitCommitsForMicroserviceInfo(context, reposInfo.getId(), microservice.getElementName(), version);
+                gitCommitsForMicroserviceInfoMap.put(microservice.getElementName(), gitCommitsForMicroserviceInfo);
+                if (gitCommitsForMicroserviceInfo == null) {
+                    //System.out.println("GitCommitsForMicroserviceInfo  "+microservice.getElementName()+"  "+version.getVersionName());
+                    continue;
+                }
+                gct.addAll(gitCommitsForMicroserviceInfo.getGitCommits());
+            }
+            //给gitCommits去重
+            List<GitCommit> gitCommits = gct.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getReposId() + "#" + o.getRepoName() + "#" + o.getSha()))), ArrayList::new));
+            ;
+            Collections.sort(gitCommits);
+            ElementsValue value = UiAction.calculateUi(gitCommits, 5, microservices, pairRelationsInfoWithoutWeight, 5.0, 4.0, 8.0);
+            System.out.println("version:");
+            System.out.println(new ArrayList<Double>(value.getValueMap().values()).toString());
+        }
     }
 
     public static List<ThresholdResult> testUiThreshold(){
@@ -79,13 +136,13 @@ public class ThresholdTest extends DevApp {
             }
             //给gitCommits去重
             List<GitCommit> gitCommits=gct.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getReposId() + "#" + o.getRepoName() + "#" + o.getSha()))),ArrayList::new));;
-
+            Collections.sort(gitCommits);
             //获得当前数据源下所有阈值的组合，每一个内嵌的list都是一组阈值
             List<List<Double>> thrs=new ArrayList<>();
             for(int ie=3;ie<7;ie++){
-                for(int j=5;j<13;j++){
-                    for(int k=3;k<7;k++){
-                        for(int h=5;h<11;h++){
+                for(int j=8;j<13;j++){
+                    for(int k=4;k<7;k++){
+                        for(int h=5;h<9;h++){
                             List<Double> list=new ArrayList<>();
                             list.add((double)ie);
                             list.add((double)j);
@@ -106,6 +163,9 @@ public class ThresholdTest extends DevApp {
                     int finalL = l;
                     executor.execute(() -> {
                         ElementsValue elementsValue=null;
+                        //根据错误提示定位到一个方法调用链，在调用过程中对List<GitCommit> gitCommits这个共享变量，
+                        //在detectMvResultForUi方法中先进行了sort相当于修改了共享变量，然后又作为 generateFileSetBlocks(gitCommits, microservices)
+                        //该方法的输入，从而导致变量读和写不同步，出现ConcurrentModificationException错误
                         elementsValue = UiAction.calculateUi(gitCommits,len,microservices,pairRelationsInfoWithoutWeight,impact,cochange,change);
                         if(elementsValue!=null){
                                 synchronized (resuts){
@@ -116,9 +176,17 @@ public class ThresholdTest extends DevApp {
                     });
                 }
             }
-            executor.shutdown();
 
-
+            //之前shutdown写在这里，只是对里层for循环里的线程做了处理，但外面还有一层for(version)的循环，因此要把
+            //shutdown放到两层for循环之外，所有线程均运行完毕之后再shutdown
+        }
+        executor.shutdown();
+        try {//等待所有线程执行完，主线程再继续执行下面的操作，也就是返回results
+            //有两种情况才会回到主线程执行：1是线程池所有线程执行完，再转去执行主线程，2是线程池执行时间超过了awaitTermination方法的第一个参数的时间，则会自动放弃执行线程池中线程，转去执行主线程
+            //将awaitTermination方法参数值设置到最大，则只有当线程池中所有线程执行完之后才会转去执行主线程
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return resuts;
     }

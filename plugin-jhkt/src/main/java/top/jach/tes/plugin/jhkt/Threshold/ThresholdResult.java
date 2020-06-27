@@ -9,7 +9,8 @@ import top.jach.tes.plugin.jhkt.microservice.MicroservicesInfo;
 import java.util.List;
 
 /**
- 目前来看所有需要进行阈值测试的AS检测都有共同的参数传入，那就是microservicesInfo和pairrelationsInfo。故多线程执行结果是源数据、阈值和执行结果
+ 目前来看所有需要进行阈值测试的AS检测都有共同的参数传入，那就是microservicesInfo和pairrelationsInfo。
+ 故多线程执行结果是源数据、阈值和执行结果
  */
 @Data
 @AllArgsConstructor

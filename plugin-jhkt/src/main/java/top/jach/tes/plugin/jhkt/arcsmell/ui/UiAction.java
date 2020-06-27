@@ -83,10 +83,13 @@ public class UiAction implements Action{
             //String mname=microservice.getAllPath();
             String name=microservice.getElementName();
             Set<String> cochangeSet=new HashSet<>();//与当前遍历到的微服务共同变更次数超过cochange次的微服务集合
-            double inValue=0.0;
+            double inValue=0.0;//inElement只有18个，总的微服务有21个，自然存在null情况
             if(inElement.getValueMap().get(name)!=null){
-                inValue=inElement.getValueMap().get(name);
+                inValue=inElement.getValueMap().get(name);//若不在inElement里则默认inValue为0
             }
+
+            //由于整个筛选要经过四层阈值筛选，对于每个符合要求的if都做了操作，但对于不符合其中一层要求的else没操作
+            //这也导致了ui检测结果其他都为空，只有全部符合要求的微服务才有值。把else的处理代码要加上来
             if(inValue>impact){
                 Map<String, Integer> cochangeMap=microResult.computeIfAbsent(name,k -> new HashMap<>());
                 if(cochangeMap.size()>0){
@@ -97,14 +100,23 @@ public class UiAction implements Action{
                     }
                     if(cochangeSet.size()>change){
                         resultDetail.put(name,cochangeSet);//每个微服务的满足ui的微服务集合
+                        //只将满足三层要求的存在UI的微服务的具体记录存入resultDetail，其他不存在UI的无记录
                     }
                 }
             }
         }
-        for(String key:resultDetail.keySet()){
+        for(String key:microservices.microserviceNames()){
+            if(resultDetail.containsKey(key)){
+                int value=resultDetail.get(key).size();
+                element.put(key,Double.valueOf(value));
+            }else{
+                element.put(key,0.0);
+            }
+        }
+       /* for(String key:resultDetail.keySet()){
             int value=resultDetail.get(key).size();
             element.put(key,Double.valueOf(value));
-        }
+        }*/
         return element;
     }
 
