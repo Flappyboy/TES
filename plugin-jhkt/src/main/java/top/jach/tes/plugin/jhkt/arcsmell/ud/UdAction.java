@@ -24,7 +24,7 @@ import java.util.*;
 /**
  * @author:AdminChen
  * @date:2020/4/9
- * @description:
+ * @description: detect for unstable dependency
  */
 public class UdAction implements Action{
     public static final String Elements_INFO = "elements_info";
@@ -77,7 +77,7 @@ public class UdAction implements Action{
         return insMap;
     }
     //遍历pairrelations得到每个微服务所依赖的服务名称的集合，每个微服务与其依赖集合构成map中一个键值对
-    public Map<String,List<String>> getDependencies(MicroservicesInfo microservices,PairRelationsInfo pairRelationsInfo){
+    public static Map<String,List<String>> getDependencies(MicroservicesInfo microservices,PairRelationsInfo pairRelationsInfo){
         Map<String,List<String>> microDependenciesMap=new HashMap<>();
 
         List<PairRelation> relations = Lists.newArrayList(pairRelationsInfo.getRelations().iterator());
@@ -95,26 +95,35 @@ public class UdAction implements Action{
         return microDependenciesMap;
     }
 
-    public ElementsValue calculateUd(MicroservicesInfo microservices,PairRelationsInfo pairRelationsInfo){
+    public static ElementsValue calculateUd(MicroservicesInfo microservices,PairRelationsInfo pairRelationsInfo){
         //所有微服务对应的instability值（得到的instability值不是0.5就是1,1表示不依赖别人也不被别人依赖）
         Map<String,Double> microInstabMap=calInstability(microservices,pairRelationsInfo);
-        //所有微服务对应的依赖服务集合（√）
+        //所有微服务对应的依赖服务集合（√）注意有可能存在某微服务对应的依赖服务集合为空，比如x_1f,x_f/x_125,x_13/x_843这三个
         Map<String,List<String>> microDependenciesMap=getDependencies(microservices,pairRelationsInfo);
         //所有微服务对应的ud检测结果
         Map<String,Double> resultMap=new HashMap<>();
         for(Microservice micro:microservices){
             String microName=micro.getElementName();
+            double udValue=0.0;
             List<String> dependlist=microDependenciesMap.get(microName);
-            double badCount=0.0;
-            double microIns=microInstabMap.get(microName);
-            for(String str:dependlist){
-                double dependIns=microInstabMap.get(str);
-                if(microIns<dependIns){
-                    badCount=badCount+1.0;//为什么+=1.0，上面badCount显示变量未使用？
+            if(dependlist.size()==0){
+                resultMap.put(microName,udValue);
+                continue;
+            }else{
+                double badCount=0.0;
+                double microIns=microInstabMap.get(microName);
+                for(String str:dependlist){
+                    double dependIns=microInstabMap.get(str);
+                    if(microIns<dependIns){
+                        badCount=badCount+1.0;//为什么用+=1.0时，上面badCount显示变量未使用？
+                    }
                 }
+
+                udValue=badCount/(dependlist.size());//UoUD值
+                resultMap.put(microName,udValue);
             }
-            double udValue=badCount/(dependlist.size());//UoUD值
-            resultMap.put(microName,udValue);
+
+
         }
         ElementsValue element=ElementsValue.createInfo();
         for(String key:resultMap.keySet()){
@@ -123,6 +132,13 @@ public class UdAction implements Action{
         }
         return element;
     }
+
+    public static ElementsValue calculateUi(MicroservicesInfo microservices,PairRelationsInfo pairRelationsInfo,double impact,double cochange,double change){
+        ElementsValue element=ElementsValue.createInfo();
+
+        return element;
+    }
+
 
     @Override
     public OutputInfos execute(InputInfos inputInfos, Context context) throws ActionExecuteFailedException {

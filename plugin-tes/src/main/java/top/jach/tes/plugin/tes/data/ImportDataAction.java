@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+//json对象转换为java数据结构的逻辑
 public class ImportDataAction implements Action {
     public static final String ImportDir = "ImportDir";
     @Override
@@ -63,6 +63,7 @@ public class ImportDataAction implements Action {
                     continue;
                 }
                 try {
+                    //读取文件，将文件序列化成一个json对象
                     JSONObject data = JSONObject.parseObject(FileUtils.readFileToString(dataFile, "utf8"));
                     Class infoClass = Class.forName(data.getString("infoClass"));
                     Info info = (Info) data.toJavaObject(infoClass);

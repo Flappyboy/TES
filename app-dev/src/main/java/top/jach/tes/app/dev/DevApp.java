@@ -43,7 +43,7 @@ public abstract class DevApp {
     }
     private static DefaultInfoRepositoryFactory defaultInfoRepositoryFactory;
     public static GitCommitRepository gitCommitRepository;
-
+//为大部分都绑定GeneraInfoMongoRepository
     private static DefaultInfoRepositoryFactory infoRepositoryFactory(){
         DefaultInfoRepositoryFactory factory = new DefaultInfoRepositoryFactory();
         DefaultNToOneMatchingStrategy<Class<? extends Info>, InfoRepository> strategy = new DefaultNToOneMatchingStrategy<>();

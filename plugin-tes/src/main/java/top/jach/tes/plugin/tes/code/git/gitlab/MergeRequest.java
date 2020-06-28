@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Set;
-
+/*记录每次提交的一些额外的信息，一定要在代码托管平台操作才有的信息*/
 @Data
 public class MergeRequest {
     Long reposId;

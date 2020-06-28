@@ -11,7 +11,7 @@ import java.io.IOException;
 public class Repo {
     String name;
 
-    String remoteUrl;
+    String remoteUrl;//下载代码仓的url
 
     public String getName() {
         return name;

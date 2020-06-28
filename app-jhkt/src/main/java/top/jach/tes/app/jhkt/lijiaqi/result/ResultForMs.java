@@ -15,6 +15,9 @@ public class ResultForMs {
     Map<String, Double> cyclic = new HashMap<>();
     Map<String, Double> undirectedCyclic = new HashMap<>();
     List<Mv> mvs;
+    Map<String,Double> unstableDependency=new HashMap<>();
+    Map<String,Double> unstableInterface=new HashMap<>();
+    Map<String,Double> sloppys=new HashMap<>();
 
     Map<String, Long> commitCount = new HashMap<>();
     Map<String, Long> bugCount = new HashMap<>();

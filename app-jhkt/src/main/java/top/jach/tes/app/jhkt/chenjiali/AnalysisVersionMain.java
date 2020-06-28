@@ -25,6 +25,7 @@ import top.jach.tes.plugin.jhkt.analysis.MicroserviceAttrsInfo;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmell;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellAction;
 import top.jach.tes.plugin.jhkt.arcsmell.ArcSmellsInfo;
+import top.jach.tes.plugin.jhkt.arcsmell.Sloppy.SloppyAction;
 import top.jach.tes.plugin.jhkt.arcsmell.mv.MvAction;
 import top.jach.tes.plugin.jhkt.arcsmell.ud.UdAction;
 import top.jach.tes.plugin.jhkt.dts.DtssInfo;
@@ -58,7 +59,7 @@ import java.util.stream.Collectors;
 public class AnalysisVersionMain extends DevApp {
     public static void main(String[] args) throws ActionExecuteFailedException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         Context context = Environment.contextFactory.createContext(Environment.defaultProject);
-
+//InfoTool对某些查询基本操作重复较多的进行统一封装，把基本操作封装起来，供调用
         ReposInfo reposInfo = InfoTool.queryLastInfoByNameAndInfoClass(InfoNameConstant.TargetSystem, ReposInfo.class);
 
         VersionsInfo versionsInfoForRelease = DataAction.queryLastInfo(context, InfoNameConstant.VersionsForRelease, VersionsInfo.class);
@@ -101,6 +102,10 @@ public class AnalysisVersionMain extends DevApp {
             PairRelationsInfo pairRelationsInfo = microservices.callRelationsInfoByTopic(wetherWeight);
             pairRelationsInfo.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
             InfoTool.saveInputInfos(pairRelationsInfo);
+            //计算不考虑权重的pairRelationsInfo
+            PairRelationsInfo pairRelationsInfoWithoutWeight = microservices.callRelationsInfoByTopic(false).deWeight();
+            pairRelationsInfoWithoutWeight.setName(InfoNameConstant.MicroserviceExcludeSomeCallRelation);
+            InfoTool.saveInputInfos(pairRelationsInfoWithoutWeight);
             //InfoTool.saveInputInfos(pairRelationsInfo);
 
             // 查询version版本下问题单数据
@@ -122,13 +127,15 @@ public class AnalysisVersionMain extends DevApp {
                 gct.addAll(gitCommitsForMicroserviceInfo.getGitCommits());
             }
             //给gitCommits去重
-           List<GitCommit> gitCommits=gct.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getReposId() + "#" + o.getRepoName() + "#" + o.getSha()))),ArrayList::new));;
+           List<GitCommit> gitCommits=gct.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(o -> o.getReposId() + "#" + o.getRepoName() + "#" + o.getSha()))),ArrayList::new));
+            Collections.sort(gitCommits);//把UiAction里调用的某个方法里的排序提到外面来做，方便并发处理
+
             // 计算version版本下的架构异味
             InputInfoProfiles infoProfileMap = InputInfoProfiles.InputInfoProfiles()
                     .addInfoProfile(ArcSmellAction.Elements_INFO, microservices)
                     .addInfoProfile(ArcSmellAction.PAIR_RELATIONS_INFO, pairRelationsInfo)
                     ;
-            Action action = new ArcSmellAction();
+            Action action = new ArcSmellAction();//
             ArcSmellsInfo arcSmellsInfo = action.execute(infoProfileMap.toInputInfos(Environment.infoRepositoryFactory), context)
                     .getFirstByInfoClass(ArcSmellsInfo.class);
 
@@ -141,11 +148,24 @@ public class AnalysisVersionMain extends DevApp {
             }
             */
             //计算ud架构异味
-            UdAction udAction=new UdAction();
-            ElementsValue ud=udAction.calculateUd(microservices,pairRelationsInfo);//ud值都是0
+           //直接用Class.静态方法的方式调用计算结果
+            ElementsValue ud=UdAction.calculateUd(microservices,pairRelationsInfo);
+            //根据论文中定义，对外依赖为0，被依赖小于thsd（最好为2）值，最终计算结果是没有一个微服务符合要求
+            //sd的计算不用包含权重
+            ElementsValue sd= SloppyAction.calculateSD(microservices,pairRelationsInfoWithoutWeight,2.0);//小于的thsd值为2
             for(String str:ud.getValueMap().keySet()){
                 ArcSmell al=arcSmellsInfo.find(str);
-                al.setUd((ud.getValueMap().get(str)).longValue());
+                if(al!=null){
+                    al.setUd((ud.getValueMap().get(str)).longValue());
+                }
+
+            }
+            for(String sstr:sd.getValueMap().keySet()){
+                ArcSmell sal=arcSmellsInfo.find(sstr);
+                if(sal!=null){
+                    sal.setSloppy((sd.getValueMap().get(sstr)).longValue());
+                }
+
             }
             //根据以上查询数据生成MicroserviceAttrsInfo类的对象
             MicroserviceAttrsInfo mai = microserviceAttrsInfos(n_version,microservices, dtssInfo, bugMicroserviceRelations, gitCommitsForMicroserviceInfoMap, arcSmellsInfo);
@@ -227,7 +247,9 @@ public static Double getPearsonBydim(List<Double> ratingOne, List<Double> rating
 
     private static String getMethodName(String fildeName){
         byte[] items = fildeName.getBytes();
-        items[0] = (byte) ((char) items[0] - 'a' + 'A');
+        if(items[0]>='a'&&items[0]<='z'){
+            items[0] = (byte) ((char) items[0] - 'a' + 'A');
+        }
         return new String(items);
     }
 

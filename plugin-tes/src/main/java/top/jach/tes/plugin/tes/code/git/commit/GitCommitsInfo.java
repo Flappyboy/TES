@@ -119,6 +119,7 @@ public class GitCommitsInfo extends Info implements WithRepo {
             if(excludeShas != null && excludeShas.contains(commit.getName())){
                 continue;
             }
+            //把任务塞到线程池里，等待线程池执行完成
             executor.execute(() -> {
                 GitCommit gitCommit = null;
                 try {
